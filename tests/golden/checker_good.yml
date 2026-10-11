@@ -107,3 +107,14 @@ lines:
   - ledger: tests/golden/ledger_pl.yml
     text: "Dziękuję za poświęcony czas."
     why: Non-claim line (Polish closer).
+
+  # ---------------- everyday words that are also level words
+  - ledger: src/honestcv/samples/en/ledger.yml
+    text: "I am available for regular meetings."
+    why: '"regular" is an everyday word, not a claim word.'
+  - ledger: src/honestcv/samples/en/ledger.yml
+    text: "I enjoy working with regular reports."
+    why: '"regular" is an everyday word here.'
+  - ledger: src/honestcv/samples/en/ledger.yml
+    text: "I can start in mid-November."
+    why: '"mid" is not a level word; "mid-level" is.'

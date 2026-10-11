@@ -60,8 +60,12 @@ def collect(cfg: Config, ws: Workspace, *, offline: bool, today: dt.date) -> tup
                 if kept:
                     head, sep, rest = status.message.partition("; ")  # the count first, then any skipped entries or problems
                     status = status.model_copy(update={"offers": len(kept), "message": f"{head}, {len(kept)} match your keywords{sep}{rest}"})
-                else:
-                    status = status.model_copy(update={"state": "empty", "offers": 0, "message": "no offers matched your keywords"})
+                else:  # the skipped entries and problems stay in the message: an incomplete result never reads as "no matches"
+                    notes = status.message.partition("; ")[2]
+                    status = status.model_copy(update={
+                        "state": status.state if notes else "empty", "offers": 0,
+                        "message": f"0 of {len(found)} offer{'s' * (len(found) != 1)} match your keywords; {notes}" if notes else "no offers matched your keywords",
+                    })  # fmt: skip
                 found = kept
             offers += found
             statuses.append(status)
@@ -71,11 +75,12 @@ def collect(cfg: Config, ws: Workspace, *, offline: bool, today: dt.date) -> tup
 
 
 def collection_status(statuses: list[SourceStatus], inbox_offers: int = 0) -> Literal["PASS", "PARTIAL", "FAIL"]:
-    """PARTIAL when any source was refused, unreadable or failed (a robots.txt that could not be read included);
-    FAIL when every source did and nothing came from the inbox either. A source that was deliberately skipped
+    """PARTIAL when any source was refused, unreadable or failed (a robots.txt that could not be read included, and so
+    is a source that skipped unreadable entries but kept its other offers); FAIL when every source failed, nothing
+    came from them and nothing came from the inbox either. A source that was deliberately skipped
     (offline, no cache) never makes a run PARTIAL."""
     failed = [s for s in statuses if s.state in ("refused", "drift", "error")]
-    if failed and len(failed) == len(statuses) and not inbox_offers:
+    if failed and len(failed) == len(statuses) and not inbox_offers and not any(s.offers for s in failed):
         return "FAIL"
     return "PARTIAL" if failed else "PASS"
 

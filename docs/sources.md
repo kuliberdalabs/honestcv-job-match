@@ -23,6 +23,7 @@ How honestcv behaves toward every source:
 - It waits at least the minimum interval between two requests to the same source, and keeps answers for the cache time shown. Inside that time it makes no request.
 - It retries HTTP 429, 500, 502, 503 and 504 up to 3 times (2, 4 and 8 seconds, or the `Retry-After` value up to 60 seconds). It never retries 401, 403 or 404, and it does not work around them.
 - It reports a source that answers with data it cannot read as `drift`, and the run as PARTIAL. It never reports that as "no matches".
+- It keeps the good offers of a source that sent some records it cannot read, reports that source as `error` with the number of records skipped, and the run as PARTIAL. The keyword filter keeps that note, even when no offer matches.
 - It never logs in, never posts anything and never calls an apply endpoint.
 
 Every offer card names its source and links to the original listing. The offers are for your own job search. Do not republish them.

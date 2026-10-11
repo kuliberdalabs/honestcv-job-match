@@ -127,6 +127,35 @@ def test_wont_is_not_won(maya):
     assert not checker._claim_bearing(checker._unit(1, "I won't be available until March.", ctx), ctx)
 
 
+@pytest.mark.parametrize("text", ["I am available for regular meetings.", "I enjoy working with regular reports.",
+                                  "I can start in mid-November.", "I head out early on Fridays."])  # fmt: skip
+def test_everyday_words_are_not_level_words(maya, text):
+    ctx = checker._Ctx.build(maya, TODAY)
+    assert not checker._claim_bearing(checker._unit(1, text, ctx), ctx)
+
+
+@pytest.mark.parametrize("text", ["Mid-level analyst at a parcel company.", "Head of support at a parcel company.",
+                                  "Team lead for the help desk.", "Lead analyst at a parcel company.", "Junior data analyst."])  # fmt: skip
+def test_level_words_in_a_role_title_are_claim_words(maya, text):
+    ctx = checker._Ctx.build(maya, TODAY)
+    assert checker._signal(checker._unit(1, text, ctx))
+
+
+@pytest.mark.parametrize("text", ["I am writing to apply with a doctorate in data science.",
+                                  "I look forward to applying my doctorate in Physics.",
+                                  "I am writing to apply, having built the weekly ticket-backlog dashboard.",
+                                  "Chciałabym aplikować na stanowisko analityka z doktoratem z ekonomii."])  # fmt: skip
+def test_an_opener_or_closer_neutralises_only_itself(tmp_path, maya, text):
+    ctx = checker._Ctx.build(maya, TODAY)
+    assert checker._claim_bearing(checker._unit(1, text, ctx), ctx)
+    assert _check(tmp_path, maya, text).units_claim_bearing == 1
+
+
+def test_an_opener_with_a_citation_marker_is_a_claim(maya):
+    ctx = checker._Ctx.build(maya, TODAY)
+    assert checker._claim_bearing(checker._unit(1, "I look forward to hearing from you. <!-- c:tag-cleanup -->", ctx), ctx)
+
+
 LETTER = ["Dear Hiring Manager,", "I am writing to apply for the Data Analyst position at Tallgrove Analytics.",
           "I am excited about the opportunity to join your team.", "I would welcome the chance to discuss my application.",
           "I look forward to hearing from you.", "Thank you for your time and consideration.", "Kind regards,",
@@ -214,6 +243,43 @@ def test_a_drafted_skills_line_is_a_draft_claim_never_a_block(tmp_path):
     assert "confirm it in ledger.yml" in result.flags[0].message and result.flags[0].field == "claims[0].draft"
     longer = _check(tmp_path, _ledger([claim]), line + ", Tableau")
     assert _rules(longer) == {"UNBACKED_SKILL"} and longer.verdict == "BLOCK"
+
+
+@pytest.mark.parametrize("text", ["Skills: SQL, Python, pandas, Zendesk.", "Skills SQL, Python", "Umiejętności: SQL i Python",
+                                  "Tech stack - Python | SQL \u00b7 dbt", "Skills: CI/CD, A/B testing, PL/SQL",
+                                  "Skills: SQL, Python, and pandas", "Python, SQL, pandas", "SQL / Excel / Tableau"])  # fmt: skip
+def test_a_pure_skill_list_is_a_skills_line(text):
+    assert checker.is_skills_line(text)
+
+
+@pytest.mark.parametrize("text", ["Skills: SQL (expert, 20 years), Python (PhD)", "Skills: SQL; I won the Nobel Prize in Physics.",
+                                  "Skills: SQL expert", "Skills: SQL, Python, 2019", "Skills", "Skills: SQL, Python, etc.",
+                                  "Python, SQL, pandas for 5 years", "Python and SQL", "SQL Python"])  # fmt: skip
+def test_anything_else_on_a_skills_line_sends_it_through_the_guards(text):
+    assert not checker.is_skills_line(text)
+
+
+@pytest.mark.parametrize("text", ["Skills: SQL (expert, 20 years), Python (PhD)", "Skills: SQL; I won the Nobel Prize in Physics."])
+def test_claims_on_a_skills_line_block_after_a_draft(tmp_path, maya, text):
+    drafted = _drafted_maya(tmp_path)
+    for ledger, ws_root in ((drafted, tmp_path), (maya, SAMPLES)):
+        result = _check(tmp_path, ledger, text, ws_root=ws_root)
+        assert result.verdict == "BLOCK" and result.units_claim_bearing == 1, render_check(result)
+        assert _rules(result) & {"UNBACKED", "DRAFT_REWORDED"}, render_check(result)
+
+
+def test_a_draft_backs_a_skills_line_only_word_for_word(tmp_path):
+    drafted = _drafted_maya(tmp_path)
+    own = "Skills: SQL, Python, pandas, scikit-learn, Looker Studio, Excel, Google Sheets, Zendesk"
+    result = _check(tmp_path, drafted, own, ws_root=tmp_path)
+    assert {(f.rule, f.severity) for f in result.flags} == {("DRAFT_CLAIM", "REVIEW")} and result.verdict == "REVIEW"
+    shorter = _check(tmp_path, drafted, "Skills: SQL, Python", ws_root=tmp_path)
+    assert {(f.rule, f.severity) for f in shorter.flags} == {("UNBACKED_SKILL", "BLOCK")} and shorter.verdict == "BLOCK"
+    assert all("only in draft claims' skills" in f.message for f in shorter.flags)
+    # a skill a confirmed claim lists still backs the line
+    confirmed = drafted.model_copy(deep=True)
+    next(c for c in confirmed.claims if c.skills == ["sql"]).draft = False
+    assert _rules(_check(tmp_path, confirmed, "Skills: SQL", ws_root=tmp_path)) == set()
 
 
 def test_markdown_report_escapes_quotes_and_gaps(tmp_path, maya):

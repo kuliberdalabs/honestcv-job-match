@@ -348,8 +348,10 @@ claim_words:
   distinction: [won the, won a, won an, won first, won second, won third, winner, winners, prize, prizes, awards,
                 patent, patents, patented, speaker, keynote, keynotes, nagrod*, wygrał*, zwycięzc*, laureat*]
   expertise: [expert, experts, proficient, fluent, advanced, native, biegł*, zaawansowan*, ekspert*]
-  seniority: [intern, trainee, staż, stażysta, junior, młodszy, mid, regular, senior, starszy, lead, staff,
-              principal, head]
+  # no bare "regular", "mid" or "head": they are everyday words ("regular meetings", "mid-November");
+  # "lead" counts through the led class of authorship
+  seniority: [intern, trainee, staż, stażysta, junior, młodszy, mid-level, senior, starszy, team lead, staff,
+              principal, head of]
   languages: [english, swedish, german, polish, french, spanish, italian, norwegian, danish, finnish, dutch,
               portuguese, russian, ukrainian, czech, chinese, japanese, angielsk*, niemieck*, szwedzk*, polsk*,
               hiszpańsk*, francusk*, włosk*, rosyjsk*, ukraińsk*, czesk*]

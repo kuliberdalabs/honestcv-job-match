@@ -212,6 +212,211 @@ def test_country_and_city(text, expected):
     assert read_place(text) == expected
 
 
+# ---- typical copied pages: the facts sit on short lines of their own ----
+
+POLISH_PAGE = """Analityk danych
+Example Bank S.A.
+Kraków
+Hybrydowo
+Umowa o pracę
+18 000 - 24 000 PLN netto (+ VAT) / mies.
+Mid
+Pełny etat
+Opis stanowiska
+Szukamy osoby do zespołu raportów. Pracujesz w zespole czterech analityków.
+"""
+POLISH_B2B_PAGE = """Specjalista ds. raportowania
+Example Bank S.A.
+Warszawa, Polska · praca zdalna
+B2B | 150-180 zł/h
+Senior
+"""
+ENGLISH_PAGE = """Data Analyst
+Tallgrove Analytics
+Location: Stockholm, Sweden
+Remote (EU)
+Salary: €4,000-5,000 per month
+Mid
+Full-time
+"""
+TRAPS = """Project Coordinator
+Example Bank S.A.
+Training budget: 1000-2000 EUR per year.
+Our product costs 100-200 USD per month. We manage client budgets from 10 000 PLN.
+We sell products in Sweden. Our customers are in Poland. You will support clients in Germany.
+We work with remote sensing data and build remote access tools for remote teams.
+"""
+
+
+def test_a_polish_page_with_one_fact_per_line():
+    offer = import_text(POLISH_PAGE)
+    assert (offer.countries, offer.location, offer.remote, offer.contract) == (["PL"], "Kraków", "hybrid", ["employment"])
+    assert (offer.salary.min, offer.salary.max, offer.salary.currency, offer.salary.unit) == (18000, 24000, "PLN", "month")
+
+
+def test_a_polish_page_with_a_b2b_rate_per_hour():
+    offer = import_text(POLISH_B2B_PAGE)
+    assert (offer.countries, offer.location, offer.remote, offer.contract) == (["PL"], "Warszawa", "remote", ["b2b"])
+    assert (offer.salary.min, offer.salary.max, offer.salary.currency, offer.salary.unit) == (150, 180, "PLN", "hour")
+
+
+def test_an_english_page_with_labelled_lines():
+    offer = import_text(ENGLISH_PAGE)
+    assert (offer.countries, offer.location, offer.remote, offer.contract) == (["SE"], "Sweden", "remote", [])
+    assert (offer.salary.min, offer.salary.max, offer.salary.currency, offer.salary.unit) == (4000, 5000, "EUR", "month")
+
+
+def test_labelled_lines_in_both_languages():
+    polish = import_text("Analityk\nMiejsce pracy: Wrocław\nTryb pracy: Hybrydowy\nRodzaj umowy: B2B\nWidełki: 14 000 - 18 000 zł netto / mies.")
+    assert (polish.countries, polish.location, polish.remote, polish.contract) == (["PL"], "Wrocław", "hybrid", ["b2b"])
+    assert (polish.salary.min, polish.salary.max, polish.salary.currency, polish.salary.unit) == (14000, 18000, "PLN", "month")
+    english = import_text("Analyst\nWork mode: On-site\nType of contract: Permanent\nRate: 60-80 EUR per hour\nLocation: Berlin, Germany")
+    assert (english.countries, english.remote, english.contract) == (["DE"], "onsite", ["employment"])
+    assert (english.salary.min, english.salary.max, english.salary.currency, english.salary.unit) == (60, 80, "EUR", "hour")
+
+
+def test_the_traps_alone_give_no_fact_at_all():
+    offer = import_text(TRAPS)
+    assert (offer.salary, offer.remote, offer.contract, offer.countries, offer.location) == (None, None, [], [], None)
+
+
+def test_a_clear_fact_next_to_the_traps_is_the_only_one_read():
+    offer = import_text(TRAPS + "Salary: 12 000 - 15 000 PLN gross.\nLocation: Gdańsk\n")
+    assert (offer.countries, offer.location, offer.remote, offer.contract) == (["PL"], "Gdańsk", None, [])
+    assert (offer.salary.min, offer.salary.max, offer.salary.currency) == (12000, 15000, "PLN")
+
+
+@pytest.mark.parametrize(
+    "text, expected",
+    [
+        ("Stawka: 120 zł netto/h", (120, 120, "PLN", "hour")),
+        ("Widełki: 14 000 - 18 000 zł", (14000, 18000, "PLN", None)),
+        ("Compensation: £50,000-60,000 a year", (50000, 60000, "GBP", "year")),
+        ("Pay: 40-50 USD per hour", (40, 50, "USD", "hour")),
+        ("We offer a salary of 12 000 - 15 000 PLN gross per month.", (12000, 15000, "PLN", "month")),
+        ("Oferujemy wynagrodzenie 12 000 - 15 000 zł brutto.", (12000, 15000, "PLN", None)),
+        ("Wymagania: SQL.\nThe hourly rate is 90-110 PLN net.", (90, 110, "PLN", None)),
+        ("Salary: 12 000 - 15 000 PLN gross.\nTraining budget: 1000-2000 EUR per year.\nOur product costs 100-200 USD per month.", (12000, 15000, "PLN", None)),
+    ],
+)
+def test_pay_in_a_clear_context(text, expected):
+    assert pay(text) == expected
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Training budget: 1000-2000 EUR per year.",
+        "Our product costs 100-200 USD per month.",
+        "We manage client budgets from 10 000 PLN.",
+        "Our clients pay 100-200 EUR per hour for support.",
+        "Salary budget for the team: 100 000 - 200 000 PLN",
+        "Budżet szkoleniowy: 3 000 - 5 000 zł brutto rocznie",
+        "Cena pakietu: 200 - 400 zł netto / mies.",
+        "Pricing starts at 49 EUR per month for the team plan.",
+        "Revenue grew from 2 000 000 to 3 000 000 EUR.",
+        "Premium support for 100-200 EUR per month",
+        "Klient płaci 150-200 zł/h",
+        "Multisport: 100-150 zł",
+    ],
+)
+def test_money_that_is_not_the_pay_gives_no_pay(text):
+    assert pay(text) is None
+
+
+@pytest.mark.parametrize(
+    "text, expected",
+    [
+        ("Praca w Krakowie", (["PL"], "Kraków")),
+        ("Biuro w Gdańsku", (["PL"], "Gdańsk")),
+        ("Siedziba w Warszawie", (["PL"], "Warszawa")),
+        ("Lokalizacja Poznań", (["PL"], "Poznań")),
+        ("We are based in Berlin, Germany.", (["DE"], "Germany")),
+        ("The team is located in Amsterdam, the Netherlands.", (["NL"], "Netherlands")),
+        ("Join our office in Wrocław, close to the station.", (["PL"], "Wrocław")),
+        ("You can work from our Warsaw office.", (["PL"], "Warszawa")),
+        ("We are based in Sweden, selling to customers in Poland.", (["SE"], "Sweden")),
+        ("Berlin, Germany · Hybrid", (["DE"], "Germany")),
+        ("Location: Stockholm, Sweden", (["SE"], "Sweden")),
+        ("Miejsce pracy: Gdynia", (["PL"], "Gdynia")),
+    ],
+)
+def test_place_in_a_clear_context(text, expected):
+    assert read_place("Data Analyst\nExample Bank\n" + text) == expected
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "We sell products in Sweden.",
+        "Our customers are in Poland.",
+        "You will support clients in Germany.",
+        "We have customers in Germany and Poland.",
+        "Our product is sold in Sweden, Norway and Finland.",
+        "You will travel to Warsaw twice a year for a meeting.",
+        "Experience with the Polish market is a plus. Our partners in Kraków help us.",
+    ],
+)
+def test_a_place_in_running_text_is_not_the_work_place(text):
+    assert read_place("Data Analyst\nExample Bank\n" + text) == ([], None)
+
+
+@pytest.mark.parametrize(
+    "text, expected",
+    [
+        ("This role is fully remote.", "remote"), ("Remote-first company", "remote"), ("You work remotely from anywhere", "remote"),
+        ("Pracujesz zdalnie lub z biura", "remote"), ("100% zdalnie", "remote"), ("The position is remote.", "remote"), ("Data Analyst (Remote)", "remote"),
+        ("Remote (EU)", "remote"), ("Zdalnie", "remote"), ("Location: Remote", "remote"), ("Tryb pracy: zdalny", "remote"),
+        ("Praca hybrydowa: 2 dni w biurze", "hybrid"), ("You work 3 days in the office.", "hybrid"), ("Hybrid work, 2 days in the office", "hybrid"),
+        ("Kraków · Hybrid", "hybrid"), ("Work mode: Hybrid", "hybrid"), ("Hybrydowo", "hybrid"),
+        ("Stacjonarnie w Krakowie", "onsite"), ("The role is on-site in Berlin.", "onsite"), ("Tryb pracy: stacjonarny", "onsite"), ("On-site", "onsite"),
+    ],
+)
+def test_work_mode_in_a_clear_context(text, expected):
+    assert read_mode(text) == expected
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "We work with remote sensing data.",
+        "Remote control of the devices.",
+        "You will build remote monitoring for wind farms.",
+        "Experience with remote access tools and remote desktops.",
+        "Remote Sensing Engineer",
+        "Hybrid Cloud Architect",
+        "Experience with hybrid cloud and on-site support.",
+        "We support remote, hybrid, and on-site teams.",
+        "Remote teams across Europe",
+        "Hybrydowy układ napędowy w samochodach",
+        "Studia stacjonarne",
+    ],
+)
+def test_a_word_in_another_sense_is_not_the_work_mode(text):
+    assert read_mode(text) is None
+
+
+@pytest.mark.parametrize(
+    "text, expected",
+    [
+        ("We offer a B2B contract.", ["b2b"]), ("Współpraca w formie kontraktu B2B", ["b2b"]), ("Współpraca B2B", ["b2b"]),
+        ("Rodzaj umowy: B2B", ["b2b"]), ("Type of contract: Permanent", ["employment"]), ("Kraków · Umowa o pracę", ["employment"]),
+        ("We offer a permanent contract and a laptop.", ["employment"]), ("Oferujemy umowę o pracę lub B2B", ["b2b", "employment"]),
+        ("Forma współpracy: UoP / B2B do wyboru", ["b2b", "employment"]), ("Możesz wybrać B2B lub umowę o pracę.", ["b2b", "employment"]),
+    ],
+)
+def test_contract_in_a_clear_context(text, expected):
+    assert read_contract(text) == expected
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["Our B2B customers love us.", "B2B sales experience is a plus.", "We build B2B software.", "Contract management and permanent improvement", "Contractors are welcome to apply."],
+)
+def test_a_word_in_another_sense_is_not_the_contract(text):
+    assert read_contract(text) == []
+
+
 # ---- speed ----
 
 
@@ -221,6 +426,19 @@ def test_country_and_city(text, expected):
      "12 000 - 18 000 zł " * 5000, "5 zł / " * 14000, "hybrid " * 14000, "no " * 33000, "Kraków\n" * 14000],
 )
 def test_long_hostile_text_is_read_quickly(text):
+    started = time.perf_counter()
+    with_text_facts(Offer(id="", source="x", attribution="y", title="t", description=text))
+    assert time.perf_counter() - started < 10  # generous for slow CI runners
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["salary 12 000 - 18 000 zł " * 4000, "\n".join(f"Kraków {n}" for n in range(14000)), "\n".join(f"Remote - Berlin {n}" for n in range(14000)),
+     "based in " * 14000, "remote " * 14000, "\n".join(f"Salary: {n} - {n + 1} zł" for n in range(8000)), "Location: " + "Kraków, " * 8000,
+     "Hybrid, " * 12000 + "\n" + "w biurze " * 10000],
+    ids=["pay word", "distinct city lines", "distinct mode lines", "based in", "remote", "distinct pay lines", "long label", "hybrid and office"],
+)
+def test_long_hostile_text_with_many_lines_is_read_quickly(text):
     started = time.perf_counter()
     with_text_facts(Offer(id="", source="x", attribution="y", title="t", description=text))
     assert time.perf_counter() - started < 10  # generous for slow CI runners

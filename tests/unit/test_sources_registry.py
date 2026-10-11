@@ -4,6 +4,7 @@ import datetime as dt
 import importlib
 import importlib.util
 import inspect
+import json
 import pkgutil
 from pathlib import Path
 
@@ -150,8 +151,29 @@ def test_collect_keeps_the_keyword_count_next_to_the_offer_count(workspace, patc
     routes[("remoteok.com", "/api")] = (200, fixture("remoteok/broken_record.json"))
     patched(fakenet.FakeNet(routes))
     offers, (status,) = collect(Config(search=SearchConfig(sources=["remoteok"], keywords=["sql"])), workspace, offline=False, today=TODAY)
-    assert [o.title for o in offers] == ["Data Analyst", "Reporting Analyst"] and (status.state, status.offers) == ("ok", 2)
+    assert [o.title for o in offers] == ["Data Analyst", "Reporting Analyst"] and (status.state, status.offers) == ("error", 2)
     assert status.message == "3 offers, 2 match your keywords; 2 offers skipped (unreadable)"
+
+
+def test_collect_a_skipped_record_makes_the_run_partial(workspace, patched, tmp_path):
+    good = [{"position": t, "url": f"https://remoteok.invalid/{i}", "description": "<p>SQL</p>"} for i, t in enumerate(["Data Analyst", "Reporting Analyst"])]
+    routes = route_everything()
+    routes[("remoteok.com", "/api")] = (200, json.dumps([{"legal": "x"}, *good, {"url": "https://remoteok.invalid/no-title"}]))
+    patched(fakenet.FakeNet(routes))
+    # two good offers and one unreadable record: both offers stay, the status says what was skipped, the run is PARTIAL
+    offers, statuses = collect(Config(search=SearchConfig(sources=["remoteok"])), workspace.for_root(tmp_path / "a"), offline=False, today=TODAY)
+    assert [o.title for o in offers] == ["Data Analyst", "Reporting Analyst"] and collection_status(statuses) == "PARTIAL"
+    assert [(s.state, s.offers, s.message) for s in statuses] == [("error", 2, "2 offers; 1 offer skipped (unreadable)")]
+    # some of them match the keywords: the count and the skipped note both stay
+    offers, statuses = collect(Config(search=SearchConfig(sources=["remoteok"], keywords=["reporting"])), workspace.for_root(tmp_path / "b"), offline=False, today=TODAY)
+    assert [o.title for o in offers] == ["Reporting Analyst"] and collection_status(statuses) == "PARTIAL"
+    assert (statuses[0].state, statuses[0].message) == ("error", "2 offers, 1 match your keywords; 1 offer skipped (unreadable)")
+    # none of them match: "no offers matched" would hide the skipped record, so the message keeps it and the state stays
+    offers, statuses = collect(Config(search=SearchConfig(sources=["remoteok"], keywords=["haskell"])), workspace.for_root(tmp_path / "c"), offline=False, today=TODAY)
+    status = statuses[0]
+    assert offers == [] and (status.state, status.offers) == ("error", 0)
+    assert status.message == "0 of 2 offers match your keywords; 1 offer skipped (unreadable)"
+    assert collection_status(statuses) != "PASS" and collection_status([*statuses, statuses[0].model_copy(update={"id": "inbox", "state": "empty"})]) == "PARTIAL"
 
 
 def test_collect_robots_unreadable_is_partial(workspace, patched):

@@ -31,6 +31,7 @@ _STRIP_MARKER = re.compile(r"[ \t]*<!--\s*c:.*?-->")
 _WORD = re.compile(r"[^\W_]+(?:'[^\W_]+)*")
 _CLAUSE_END = re.compile(r"[;:]|[.!?](?=\s|$)")
 _HEADING = re.compile(r"^#{1,6}\s+(.+?)(?:\s+#+)?$")
+_LIST_GAP = re.compile(r"(?:[\s,;|/\u00b7]|\band\b|\bi\b)*", re.IGNORECASE)  # what may stand between two skills
 
 
 # ---------------------------------------------------------------- vocabulary
@@ -79,6 +80,7 @@ class Vocab:
     not_entities: frozenset[str]
     labels: "re.Pattern[str]"
     nonclaims: list["re.Pattern[str]"]
+    phrases: list["re.Pattern[str]"]  # letter openers and closers: they neutralise only themselves
     skills: list[tuple[str, "re.Pattern[str]", bool]]  # canonical, pattern, counts outside a skills line
     canon: dict[str, str]  # lower-case name or alias -> canonical
 
@@ -106,6 +108,7 @@ def vocab() -> Vocab:
         not_entities=frozenset(verbs["not_entities"]) | {w for w in words["languages"] + words["cefr"] if "*" not in w},
         labels=re.compile(rf"^(?:{labels})\b", re.IGNORECASE),
         nonclaims=[re.compile(p, re.IGNORECASE) for p in nonclaims["units"]],
+        phrases=[re.compile(rf"(?:{p})(?!\w)", re.IGNORECASE) for p in nonclaims.get("phrases", [])],
         skills=skills,
         canon=canon,
     )
@@ -306,8 +309,13 @@ def _overlap(item: str, full: set[str]) -> float:
     return len(toks & full) / len(toks) if toks else 0.0
 
 
-def _nonclaim(u: _Unit) -> bool:
-    return any(p.fullmatch(u.norm) for p in vocab().nonclaims)
+def _nonclaim(u: _Unit, ctx: "_Ctx") -> bool:
+    """A unit on the non-claim list, or a letter opener or closer whose rest has no claim signal."""
+    voc = vocab()
+    if any(p.fullmatch(u.norm) for p in voc.nonclaims):
+        return True
+    m = next((m for p in voc.phrases if (m := p.match(u.norm))), None)
+    return m is not None and u.cites is None and not _signal(_unit(u.line, u.norm[m.end():], ctx))
 
 
 def _signal(u: _Unit) -> bool:
@@ -315,7 +323,7 @@ def _signal(u: _Unit) -> bool:
     term or a citation marker. A word shared with a claim's summary is not one."""
     if u.cites is not None or any(v for k, v in u.hits.items() if k.split(":")[0] in ("state", "class", "venue", "outcome", "claim")):
         return True
-    return bool(u.all_nums or u.durs or skill_terms(u.text))
+    return bool(u.all_nums or u.durs or skill_terms(u.text, skills_line=bool(_labelled(u))))
 
 
 def _matched(path: str, k: Claim | None) -> bool:
@@ -326,19 +334,33 @@ def _matched(path: str, k: Claim | None) -> bool:
 
 def _claim_bearing(u: _Unit, ctx: _Ctx) -> bool:
     """Not on the non-claim list, and a claim signal or (without one) a claim the unit is attributed to."""
-    if _nonclaim(u):
+    if _nonclaim(u, ctx):
         return False
     return _signal(u) or _matched(*_attribute(u, ctx, None)[:2])
 
 
+def _skill_list(text: str) -> int:
+    """How many skills.yml terms text lists when it is a pure list: each item one term or alias, items separated
+    by , ; | / \u00b7 "and" or "i", nothing else; 0 when anything else stands there (a number, a word, a bracket)."""
+    body = text.rstrip(" .,;")
+    terms = skill_terms(body, skills_line=True)
+    if not terms or body[: terms[0][1]].strip() or body[terms[-1][2] :].strip():
+        return 0
+    gaps = [body[a[2] : b[1]] for a, b in zip(terms, terms[1:])]
+    return len(terms) if all(g.strip() and _LIST_GAP.fullmatch(g) for g in gaps) else 0
+
+
+def _labelled(u: _Unit) -> "re.Match[str] | None":
+    return vocab().labels.match(u.text)
+
+
 def _is_skills_line(u: _Unit) -> bool:
-    """A labelled or comma-separated list of skills.yml terms; a bare "Skills" title with no term is not one."""
-    if not skill_terms(u.text, skills_line=True):
-        return False
-    if vocab().labels.match(u.text):
-        return True
-    items = [x for x in re.split(r"[,;]", u.text) if x.strip()]
-    return len(items) >= 3 and all(skill_terms(x, skills_line=True) for x in items)
+    """A pure list of skills.yml terms after a skills label, or of three or more without one. A bare "Skills"
+    title, or a list with anything else on it, is not one: such a unit goes through the claim guards."""
+    label = _labelled(u)
+    if label:
+        return _skill_list(u.text[label.end() :].lstrip(" :-\u2013\u2014")) >= 1
+    return _skill_list(u.text) >= 3
 
 
 def _plain_ctx() -> _Ctx:
@@ -617,14 +639,17 @@ def _attribute(u: _Unit, ctx: _Ctx, negated_ceiling: Claim | None) -> tuple[str,
     return "none", None, flags
 
 
-def _skills(u: _Unit, k: Claim | None, ctx: _Ctx) -> list[_Hit]:
-    """Step 4. A skills line (k None): every term needs some claim's skills. Elsewhere: the matched claim's."""
+def _skills(u: _Unit, k: Claim | None, ctx: _Ctx, draft: Claim | None = None) -> list[_Hit]:
+    """Step 4. A skills line (k None): every term needs a non-draft claim's skills, or those of draft, the draft
+    claim the line repeats word for word. Elsewhere: the matched claim's."""
     if k is None:
-        known = {canonical_skill(s) for c in ctx.ledger.claims for s in c.skills}
+        known = {canonical_skill(s) for c in ctx.ledger.claims if not c.draft or c is draft for s in c.skills}
+        drafted = {canonical_skill(s) for c in ctx.ledger.claims if c.draft for s in c.skills}
         names = dict.fromkeys(n for n, s, e in skill_terms(u.text, skills_line=True))
-        return [("UNBACKED_SKILL", "BLOCK", None, None, f'"{n}" is in no claim\'s skills') for n in names if n not in known]
+        return [("UNBACKED_SKILL", "BLOCK", None, None, f'"{n}" is only in draft claims\' skills; a draft backs only its own line, word for word'
+                 if n in drafted else f'"{n}" is in no claim\'s skills') for n in names if n not in known]  # fmt: skip
     own = {canonical_skill(s) for s in k.skills}
-    names = dict.fromkeys(n for n, s, e in skill_terms(u.text))
+    names = dict.fromkeys(n for n, s, e in skill_terms(u.text, skills_line=bool(_labelled(u))))
     return [("UNBACKED_SKILL", "BLOCK", k, None, f'"{n}" is not in {k.id}.skills') for n in names if n not in own]
 
 
@@ -635,10 +660,10 @@ def _check_unit(line: int, raw: str, ctx: _Ctx, require_markers: bool) -> tuple[
     if require_markers and u.cites is None:
         return flags + [("UNBACKED", "BLOCK", None, None, "a tailored line must carry a citation marker <!-- c:ID -->")], True, False
     if _is_skills_line(u):
-        hits = _skills(u, None, ctx)
         draft = next((c for c in ctx.ledger.claims if c.draft and u.norm in {exact_form(s) for s in c.allowed}), None)
+        hits = _skills(u, None, ctx, draft)
         return flags + hits + ([_draft_flag(draft, ctx)] if draft else []), True, not hits
-    if _nonclaim(u):
+    if _nonclaim(u, ctx):
         return flags, False, False
     path, k, attribution = _attribute(u, ctx, negated_ceiling)
     if not _signal(u) and not _matched(path, k):

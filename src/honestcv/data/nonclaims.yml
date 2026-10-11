@@ -1,9 +1,12 @@
 # Units that are never claim-bearing: salutations, sign-offs, letter openers and closers, section titles,
 # "References available on request" and the Polish data-processing consent clause. Hand-written for honestcv.
 #
-# Each entry is a regular expression matched against the whole unit (case ignored), after trailing
-# punctuation and spaces are removed. A matching unit gets no flag from the claim guards; the document-wide
-# guards (forbidden phrases, ceilings, private names) still run on it.
+# units: regular expressions matched against the whole unit (case ignored), after trailing punctuation and
+# spaces are removed. A matching unit gets no flag from the claim guards; the document-wide guards (forbidden
+# phrases, ceilings, private names) still run on it.
+# phrases: letter openers and closers, matched at the start of a unit the same way. A phrase neutralises only
+# itself: the rest of the unit is read for claim signals as usual, and the unit is a non-claim line only when
+# the rest has none. "I am writing to apply with a doctorate ..." stays a claim through "doctorate".
 units:
   # salutations: at most four more words and no comma inside, so "Dear team, I built ..." stays a claim
   - '(dear|hello|hi|good morning)(\s+[\w.''-]+){0,4}'
@@ -17,16 +20,6 @@ units:
   - 'with (best|kind) wishes|best wishes|all the best|cheers'
   - 'z poważaniem|z wyrazami szacunku|pozdrawiam(\s+serdecznie)?|serdecznie pozdrawiam|łączę pozdrowienia'
   - 'dziękuję( państwu)?( za (uwagę|poświęcony czas)( i uwagę)?)?'
-  # letter openers and closers: the rest names the role, the company or the next step, in at most twelve
-  # words with no digit and no comma inside, so "I am writing to apply, having built ..." stays a claim
-  - '(i am|i''m) writing to (apply|express my interest)(\s+[^\s\d,;:]+){0,12}'
-  - '(i am|i''m) (excited|delighted|thrilled) (about|by) the (opportunity|chance|prospect)(\s+[^\s\d,;:]+){0,12}'
-  - 'i would (welcome|appreciate|love) the (chance|opportunity)(\s+[^\s\d,;:]+){0,12}'
-  - 'i look forward to(\s+[^\s\d,;:]+){0,12}'
-  - 'z (dużym )?zainteresowaniem (przeczytał\w*|zapoznał\w*)(\s+[^\s\d,;:]+){0,12}'
-  - 'chciał(a|)bym (aplikować|zgłosić swoją kandydaturę|ubiegać się)(\s+[^\s\d,;:]+){0,12}'
-  - 'chętnie porozmawiam(\s+[^\s\d,;:]+){0,12}'
-  - 'czekam na (odpowiedź|kontakt|wiadomość)(\s+[^\s\d,;:]+){0,8}'
   # section titles of a CV or letter, and the title honestcv tailor writes
   - '(about me|profile|summary|professional summary|experience|work experience|professional experience|employment( history)?|education|skills|key skills|technical skills|languages|certifications?|certificates?|courses|training|projects|publications|awards?|honou?rs|achievements|interests|hobbies|volunteering|references|contact( details)?)'
   - '(o mnie|profil|podsumowanie|doświadczenie( zawodowe)?|wykształcenie|edukacja|umiejętności|języki( obce)?|certyfikaty|kursy|szkolenia|projekty|publikacje|nagrody|osiągnięcia|zainteresowania|kontakt)'
@@ -37,3 +30,13 @@ units:
   # consent clauses (Polish first, as job offers in Poland ask for it)
   - 'wyrażam zgodę na przetwarzanie\b.*'
   - '(i )?(hereby )?(consent|agree) to the processing of my personal data\b.*'
+# Letter openers and closers (see phrases above): the phrase only, the rest of the unit is checked.
+phrases:
+  - '(i am|i''m) writing to (apply|express my interest)'
+  - '(i am|i''m) (excited|delighted|thrilled) (about|by) the (opportunity|chance|prospect)'
+  - 'i would (welcome|appreciate|love) the (chance|opportunity)'
+  - 'i look forward to'
+  - 'z (dużym )?zainteresowaniem (przeczytał\w*|zapoznał\w*)'
+  - 'chciał(a|)bym (aplikować|zgłosić swoją kandydaturę|ubiegać się)'
+  - 'chętnie porozmawiam'
+  - 'czekam na (odpowiedź|kontakt|wiadomość)'

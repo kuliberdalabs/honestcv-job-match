@@ -479,3 +479,42 @@ lines:
       A heading is a unit like any sentence: the same flags as the line without "#". forbidden_here[0] of
       ml-production-ceiling matches; "deployed" implies shipped, above tested; not_confirmed[2] "deployed";
       "production" is not in scope_words_allowed; "course capstone" is missing.
+
+  # ---------------- skills lines with more than skills on them, openers and closers that carry a claim
+  - id: maya-skills-line-with-claims
+    ledger: src/honestcv/samples/en/ledger.yml
+    text: "Skills: SQL (expert, 20 years), Python (PhD)"
+    expect:
+      - {rule: UNBACKED, severity: BLOCK}
+    exact: true
+    verdict: BLOCK
+    why: >-
+      Not a pure skill list (a bracket, "expert", a duration, "phd"), so the whole line takes the claim guards;
+      no claim supports it.
+
+  - id: maya-skills-line-with-a-sentence
+    ledger: src/honestcv/samples/en/ledger.yml
+    text: "Skills: SQL; I won the Nobel Prize in Physics."
+    expect:
+      - {rule: UNBACKED, severity: BLOCK}
+    exact: true
+    verdict: BLOCK
+    why: 'Not a pure skill list; "won the" and "prize" are claim words and no claim supports the line.'
+
+  - id: maya-opener-doctorate
+    ledger: src/honestcv/samples/en/ledger.yml
+    text: "I am writing to apply with a doctorate in data science."
+    expect:
+      - {rule: UNBACKED, severity: BLOCK}
+    exact: true
+    verdict: BLOCK
+    why: 'The opener phrase neutralises only itself; "doctorate" in the rest is a claim word.'
+
+  - id: maya-closer-doctorate
+    ledger: src/honestcv/samples/en/ledger.yml
+    text: "I look forward to applying my doctorate in Physics."
+    expect:
+      - {rule: UNBACKED, severity: BLOCK}
+    exact: true
+    verdict: BLOCK
+    why: 'The closer phrase neutralises only itself; "doctorate" in the rest is a claim word.'

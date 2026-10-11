@@ -2,6 +2,7 @@
 
 import datetime as dt
 import importlib.util
+import json
 from pathlib import Path
 
 from honestcv.config import CompaniesConfig, SearchConfig
@@ -223,9 +224,9 @@ def test_non_finite_salary_is_not_a_salary(tmp_path):
 def test_one_bad_record_never_stops_a_source(tmp_path):
     _, offers, status = run(RemoteOkAdapter(), {"/api": (200, fixture("remoteok/broken_record.json"))}, tmp_path / "a")
     assert [o.title for o in offers] == ["Data Analyst", "Customer Support Agent", "Reporting Analyst"]
-    assert (status.state, status.offers, status.message) == ("ok", 3, "3 offers; 2 offers skipped (unreadable)")
+    assert (status.state, status.offers, status.message) == ("error", 3, "3 offers; 2 offers skipped (unreadable)")  # kept, but incomplete: PARTIAL
     cached = run(RemoteOkAdapter(), {"/api": (500, "")}, tmp_path / "a")[2]  # same cache folder
-    assert (cached.state, cached.message) == ("cached", "from cache, 3 offers; 2 offers skipped (unreadable)")
+    assert (cached.state, cached.message) == ("error", "from cache, 3 offers; 2 offers skipped (unreadable)")
     # an entry that raises any error is dropped and counted, not only the expected kinds
     def mapper(entry):
         if entry == "bad":
@@ -242,3 +243,31 @@ def test_one_bad_record_never_stops_a_source(tmp_path):
 def test_answer_nested_too_deep_is_drift(tmp_path):
     _, offers, status = run(RemoteOkAdapter(), {"/api": (200, "[" * 100_000 + "]" * 100_000)}, tmp_path)
     assert (offers, status.state) == ([], "drift")
+
+
+def remoteok_payload(*, unreadable: int) -> str:
+    """The legal notice, two good offers and `unreadable` entries with no position."""
+    good = [{"position": title, "url": f"https://remoteok.invalid/{i}", "company": "Tallgrove Analytics"} for i, title in enumerate(["Data Analyst", "Reporting Analyst"])]
+    return json.dumps([{"legal": "x"}, *good, *({"url": f"https://remoteok.invalid/x{i}"} for i in range(unreadable))])
+
+
+def test_a_source_that_skipped_a_record_is_partial_not_ok(tmp_path):
+    # two good offers and one unreadable record: the offers are kept, and the run is PARTIAL
+    _, offers, status = run(RemoteOkAdapter(), {"/api": (200, remoteok_payload(unreadable=1))}, tmp_path / "a")
+    assert [o.title for o in offers] == ["Data Analyst", "Reporting Analyst"]
+    assert (status.state, status.offers, status.message) == ("error", 2, "2 offers; 1 offer skipped (unreadable)")
+    assert collection_status([status]) == "PARTIAL" and collection_status([status, status]) == "PARTIAL"  # not FAIL: offers were collected
+    clean = run(RemoteOkAdapter(), {"/api": (200, remoteok_payload(unreadable=0))}, tmp_path / "b")[2]
+    assert (clean.state, clean.message) == ("ok", "2 offers") and collection_status([clean]) == "PASS"
+    # the same answer served from the cache is just as incomplete
+    cached = run(RemoteOkAdapter(), {"/api": (500, "")}, tmp_path / "a")[2]
+    assert (cached.state, cached.message) == ("error", "from cache, 2 offers; 1 offer skipped (unreadable)") and collection_status([cached]) == "PARTIAL"
+
+
+def test_records_dropped_and_then_filtered_out_never_read_as_empty(tmp_path):
+    class Filtering(RemoteOkAdapter):
+        def fetch(self, http, search, today):
+            return [o for o in super().fetch(http, search, today) if o.title == "Chief Haskell Officer"]
+
+    _, offers, status = run(Filtering(), {"/api": (200, remoteok_payload(unreadable=1))}, tmp_path)
+    assert offers == [] and (status.state, status.offers, status.message) == ("error", 0, "0 offers; 1 offer skipped (unreadable)")

@@ -106,8 +106,10 @@ def run_adapter(adapter: Adapter, http: HttpClient, search: SearchConfig, today:
     counts = http.stats.get(sid, {})
     if problems:
         return offers, status("error", "; ".join([_plural(len(offers)), *unreadable, *problems]), len(offers))
-    if not offers:
+    if not offers and not unreadable:
         return [], status("empty", getattr(adapter, "empty_message", "the source returned no offers"))
-    if counts.get("network", 0) == 0 and counts.get("cache", 0) > 0:
-        return offers, status("cached", "; ".join([f"from cache, {_plural(len(offers))}", *unreadable]), len(offers))
-    return offers, status("ok", "; ".join([_plural(len(offers)), *unreadable]), len(offers))
+    cached = counts.get("network", 0) == 0 and counts.get("cache", 0) > 0
+    count = f"from cache, {_plural(len(offers))}" if cached else _plural(len(offers))
+    # A source that dropped records keeps its good offers, but its result is incomplete: `error` makes the run PARTIAL.
+    state = "error" if unreadable else "cached" if cached else "ok"
+    return offers, status(state, "; ".join([count, *unreadable]), len(offers))

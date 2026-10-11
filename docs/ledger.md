@@ -14,7 +14,7 @@ honestcv ledger draft
 honestcv ledger lint
 ```
 
-`ledger draft` turns every bullet and every job line of your CVs into a claim marked `draft: true`, and also every other line the check reads as a claim: the Skills line (a `kind: skill` claim listing each skill on it), profile sentences and headings with a year. Each unchanged CV then checks against its draft with no BLOCK. Identical lines from several CVs become one claim. A draft claim is your own CV line, not yet backed by evidence:
+`ledger draft` turns every bullet and every job line of your CVs into a claim marked `draft: true`, and also every other line the check reads as a claim: the Skills line (a `kind: skill` claim listing each skill on it, when the line lists only skills honestcv knows; a Skills line with anything else on it, such as a bracket, a year or an unknown tool, is drafted like a sentence), profile sentences and headings with a year. Each unchanged CV then checks against its draft with no BLOCK. Identical lines from several CVs become one claim. A draft claim is your own CV line, not yet backed by evidence:
 
 - it does not count as ledger backing;
 - tailoring and the check accept its sentence only word for word, as it stands in your CV (`DRAFT_CLAIM`, a REVIEW);
@@ -129,7 +129,9 @@ WARN:
 
 ## How the check works
 
-The checker reads the file from disk and splits it into lines, bullets and sentences. A Markdown heading is checked like a sentence; comments are skipped. Section titles ("Experience", "Doświadczenie"), greetings, sign-offs and the usual cover-letter openers and closers ("I am writing to apply for ...", "I look forward to ...") never count as claims. A line is claim-bearing when it has a claim signal: a verb or state word, an authorship, outcome or venue word, a number, a duration, a skill, a language, a degree, certificate or award, an expertise or seniority word, or a citation marker. A word it shares with a claim's summary is not a signal on its own. A line with no signal still counts when it is attributed to a claim by the steps below; such a line is never `UNBACKED`.
+The checker reads the file from disk and splits it into lines, bullets and sentences. A Markdown heading is checked like a sentence; comments are skipped. Section titles ("Experience", "Doświadczenie"), greetings and sign-offs never count as claims. In the usual cover-letter openers and closers, only the phrase itself ("I am writing to apply", "I look forward to") is not a claim; the rest of the sentence is checked like any other text, so "I am writing to apply with a doctorate ..." is a claim. A line is claim-bearing when it has a claim signal: a verb or state word, an authorship, outcome or venue word, a number, a duration, a skill, a language, a degree, certificate or award, an expertise or seniority word, or a citation marker. A word it shares with a claim's summary is not a signal on its own. A line with no signal still counts when it is attributed to a claim by the steps below; such a line is never `UNBACKED`.
+
+A Skills line (a skills label, or three or more skills, and nothing else) is checked skill by skill: each skill on it must be listed in the `skills` of a confirmed claim, or of the draft claim the line repeats word for word. Any other text on the line sends it through the steps below like a sentence.
 
 Each claim-bearing line is matched to one claim:
 
@@ -149,7 +151,7 @@ The result is BLOCK when any flag is BLOCK, REVIEW when any flag is REVIEW, else
 | `UNBACKED` | BLOCK | No claim supports the line | none |
 | `AMBIGUOUS` | REVIEW | The line only partly matches its best claim | `claims[i]` |
 | `CITATION_MISMATCH` | BLOCK | A `<!-- c:ID -->` marker names an unknown claim, or one that does not support the line | `claims[i]` or the missing id |
-| `UNBACKED_SKILL` | BLOCK | A skill that no claim lists in `skills` | none |
+| `UNBACKED_SKILL` | BLOCK | A skill that no claim lists in `skills` (on a Skills line, no confirmed claim; a draft backs only its own line, word for word) | none |
 | `STATE_OVERSTATED` | BLOCK | The verb implies a higher state than the claim's highest confirmed state | `claims[i].confirmed` |
 | `NOT_CONFIRMED` | BLOCK | The line states something listed in `not_confirmed` | `claims[i].not_confirmed[j]` |
 | `QUANTITY_MISMATCH` | BLOCK | A number that is not in the claim, a "+" or "over" the ledger does not exceed, or a number true only for a lower state | `claims[i].quantities[j]` |
