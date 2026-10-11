@@ -1,10 +1,11 @@
 """Gates, penalties, the surface rule and ranking."""
 
 import datetime as dt
+import time
 
 from honestcv.config import Config
 from honestcv.models import LedgerIndex, MatchResult, Offer, Preferences, Profile
-from honestcv.scoring import best_per_offer, check_gates, score_all, score_offer
+from honestcv.scoring import MAX_TEXT, best_per_offer, check_gates, extract_requirements, monthly_salary, score_all, score_offer
 
 TODAY = dt.date(2026, 10, 10)
 REQ = "Requirements\n"
@@ -243,3 +244,37 @@ def test_match_is_rounded_half_up_and_kept_in_range():
     cfg = config(scoring={"penalties": [{"code": "hard_requirement_missing", "points": -200}]})
     o = offer(description="Tableau is required. Python, SQL.", skills=["tableau", "python", "sql"])
     assert score_offer(o, profile(skills=["python", "sql"]), cfg, None, TODAY).match_pct == 0  # never below 0
+
+
+# ---------------------------------------------------------------- size and odd values
+
+
+def test_scoring_reads_at_most_the_first_100000_characters_of_a_description():
+    filler = "Lorem ipsum dolor sit amet. " * 4000  # 112,000 characters
+    assert len(filler) > MAX_TEXT == 100_000
+    late_skills = offer(description=filler + "\n" + REQ + THREE)
+    early_skills = offer(description=REQ + THREE + filler)
+    mine = profile(skills=["python", "sql"])
+    assert extract_requirements(late_skills, mine, None) == []  # past the cap: not read
+    assert [r.term for r in extract_requirements(early_skills, mine, None)] == ["python", "sql", "excel"]
+    assert gate(offer(description=filler + " This role is commission only.")) is None
+    assert gate(offer(description="This role is commission only. " + filler)).code == "commission_only"
+    assert len(late_skills.description) > MAX_TEXT  # the offer itself is not changed
+
+
+def test_a_huge_description_is_scored_quickly():
+    text = "Python and SQL. " * 70000  # 1.1 million characters
+    start = time.perf_counter()
+    r = score_offer(offer(description=text), profile(skills=["python", "sql"]), config(), None, TODAY)
+    assert time.perf_counter() - start < 2.0
+    assert {q.term for q in r.requirements} == {"python", "sql"}
+
+
+def test_a_salary_that_is_infinity_is_scored_as_not_stated():
+    cfg = config(preferences={"min_salary": [{"amount": 20000, "currency": "USD", "unit": "month"}]})
+    for amount in ("Infinity", float("nan"), "-inf"):
+        o = offer(description=REQ + THREE, salary={"min": amount, "max": amount, "currency": "USD", "unit": "year"})
+        r = score_offer(o, profile(skills=["python"]), cfg, None, TODAY)
+        salary = next(c for c in r.criteria if c.id == "salary")
+        assert salary.note == "the offer states no salary" and "salary not stated" in r.unknowns
+        assert monthly_salary(o.salary, "USD") is None

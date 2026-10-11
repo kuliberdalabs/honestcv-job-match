@@ -18,7 +18,7 @@ preferences:             # anything left empty is simply not scored
   freshness_days: 30     # older offers are filtered out
 
 search:
-  keywords: []           # empty = your top 5 skills + target titles
+  keywords: []           # empty = your target_titles, then your top 5 skills
   sources: [himalayas, remoteok, weworkremotely, arbeitnow]
   companies:             # public job boards of companies you name; nothing is discovered for you
     greenhouse: []

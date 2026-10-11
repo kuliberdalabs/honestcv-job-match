@@ -30,6 +30,7 @@ _MARKER = re.compile(r"<!--\s*c:\s*(.*?)\s*-->")
 _STRIP_MARKER = re.compile(r"[ \t]*<!--\s*c:.*?-->")
 _WORD = re.compile(r"[^\W_]+(?:'[^\W_]+)*")
 _CLAUSE_END = re.compile(r"[;:]|[.!?](?=\s|$)")
+_HEADING = re.compile(r"^#{1,6}\s+(.+?)(?:\s+#+)?$")
 
 
 # ---------------------------------------------------------------- vocabulary
@@ -171,6 +172,22 @@ def skill_terms(text: str, *, skills_line: bool = False) -> list[tuple[str, int,
     return [(name, s, e) for s, e, name in _longest(found)]
 
 
+def document_units(text: str, *, headings: bool = True) -> list[tuple[int, str]]:
+    """The units of sentences(), plus one unit per Markdown heading outside a comment: a heading is checked
+    like a sentence."""
+    units = sentences(text)
+    if not headings:
+        return units
+    in_comment = False
+    for no, raw in enumerate(text.replace("\r\n", "\n").replace("\r", "\n").split("\n"), 1):
+        m = None if in_comment else _HEADING.match(raw.strip())
+        if m and (heading := sentences("- " + m.group(1))):
+            units.append((no, heading[0][1]))
+        opens, closes = raw.rfind("<!--"), raw.rfind("-->")
+        in_comment = opens > closes if opens != closes else in_comment
+    return sorted(units, key=lambda u: u[0])
+
+
 # ---------------------------------------------------------------- units
 
 
@@ -228,7 +245,6 @@ class _Ctx:
     pos: dict[str, int]
     stems: dict[str, frozenset[str]]
     private: frozenset[str]
-    summary: frozenset[str]
     company: frozenset[str] = frozenset()
     lint: bool = False
     by_id: dict[str, Claim] = field(default_factory=dict)
@@ -243,7 +259,6 @@ class _Ctx:
         return cls(ledger=ledger, today=today, states=states, pos={c.id: i for i, c in enumerate(claims)},
                    stems={cid: frozenset(t for x in parts for t in _tokens(x)) for cid, parts in texts.items()},
                    private=frozenset(t for c in claims for n in c.private_names for t in _tokens(n)),
-                   summary=frozenset(t for c in claims for t in _tokens(c.summary)),
                    company=frozenset(_word(w) for w in _WORD.findall(offer.company or "")) if offer else frozenset(),
                    lint=lint, by_id={c.id: c for c in claims})  # fmt: skip
 
@@ -291,21 +306,53 @@ def _overlap(item: str, full: set[str]) -> float:
     return len(toks & full) / len(toks) if toks else 0.0
 
 
+def _nonclaim(u: _Unit) -> bool:
+    return any(p.fullmatch(u.norm) for p in vocab().nonclaims)
+
+
+def _signal(u: _Unit) -> bool:
+    """A claim signal: a state, authorship, venue or outcome word, a claim word, a number, a duration, a skills
+    term or a citation marker. A word shared with a claim's summary is not one."""
+    if u.cites is not None or any(v for k, v in u.hits.items() if k.split(":")[0] in ("state", "class", "venue", "outcome", "claim")):
+        return True
+    return bool(u.all_nums or u.durs or skill_terms(u.text))
+
+
+def _matched(path: str, k: Claim | None) -> bool:
+    """Whether attribution found a claim for a unit without a signal. Such a unit is never UNBACKED, and a
+    draft found only on the ambiguous path does not count: a draft is not ledger backing."""
+    return path != "none" and not (path == "ambiguous" and k is not None and k.draft)
+
+
 def _claim_bearing(u: _Unit, ctx: _Ctx) -> bool:
-    if any(p.fullmatch(u.norm) for p in vocab().nonclaims):
+    """Not on the non-claim list, and a claim signal or (without one) a claim the unit is attributed to."""
+    if _nonclaim(u):
         return False
-    if any(v for k, v in u.hits.items() if k.split(":")[0] in ("state", "class", "venue", "outcome", "claim")):
-        return True
-    if u.all_nums or u.durs or skill_terms(u.text):
-        return True
-    return any(stem(w) in ctx.summary or stem(w) in ctx.private for s, e, w in u.words if w not in stopwords())
+    return _signal(u) or _matched(*_attribute(u, ctx, None)[:2])
 
 
 def _is_skills_line(u: _Unit) -> bool:
+    """A labelled or comma-separated list of skills.yml terms; a bare "Skills" title with no term is not one."""
+    if not skill_terms(u.text, skills_line=True):
+        return False
     if vocab().labels.match(u.text):
         return True
     items = [x for x in re.split(r"[,;]", u.text) if x.strip()]
     return len(items) >= 3 and all(skill_terms(x, skills_line=True) for x in items)
+
+
+def _plain_ctx() -> _Ctx:
+    return _Ctx.build(Ledger(schema_version=1, person={}), dt.date.today())
+
+
+def is_skills_line(text: str) -> bool:
+    return _is_skills_line(_unit(0, text, _plain_ctx()))
+
+
+def claim_units(text: str, ledger: Ledger) -> list[tuple[int, str]]:
+    """The units of a document the check reads as claims against ledger: skills lines and claim-bearing units."""
+    ctx = _Ctx.build(ledger, dt.date.today())
+    return [(no, t) for no, t in document_units(text) if _is_skills_line(u := _unit(no, t, ctx)) or _claim_bearing(u, ctx)]
 
 
 # ---------------------------------------------------------------- guards
@@ -454,7 +501,7 @@ def _guards(u: _Unit, k: Claim, ctx: _Ctx, *, exact: bool) -> list[_Hit]:
         if q.strip() and not _rx(q).search(u.text) and not (set(_tokens(q)) and set(_tokens(q)) <= unit_stems):
             out.append(("MISSING_QUALIFIER", "REVIEW", k, f"claims[{i}].required_qualifiers[{j}]", f'"{q}" is missing'))
     if k.draft and exact:
-        out.append(("DRAFT_CLAIM", "REVIEW", k, f"claims[{i}].draft", f"{k.id} is a draft: your own CV line, not yet backed by evidence"))
+        out.append(_draft_flag(k, ctx))
     elif k.draft:
         out.append(("DRAFT_REWORDED", "BLOCK", k, f"claims[{i}].draft", f"{k.id} is a draft; it is accepted only word for word"))
     if exact:
@@ -477,6 +524,11 @@ def _guards(u: _Unit, k: Claim, ctx: _Ctx, *, exact: bool) -> list[_Hit]:
         named = f'; {k.id}.not_confirmed[{nc}] "{k.not_confirmed[nc]}" is not confirmed' if nc is not None else ""
         out.append(("UNBACKED_OUTCOME", "BLOCK", k, f"claims[{i}].outcomes_allowed", f'"{outcomes[0][2]}" claims an outcome; {why}{named}'))
     return out
+
+
+def _draft_flag(k: Claim, ctx: _Ctx) -> _Hit:
+    message = f"{k.id} is a draft: your own CV line, not yet backed by evidence; confirm it in ledger.yml"
+    return ("DRAFT_CLAIM", "REVIEW", k, f"claims[{ctx.pos[k.id]}].draft", message)
 
 
 def _stale(k: Claim, i: int, ctx: _Ctx) -> list[_Hit]:
@@ -584,10 +636,13 @@ def _check_unit(line: int, raw: str, ctx: _Ctx, require_markers: bool) -> tuple[
         return flags + [("UNBACKED", "BLOCK", None, None, "a tailored line must carry a citation marker <!-- c:ID -->")], True, False
     if _is_skills_line(u):
         hits = _skills(u, None, ctx)
-        return flags + hits, True, not hits
-    if not _claim_bearing(u, ctx):
+        draft = next((c for c in ctx.ledger.claims if c.draft and u.norm in {exact_form(s) for s in c.allowed}), None)
+        return flags + hits + ([_draft_flag(draft, ctx)] if draft else []), True, not hits
+    if _nonclaim(u):
         return flags, False, False
     path, k, attribution = _attribute(u, ctx, negated_ceiling)
+    if not _signal(u) and not _matched(path, k):
+        return flags, False, False
     flags += attribution
     if k is None or path == "ceiling":
         return flags, True, k is not None
@@ -635,10 +690,11 @@ def check_document(
     ws_root: Path,
     today: dt.date,
 ) -> CheckResult:
-    """Check the file as it is on disk. require_markers is tailor mode: every unit needs a <!-- c:ID --> marker."""
+    """Check the file as it is on disk. require_markers is tailor mode: every unit needs a <!-- c:ID --> marker,
+    and headings (honestcv writes them) are not units."""
     path = Path(path)
     raw = path.read_bytes()
-    units = sentences(_document_text(path, raw))
+    units = document_units(_document_text(path, raw), headings=not require_markers)
     lint = lint_ledger(ledger, Path(ws_root), today)
     base = {"units_total": len(units), "lint": lint, "document_path": home_relative(path), "document_sha256": hashlib.sha256(raw).hexdigest()}
     errors = [x for x in lint if x.severity == "ERROR"]
@@ -684,26 +740,29 @@ def summary_line(result: CheckResult) -> str:
     return f"{result.verdict} · {_count(blocked, 'blocked')} · {_count(len(units) - blocked, 'to review')} · {_count(passed, 'passed')}"
 
 
-def render_check(result: CheckResult) -> str:
+def render_check(result: CheckResult, *, markdown: bool = False) -> str:
     """Text for check.md and the CLI: the verdict, then each flagged line with its rules, ledger field paths and
-    a safe rewrite from the ledger, then the gaps."""
+    a safe rewrite from the ledger, then the gaps. markdown escapes the quoted text and the offer's gaps."""
+    text = str
+    if markdown:
+        from honestcv.report.markdown import esc as text
     out = [summary_line(result), ""]
     if any(f.rule == "LEDGER_LINT" for f in result.flags):
         out.append("Fix these ledger errors first (honestcv ledger lint shows them all):")
-        out += [f"  ERROR  line {f.line}  {f.field}: {f.message}" for f in result.flags]
+        out += [f"  ERROR  line {f.line}  {f.field}: {text(f.message)}" for f in result.flags]
     groups: dict[tuple[int, str], list[CheckFlag]] = {}
     for f in (f for f in result.flags if f.rule != "LEDGER_LINT"):
         groups.setdefault((f.line, f.quote), []).append(f)
     for (line, quote), flags in groups.items():
-        out.append(f'line {line}  "{quote}"')
+        out.append(f'line {line}  "{text(quote)}"')
         for f in flags:
             review = " (REVIEW)" if f.severity == "REVIEW" else ""
-            out.append(f"  {f.rule:<18} {f.message}{review}" + (f"  [{f.field}]" if f.field else ""))
+            out.append(f"  {f.rule:<18} {text(f.message)}{review}" + (f"  [{f.field}]" if f.field else ""))
         safe = Counter(f.safe_rewrite for f in flags if f.safe_rewrite).most_common(1)
         if safe:
-            out.append(f'  safe: "{safe[0][0]}"')
+            out.append(f'  safe: "{text(safe[0][0])}"')
     if result.gaps:
-        out += ["", "Offer requirements your ledger does not back (not added anywhere):"] + [f"  - {g}" for g in result.gaps]
+        out += ["", "Offer requirements your ledger does not back (not added anywhere):"] + [f"  - {text(g)}" for g in result.gaps]
     warns = sum(1 for x in result.lint if x.severity == "WARN")
     if warns:
         out += ["", f"Ledger: {warns} warning{'' if warns == 1 else 's'}. Run: honestcv ledger lint"]

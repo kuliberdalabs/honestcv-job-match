@@ -69,3 +69,41 @@ lines:
   - ledger: tests/golden/ledger_rules.yml
     text: "Catalogue assistant at an online shop, 2021-2026."
     why: catalogue-years.allowed[0], exact; the exact path does not run the review date check.
+
+  # ---------------- letter openers and closers, section titles
+  - ledger: src/honestcv/samples/en/ledger.yml
+    text: "I am writing to apply for the Data Analyst position at Tallgrove Analytics."
+    why: A letter opener; "analyst" shared with a claim summary is not a claim signal.
+  - ledger: src/honestcv/samples/en/ledger.yml
+    text: "I am excited about the opportunity to join your team."
+    why: A letter opener; "team" shared with a claim summary is not a claim signal.
+  - ledger: src/honestcv/samples/en/ledger.yml
+    text: "I would welcome the chance to discuss my application."
+    why: Non-claim line (closer).
+  - ledger: src/honestcv/samples/en/ledger.yml
+    text: "I look forward to hearing from you."
+    why: Non-claim line (closer).
+  - ledger: src/honestcv/samples/en/ledger.yml
+    text: "Thank you for your time and consideration."
+    why: Non-claim line (closer).
+  - ledger: src/honestcv/samples/en/ledger.yml
+    text: "## Experience"
+    why: A section title carries no claim signal.
+  - ledger: src/honestcv/samples/en/ledger.yml
+    text: "## Skills"
+    why: A section title; with no skills term it is not a skills line.
+  - ledger: tests/golden/ledger_pl.yml
+    text: "Szanowni Państwo,"
+    why: Non-claim line (Polish salutation).
+  - ledger: tests/golden/ledger_pl.yml
+    text: "Z zainteresowaniem przeczytałam ogłoszenie na stanowisko Analityka danych w Example Bank."
+    why: A Polish letter opener.
+  - ledger: tests/golden/ledger_pl.yml
+    text: "Chciałabym aplikować na stanowisko analityka danych."
+    why: A Polish letter opener.
+  - ledger: tests/golden/ledger_pl.yml
+    text: "Chętnie porozmawiam o szczegółach."
+    why: Non-claim line (Polish closer).
+  - ledger: tests/golden/ledger_pl.yml
+    text: "Dziękuję za poświęcony czas."
+    why: Non-claim line (Polish closer).

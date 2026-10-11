@@ -35,7 +35,7 @@ def _adapter(source_id: str, cfg: Config) -> Adapter:
 def collect(cfg: Config, ws: Workspace, *, offline: bool, today: dt.date) -> tuple[list[Offer], list[SourceStatus]]:
     """Run every enabled source: search.sources, plus Greenhouse, Lever and Ashby once companies are listed.
 
-    Empty search.keywords falls back to profile.target_titles (the pipeline may fill keywords from the CV first).
+    Empty search.keywords falls back to profile.target_titles. Titles the CV reader found are never search terms.
     The inbox is not read here; see importers.import_inbox. Offers are not deduplicated here.
     """
     companies = cfg.search.companies
@@ -58,7 +58,8 @@ def collect(cfg: Config, ws: Workspace, *, offline: bool, today: dt.date) -> tup
             if REGISTRY[source_id].get("filter_keywords") and keywords and found:
                 kept = [o for o in found if any(hit(f"{o.title}\n{o.description}".lower(), k) for k in keywords)]
                 if kept:
-                    status = status.model_copy(update={"offers": len(kept), "message": f"{status.message}, {len(kept)} match your keywords"})
+                    head, sep, rest = status.message.partition("; ")  # the count first, then any skipped entries or problems
+                    status = status.model_copy(update={"offers": len(kept), "message": f"{head}, {len(kept)} match your keywords{sep}{rest}"})
                 else:
                     status = status.model_copy(update={"state": "empty", "offers": 0, "message": "no offers matched your keywords"})
                 found = kept
@@ -70,8 +71,9 @@ def collect(cfg: Config, ws: Workspace, *, offline: bool, today: dt.date) -> tup
 
 
 def collection_status(statuses: list[SourceStatus], inbox_offers: int = 0) -> Literal["PASS", "PARTIAL", "FAIL"]:
-    """PARTIAL when any source was refused, unreadable or failed; FAIL when every source did and nothing came
-    from the inbox either. A source that was only skipped (offline, no cache) never makes a run PARTIAL."""
+    """PARTIAL when any source was refused, unreadable or failed (a robots.txt that could not be read included);
+    FAIL when every source did and nothing came from the inbox either. A source that was deliberately skipped
+    (offline, no cache) never makes a run PARTIAL."""
     failed = [s for s in statuses if s.state in ("refused", "drift", "error")]
     if failed and len(failed) == len(statuses) and not inbox_offers:
         return "FAIL"

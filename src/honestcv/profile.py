@@ -7,6 +7,7 @@ import codecs
 import datetime as dt
 import functools
 import hashlib
+import itertools
 import json
 import re
 import unicodedata
@@ -123,7 +124,8 @@ def _read_docx(path: Path) -> str:
 
 def load_cv_text(path: Path) -> CvText:
     """.md .txt .pdf (pypdf) .docx (zipfile + xml, mc:Fallback skipped); normalize() is applied. Files that cannot
-    be used raise WorkspaceError with a message that says how to fix it. Bad decoding of a PDF goes to warnings."""
+    be used, an empty one included, raise WorkspaceError with a message that says how to fix it. Bad decoding of a
+    PDF goes to warnings."""
     path = Path(path).expanduser()
     suffix = path.suffix.lower()
     if suffix not in SUPPORTED:
@@ -139,9 +141,11 @@ def load_cv_text(path: Path) -> CvText:
     else:
         raw, warnings = _decode(path.read_bytes())
     text = normalize(raw)
-    if suffix == ".pdf":
-        if not text.strip():
+    if not text.strip():
+        if suffix == ".pdf":
             raise _refuse(path, "This PDF has no text layer (it is an image).", "Export your CV as text-based PDF or DOCX.")
+        raise _refuse(path, f"{path.name} has no readable text.", "Put your CV text in the file and save it, or add a DOCX or text-based PDF instead.")
+    if suffix == ".pdf":
         bad = text.count("\ufffd") + sum(unicodedata.category(c) in ("Mn", "Mc", "Me") for c in text)
         if bad > 0.01 * max(1, sum(c.isalpha() for c in text)):
             warnings.append(BAD_LETTERS)
@@ -189,17 +193,33 @@ def skill_tokens(name: str) -> tuple[str, ...]:
 
 
 def _sentence_start(low: str, pos: int) -> int:
-    k = low.rfind(". ", 0, pos)
-    return max(low.rfind("\n", 0, pos) + 1, k + 2 if k >= 0 else 0, pos - 40, 0)
+    lo = max(0, pos - 40)  # a sentence start is never more than 40 characters back, so only that window is searched
+    k = low.rfind(". ", max(0, lo - 1), pos)
+    return max(low.rfind("\n", lo, pos) + 1, k + 2 if k >= 0 else 0, lo)
+
+
+@functools.cache
+def _negation_rx() -> tuple["re.Pattern[str]", "re.Pattern[str]"]:
+    """(cues before a mention, cues after it), each list as one pattern that finds what hit() finds for any cue."""
+    cues = pack("skills.yml")
+    patterns = ([rx.pattern for n in cues[key] if (rx := _token_regex(n))] for key in ("negations_before", "negations_after"))
+    before, after = (re.compile("|".join(p) or "(?!)") for p in patterns)  # (?!) matches nothing
+    return before, after
 
 
 def _negated(low: str, s: int, e: int) -> bool:
-    cues, after = pack("skills.yml"), e + 40
+    after = e + 40
     for sep in ("\n", ". "):
-        k = low.find(sep, e)
+        k = low.find(sep, e, e + 40 + len(sep))
         after = min(after, k) if k >= 0 else after
-    before_text, after_text = low[_sentence_start(low, s) : s], low[e:after]
-    return any(hit(before_text, n) for n in cues["negations_before"]) or any(hit(after_text, n) for n in cues["negations_after"])
+    pieces = (low[_sentence_start(low, s) : s].lower(), low[e:after].lower())
+    return any(rx.search(text) for rx, text in zip(_negation_rx(), pieces))
+
+
+def _first_word(token: str) -> str:
+    """The first word of a token as _token_regex() reads it: lower case, without a trailing prefix star."""
+    t = " ".join(token.lower().split())
+    return (t[:-1] if t.endswith("*") and len(t) > 1 else t).split(" ")[0]
 
 
 @functools.lru_cache(maxsize=2048)
@@ -209,9 +229,31 @@ def scan_skills(low: str, direct: bool = False) -> tuple[tuple[str, int, int], .
     found = set()
     for name, (free, every) in _skills().items():
         for token in dict.fromkeys(every if direct else free):
+            if _first_word(token) not in low:  # the pattern cannot match a text that lacks the token's first word
+                continue
             found.update((name, m.start(), m.end()) for m in _token_regex(token).finditer(low) if not _negated(low, m.start(), m.end()))
-    # "looker studio" is one mention of one skill, not also a mention of "looker"
-    inside = {h for h in found for o in found if o[0] != h[0] and o[1] <= h[1] and h[2] <= o[2] and o[2] - o[1] > h[2] - h[1]}
+    # "looker studio" is one mention of one skill, not also a mention of "looker": a mention inside a longer mention
+    # of another skill is dropped. One pass in text order; best/second are the furthest-reaching ends seen so far
+    # for two different skills, so the longer mention that holds a mention is found without comparing all pairs.
+    inside = set()
+    best = second = (-1, "")  # (end, skill)
+    ordered = sorted(found, key=lambda h: (h[1], -h[2]))
+    for _, group in itertools.groupby(ordered, key=lambda h: h[1:]):
+        group = list(group)  # mentions with the same span never hold each other
+        for h in group:
+            if (second if best[1] == h[0] else best)[0] >= h[2]:
+                inside.add(h)
+        for name, _, end in group:
+            if name == best[1]:
+                best = max(best, (end, name))
+            elif name == second[1]:
+                second = max(second, (end, name))
+            elif end > best[0]:
+                best, second = (end, name), best
+            elif end > second[0]:
+                second = (end, name)
+            if second[0] > best[0]:
+                best, second = second, best
     return tuple(sorted(found - inside, key=lambda h: (h[1], h[2], h[0])))
 
 

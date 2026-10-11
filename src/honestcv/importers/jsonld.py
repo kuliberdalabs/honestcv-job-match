@@ -8,6 +8,8 @@ from honestcv.importers.urls import country_code, finalize_offer, make_salary, m
 from honestcv.models import Offer
 from honestcv.textutil import plain
 
+_MAX_DEPTH = 50  # nesting of lists, objects and @graph below which nodes are ignored
+
 
 class _Page(HTMLParser):
     """Collects the JSON-LD blocks, the first h1, the title and the canonical link of a page."""
@@ -42,24 +44,35 @@ class _Page(HTMLParser):
             self._open = None
 
 
+def json_ld_blocks(html_text: str) -> list[str]:
+    """The text of every closed <script type="application/ld+json"> block of a page, in one linear pass."""
+    page = _Page()
+    page.feed(html_text)
+    page.close()
+    return page.blocks
+
+
 def job_postings(blocks: list[str]) -> list[dict]:
-    """Every JobPosting object in the JSON-LD blocks, including those inside @graph; damaged blocks are skipped."""
+    """Every JobPosting object in the JSON-LD blocks, including those inside @graph; damaged blocks are skipped
+    and nodes nested deeper than 50 levels are ignored."""
     found: list[dict] = []
 
-    def walk(node: object) -> None:
+    def walk(node: object, depth: int = 0) -> None:
+        if depth > _MAX_DEPTH:
+            return
         if isinstance(node, list):
             for item in node:
-                walk(item)
+                walk(item, depth + 1)
         elif isinstance(node, dict):
             kinds = node.get("@type")
             if "JobPosting" in (kinds if isinstance(kinds, list) else [kinds]):
                 found.append(node)
-            walk(node.get("@graph", []))
+            walk(node.get("@graph", []), depth + 1)
 
     for block in blocks:
         try:
             walk(json.loads(block, strict=False))
-        except ValueError:
+        except (ValueError, RecursionError):  # a block nested deeper than the parser allows
             continue
     return found
 

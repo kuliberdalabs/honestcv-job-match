@@ -8,7 +8,7 @@ from honestcv.config import CompaniesConfig, SearchConfig
 from honestcv.sources import collection_status
 from honestcv.sources.arbeitnow import ArbeitnowAdapter
 from honestcv.sources.ats import AshbyAdapter, GreenhouseAdapter, LeverAdapter
-from honestcv.sources.base import run_adapter
+from honestcv.sources.base import make_offer, map_entries, run_adapter
 from honestcv.sources.himalayas import HimalayasAdapter
 from honestcv.sources.remoteok import RemoteOkAdapter
 from honestcv.sources.weworkremotely import WeWorkRemotelyAdapter
@@ -204,3 +204,41 @@ def test_drift_canary(tmp_path):
     assert down.state == "error" and collection_status([down, ok]) == "PARTIAL"
     cached = run(RemoteOkAdapter(), {"/api": (200, fixture("remoteok/api.json"))}, tmp_path / "ok")  # second run, same cache folder
     assert cached[2].state == "cached" and cached[2].message == "from cache, 3 offers" and len(cached[1]) == 3
+
+
+def test_non_finite_salary_is_not_a_salary(tmp_path):
+    _, offers, status = run(RemoteOkAdapter(), {"/api": (200, fixture("remoteok/infinity.json"))}, tmp_path / "a")
+    assert status.state == "ok" and status.message == "2 offers"  # both offers import, nothing is skipped
+    first, second = offers
+    assert first.title == "Data Analyst" and first.salary is None
+    assert (second.salary.min, second.salary.max) == (None, 60000)
+    # bare Infinity and an overflowing number are read by json.loads as infinity too
+    payload = '[{"legal": "x"}, {"position": "Data Analyst", "url": "https://remoteok.invalid/a", "salary_min": Infinity, "salary_max": 1e999}]'
+    _, (only,), status = run(RemoteOkAdapter(), {"/api": (200, payload)}, tmp_path / "b")
+    assert only.salary is None and status.message == "1 offer"
+    for offer in (*offers, only):
+        assert "Infinity" not in offer.model_dump_json() and "NaN" not in offer.model_dump_json()
+
+
+def test_one_bad_record_never_stops_a_source(tmp_path):
+    _, offers, status = run(RemoteOkAdapter(), {"/api": (200, fixture("remoteok/broken_record.json"))}, tmp_path / "a")
+    assert [o.title for o in offers] == ["Data Analyst", "Customer Support Agent", "Reporting Analyst"]
+    assert (status.state, status.offers, status.message) == ("ok", 3, "3 offers; 2 offers skipped (unreadable)")
+    cached = run(RemoteOkAdapter(), {"/api": (500, "")}, tmp_path / "a")[2]  # same cache folder
+    assert (cached.state, cached.message) == ("cached", "from cache, 3 offers; 2 offers skipped (unreadable)")
+    # an entry that raises any error is dropped and counted, not only the expected kinds
+    def mapper(entry):
+        if entry == "bad":
+            raise OverflowError("cannot convert float infinity to integer")
+        return make_offer("remoteok", "RemoteOK", entry, f"https://remoteok.invalid/{entry}")
+
+    assert [o.title for o in map_entries(["one", "bad", "two"], mapper)] == ["one", "two"]
+    # a skipped entry is reported next to the problems of an adapter that has them
+    routes = {"/v1/boards/tallgrove/jobs": (200, fixture("greenhouse/board.json").replace('"title"', '"no_title"', 1)), "/v1/boards/missing/jobs": (404, "")}
+    _, offers, status = run(GreenhouseAdapter(), routes, tmp_path / "b", ats_search(greenhouse=["tallgrove", "missing"]))
+    assert status.state == "error" and status.message.startswith(f"{len(offers)} offer") and "; 1 offer skipped (unreadable); missing:" in status.message
+
+
+def test_answer_nested_too_deep_is_drift(tmp_path):
+    _, offers, status = run(RemoteOkAdapter(), {"/api": (200, "[" * 100_000 + "]" * 100_000)}, tmp_path)
+    assert (offers, status.state) == ([], "drift")

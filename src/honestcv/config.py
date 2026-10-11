@@ -28,13 +28,13 @@ _DEFAULT_CONFIG_TEXT = """\
 profile:
   level: null            # intern | junior | mid | senior | lead. null = level is not scored (never guessed)
   years: null            # years of experience. null = counted from date ranges under experience headings
-  target_titles: []      # e.g. ["data analyst", "analityk danych"]; list both languages. empty = titles from your CV
+  target_titles: []      # e.g. ["data analyst", "analityk danych"]; list both languages. empty = the score uses titles from your CV; no title is sent as a search term
   skills_add: []         # skills the CV reader missed
   skills_remove: []      # skills it found that you do not want matched
 
 preferences:             # anything left empty is simply not scored
   remote: []             # any of: remote, hybrid, onsite
-  countries: []          # ISO codes, e.g. [PL, SE]
+  countries: []          # two-letter codes, e.g. [PL, SE]; names such as Poland work too
   cities: []
   contract: []           # any of: employment, b2b, contract, freelance, internship
   min_salary: []         # one entry per currency, e.g. [{amount: 12000, currency: PLN, unit: month}, {amount: 3000, currency: EUR, unit: month}]
@@ -43,7 +43,7 @@ preferences:             # anything left empty is simply not scored
   freshness_days: 30     # older offers are filtered out
 
 search:
-  keywords: []           # empty = your top 5 skills + target titles
+  keywords: []           # empty = your target_titles, then your top 5 skills
   sources: [himalayas, remoteok, weworkremotely, arbeitnow]
   companies:             # public job boards of companies you name; nothing is discovered for you
     greenhouse: []       # board tokens, e.g. [examplecorp]
@@ -115,7 +115,7 @@ class CompaniesConfig(BaseModel):
 
 class SearchConfig(BaseModel):
     model_config = _STRICT
-    keywords: list[str] = []  # empty = top 5 skills + target titles
+    keywords: list[str] = []  # empty = target_titles typed in honestcv.yml, then the top 5 skills
     sources: list[str] = ["himalayas", "remoteok", "weworkremotely", "arbeitnow"]
     companies: CompaniesConfig = CompaniesConfig()
     weworkremotely_feeds: list[str] = []  # extra category feeds, e.g. ["remote-data-science-jobs"]; not in the template

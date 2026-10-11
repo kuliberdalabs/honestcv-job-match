@@ -5,9 +5,12 @@ instead of silently ignored. Models for data honestcv produces (offers, results,
 """
 
 import datetime as dt
-from typing import Literal
+import math
+import unicodedata
+from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic_core import PydanticCustomError
 
 Level = Literal["intern", "junior", "mid", "senior", "lead"]
 Layer = Literal["CORE", "STRETCH", "DOWNSHIFT"]
@@ -18,14 +21,43 @@ Severity = Literal["BLOCK", "REVIEW"]
 
 _STRICT_KEYS = ConfigDict(extra="forbid")
 
-class Salary(BaseModel):
+# C0 controls except tab and newline, DEL and the C1 controls. ESC starts the sequences that move the cursor, clear the
+# screen, set a window title or write to the clipboard when a terminal prints them.
+_CONTROLS = dict.fromkeys([*range(0x09), *range(0x0B, 0x20), 0x7F, *range(0x80, 0xA0)], None)
+
+def strip_controls(text: str) -> str:
+    """Text without control characters. A carriage return counts as a line end; tab and newline stay."""
+    return text.replace("\r\n", "\n").replace("\r", "\n").translate(_CONTROLS)
+
+def _clean(value: Any) -> Any:
+    if isinstance(value, str):
+        return strip_controls(value)
+    if isinstance(value, dict):
+        return {k: _clean(v) for k, v in value.items()}
+    return [_clean(v) for v in value] if isinstance(value, (list, tuple)) else value
+
+class _Untrusted(BaseModel):
+    """Base of the models that hold text from outside (job boards, files, e-mails). Whatever builds one, from an
+    adapter, an importer or a JSON file, every string in it comes out without control characters."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _strip_control_characters(cls, data: Any) -> Any:
+        return _clean(data) if isinstance(data, dict) else data
+
+class Salary(_Untrusted):
     min: float | None = None
     max: float | None = None
     currency: str | None = None  # ISO 4217, upper case
     unit: Literal["hour", "day", "month", "year"] | None = None
     unit_assumed: bool = False  # true when the unit was inferred from the amount
 
-class Offer(BaseModel):
+    @field_validator("min", "max")
+    @classmethod
+    def _finite(cls, value: float | None) -> float | None:
+        return value if value is None or math.isfinite(value) else None  # "Infinity" and "NaN" mean "not stated"
+
+class Offer(_Untrusted):
     id: str  # first 10 hex of sha1(dedupe_key)
     source: str  # registry id, or "import:csv|json|eml|html|text"
     title: str
@@ -72,7 +104,7 @@ class CvText(BaseModel):
 
 class Money(BaseModel):
     model_config = _STRICT_KEYS
-    amount: float
+    amount: float = Field(allow_inf_nan=False)
     currency: str
     unit: Literal["hour", "day", "month", "year"] = "month"
 
@@ -80,6 +112,24 @@ class Money(BaseModel):
     @classmethod
     def _upper_currency(cls, value: str) -> str:
         return value.strip().upper()  # "sek" and "SEK" mean the same
+
+def _fold(name: str) -> str:
+    """Lower case without accents, so "España", "espana" and "ESPAÑA" are one key."""
+    decomposed = unicodedata.normalize("NFKD", name.casefold().replace("\u0142", "l"))
+    return " ".join("".join(c for c in decomposed if not unicodedata.combining(c)).split())
+
+_COUNTRY_NAMES = {
+    _fold(name): code
+    for code, names in (
+        ("PL", ("Polska", "Poland")), ("SE", ("Sverige", "Sweden", "Szwecja")), ("DE", ("Deutschland", "Germany", "Niemcy")),
+        ("GB", ("United Kingdom", "Great Britain", "Wielka Brytania")), ("US", ("United States", "USA", "Stany Zjednoczone")),
+        ("NL", ("Netherlands", "Nederland", "Holandia")), ("ES", ("Spain", "España", "Hiszpania")), ("FR", ("France", "Francja")),
+        ("CZ", ("Czechia", "Czech Republic", "Czechy")), ("IE", ("Ireland", "Irlandia")), ("NO", ("Norway", "Norge", "Norwegia")),
+        ("DK", ("Denmark", "Danmark", "Dania")), ("FI", ("Finland", "Suomi", "Finlandia")), ("AT", ("Austria", "Österreich")),
+        ("CH", ("Switzerland", "Schweiz", "Szwajcaria")), ("PT", ("Portugal", "Portugalia")), ("IT", ("Italy", "Italia", "Włochy")),
+    )
+    for name in names
+}  # fmt: skip
 
 class Preferences(BaseModel):
     model_config = _STRICT_KEYS
@@ -94,8 +144,16 @@ class Preferences(BaseModel):
 
     @field_validator("countries")
     @classmethod
-    def _upper_countries(cls, value: list[str]) -> list[str]:
-        return [c.strip().upper() for c in value]  # "se" and "SE" mean the same
+    def _country_codes(cls, value: list[str]) -> list[str]:
+        out = []
+        for name in value:
+            text = name.strip()
+            two_letters = len(text) == 2 and text.isascii() and text.isalpha()
+            code = ("GB" if text.upper() == "UK" else text.upper()) if two_letters else _COUNTRY_NAMES.get(_fold(text))
+            if code is None:
+                raise PydanticCustomError("country_code", "Use two-letter country codes, for example PL or SE")
+            out.append(code)  # "se" and "SE" mean the same
+        return out
 
 class OutputConfig(BaseModel):
     """The output: block of honestcv.yml."""

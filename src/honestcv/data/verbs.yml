@@ -341,8 +341,12 @@ negations:
 
 # Other words that make a unit claim-bearing.
 claim_words:
-  certification: [certified, certificate, certificates, certification, certifications, degree, bsc, msc, mba, phd,
-                  licencjat, magister, inżynier, certyfikat*]
+  certification: [certified, certificate, certificates, certification, certifications, degree, degrees, bsc, msc, mba,
+                  phd, doctorate, doctoral, master's, masters, bachelor's, bachelors, diploma, diplomas, licensed,
+                  licencjat, magister, inżynier, certyfikat*, doktorat*, dyplom*, licencjonowan*]
+  # "won" only before an object, so "won't" stays a negation
+  distinction: [won the, won a, won an, won first, won second, won third, winner, winners, prize, prizes, awards,
+                patent, patents, patented, speaker, keynote, keynotes, nagrod*, wygrał*, zwycięzc*, laureat*]
   expertise: [expert, experts, proficient, fluent, advanced, native, biegł*, zaawansowan*, ekspert*]
   seniority: [intern, trainee, staż, stażysta, junior, młodszy, mid, regular, senior, starszy, lead, staff,
               principal, head]

@@ -2,13 +2,13 @@
 
 Job offers matched to your CV, and a claims ledger that keeps tailored CVs truthful.
 
-honestcv reads public job APIs and job offers you save, scores each offer against your CV with one rule set you can read, and checks every CV line or cover letter line against a ledger of what you actually did and what proves it. It runs on your computer. It makes no model calls.
+honestcv reads public job APIs and job offers you save, scores each offer against your CV with one rule set you can read, and checks every line the rules recognise as a claim, in a CV or a cover letter, against a ledger of what you actually did and what proves it. It runs on your computer. It makes no model calls.
 
 ## Why this exists
 
-Tools that tailor a CV to an offer tend to make claims stronger than the facts. One case is described in career-ops issue #1411: tailoring turned work the user directed a vendor to build into work the user wrote. Nobody lied on purpose, and the sentence still went out.
+Tools that tailor a CV to an offer tend to make claims stronger than the facts. One case is described in [career-ops issue #1411](https://github.com/career-ops-hq/career-ops/issues/1411): tailoring turned work the user directed a vendor to build into work the user wrote. Nobody lied on purpose, and the sentence still went out.
 
-honestcv keeps a ledger of your claims. Each claim records what state the work reached (built, tested, shipped, used, and so on), the evidence for it, who did it, and the sentences you are happy to send. The checker reads any document and flags lines that claim more than the ledger backs: a stronger verb, a bigger number, a wider scope, an outcome nobody measured, or authorship you do not have. It does this with fixed rules, so the same line always gets the same answer.
+honestcv keeps a ledger of your claims. Each claim records what state the work reached (built, tested, shipped, used, and so on), the evidence for it, who did it, and the sentences you are happy to send. The checker reads any document and flags lines that claim more than the ledger backs: a stronger verb, a bigger number, a wider scope, an outcome nobody measured, or authorship you do not have. It does this with fixed rules, so the same line always gets the same answer. A line that makes a claim in words the rules do not know is not checked, so a PASS means that no claim the rules recognise went beyond your ledger. It does not mean the whole document is true.
 
 ## Start here
 
@@ -18,6 +18,8 @@ You need uv, a small tool that installs Python programs. Do this once per comput
   `curl -LsSf https://astral.sh/uv/install.sh | sh`
 - Windows: open Start, type PowerShell, press Enter, then run:
   `winget install --id=astral-sh.uv -e`
+- Linux: open a terminal, then run:
+  `curl -LsSf https://astral.sh/uv/install.sh | sh`
 
 Close the window and open a new one. Then install honestcv:
 
@@ -36,7 +38,7 @@ honestcv demo
 
 The demo copies a fictional sample (Maya Lindqvist, a support operations analyst moving into data analysis) to a temporary folder. It scores eight sample offers against her two CV variants and checks a cover letter with planted problems. It runs offline, needs no keys, and pins the date to the sample date, so the output is the same every time. Then open the report it prints.
 
-Your own setup is one step, and the CV is optional:
+Your own setup is two commands. `honestcv init` works without a CV, but `honestcv scan` needs one: pass it with `--cv` now, or add it later with `honestcv add-cv FILE`.
 
 ```
 honestcv init --cv your-cv.pdf
@@ -50,7 +52,7 @@ honestcv scan
 | Command | What it does |
 |---|---|
 | `honestcv demo` | Offline run on the bundled sample: scan, report, and the check of a planted cover letter |
-| `honestcv init [DIR] [--cv FILE]` | Creates your workspace (default `~/honestcv`) and reads your CV |
+| `honestcv init [DIR] [--cv FILE]` | Creates your workspace (default `~/honestcv`) and reads your CV when you pass one |
 | `honestcv add-cv FILE` | Adds another CV variant; every scan scores each offer against every CV |
 | `honestcv add-offer --paste` | Imports an offer from the clipboard; also a file (`.eml`, `.html`, `.csv`, `.json`, `.txt`), `--text` or `--url` |
 | `honestcv ledger draft` / `ledger lint` | Drafts a starting ledger from your CVs; checks the ledger |
@@ -83,7 +85,7 @@ honestcv scan
 | `src/` is plain Python modules: no plugin system, no generated code, no network code outside `sources/`. | A tool nobody can audit. |
 | A source that changes shape is reported as PARTIAL. | A parser that silently returns zero offers looks like "no matches". |
 
-Prior art: claimledger-studio, an evidence-backed resume-tailoring console with a claim ledger, is the closest existing concept.
+Prior art: [claimledger-studio](https://github.com/mikepatraw/claimledger-studio), an evidence-backed resume-tailoring console with a claim ledger, is the closest existing concept.
 
 ## What this does not do
 
@@ -100,13 +102,13 @@ Prior art: claimledger-studio, an evidence-backed resume-tailoring console with 
 
 ## What leaves your computer
 
-- Keywords derived from your CV (your target titles and your top 5 skills) and the country you set go to Himalayas as search terms. If you set `search.keywords`, those go instead.
+- Himalayas gets search terms: the skill names honestcv recognised in your CV (from its built-in list, plus any you add as `profile.skills_add`) and the target titles you typed in `honestcv.yml`, or your `search.keywords` if you set them, plus the country you set. No sentence, job title, employer or date that honestcv reads from your CV is sent.
 - RemoteOK, We Work Remotely and Arbeitnow get plain requests with no search terms; honestcv filters their offers on your computer. Greenhouse, Lever and Ashby get only the company board names you list.
 - Before the first request to a source in a run, honestcv reads that host's robots.txt.
-- No other CV data goes anywhere. No telemetry, no analytics.
+- Nothing else from your CV, ledger or e-mails leaves the computer. No telemetry, no analytics.
 - honestcv makes no LLM calls.
 
-honestcv reads public job APIs whose terms allow it and files you provide. It contains only original code and no credentials. You are responsible for complying with the terms of service of any site whose offers you import.
+honestcv reads public job APIs whose terms allow it and files you provide. The repository contains no proprietary software, no license circumvention, no credential collection and no authentication circumvention. You are responsible for following the terms of the job boards and APIs you use, including any site whose offers you import.
 
 honestcv is for your personal job search. Do not republish its results.
 

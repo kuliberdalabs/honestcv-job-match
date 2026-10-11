@@ -3,12 +3,15 @@
 import datetime as dt
 import re
 from email.utils import parsedate_to_datetime
-from urllib.parse import urlsplit, urlunsplit
+from urllib.parse import SplitResult, unquote, urlsplit, urlunsplit
 
 from honestcv.models import Offer, Salary
 from honestcv.state import offer_id
 
+MAX_DESCRIPTION = 100_000  # characters kept of an offer text at import, from the start
 _TRACKING = re.compile(r"(utm_.*|fbclid|gclid|mc_.*|trk|trackingid|refid)", re.IGNORECASE)
+_AT_SIGN = re.compile(r"@|%(?:25)*40", re.IGNORECASE)
+_ADDRESS = re.compile(r"[^@\s]+@[^@\s]+")
 _COUNTRIES = (
     "AL Albania|AD Andorra|AR Argentina|AM Armenia|AU Australia|AT Austria|BE Belgium|BA Bosnia and Herzegovina|BR Brazil|"
     "BG Bulgaria|CA Canada|CL Chile|CN China|CO Colombia|HR Croatia|CY Cyprus|CZ Czechia|CZ Czech Republic|DK Denmark|"
@@ -25,6 +28,37 @@ _CONTRACTS = (("internship", r"intern|sta[zż]"), ("b2b", r"b2b"), ("freelance",
 _UNITS = (("hour", r"hour|godz"), ("day", r"day|daily|dzie[nń]"), ("month", r"month|mies|\bmc\b"), ("year", r"year|annual|rok|roczn"))
 
 
+def _split(url: str) -> SplitResult | None:
+    """urlsplit, or None for text it cannot read (an unclosed "[" in the host, for example)."""
+    try:
+        return urlsplit(url)
+    except ValueError:
+        return None
+
+
+def _has_address(text: str) -> bool:
+    """True when the text, percent-decoded (also when encoded twice), has something on both sides of an @."""
+    for _ in range(3):
+        if _ADDRESS.search(text):
+            return True
+        decoded = unquote(text)
+        if decoded == text:
+            break
+        text = decoded
+    return False
+
+
+def without_addresses(url: str) -> str:
+    """The link without e-mail addresses: a user name before the host, path segments and query parameters that
+    carry an address (alert e-mails put the recipient into their links), in plain or percent-encoded form."""
+    parts = _split(url) if _AT_SIGN.search(url) else None
+    if parts is None:
+        return url
+    path = "/".join(seg for seg in parts.path.split("/") if not _has_address(seg))
+    query = "&".join(seg for seg in parts.query.split("&") if not any(map(_has_address, seg.split("=", 1))))
+    return urlunsplit((parts.scheme, parts.netloc.rsplit("@", 1)[-1], path, query, parts.fragment))
+
+
 def clean_url(url: str) -> str:
     """Remove tracking parameters (utm_*, fbclid, gclid, mc_*, trk, trackingId, refId) and the fragment.
 
@@ -32,28 +66,31 @@ def clean_url(url: str) -> str:
     http(s) link comes back unchanged.
     """
     url = url.strip()
-    parts = urlsplit(url)
-    if parts.scheme.lower() not in ("http", "https") or not parts.netloc:
+    parts = _split(url)
+    if parts is None or parts.scheme.lower() not in ("http", "https") or not parts.netloc:
         return url
     kept = [seg for seg in parts.query.split("&") if seg and not _TRACKING.fullmatch(seg.split("=", 1)[0])]
     return urlunsplit((parts.scheme, parts.netloc, parts.path, "&".join(kept), ""))
 
 
 def web_link(url: str | None) -> str | None:
-    """The cleaned link, or None when it is empty or not an http(s) link (javascript: and the like are dropped)."""
+    """The cleaned link without e-mail addresses, or None when it is empty or not an http(s) link (javascript:
+    and the like, and text that cannot be read as a link, are dropped)."""
     if not url or not url.strip():
         return None
-    cleaned = clean_url(url)
-    parts = urlsplit(cleaned)
-    return cleaned if parts.scheme.lower() in ("http", "https") and parts.netloc else None
+    cleaned = without_addresses(clean_url(url))
+    parts = _split(cleaned)
+    return cleaned if parts is not None and parts.scheme.lower() in ("http", "https") and parts.netloc else None
 
 
 def finalize_offer(offer: Offer) -> Offer:
-    """Tidy the text fields, clean the links and set the id (first 10 hex of sha1 of the dedupe key)."""
+    """Tidy the text fields, clean the links, keep the first 100,000 characters of the text and set the id
+    (first 10 hex of sha1 of the dedupe key)."""
     url, apply_url = web_link(offer.url), web_link(offer.apply_url)
     others = [u for u in dict.fromkeys(web_link(x) for x in offer.other_urls) if u and u != url]
     tidy = offer.model_copy(update={
         "title": " ".join(offer.title.split()),
+        "description": offer.description[:MAX_DESCRIPTION].rstrip() if len(offer.description) > MAX_DESCRIPTION else offer.description,
         "company": " ".join((offer.company or "").split()) or None,
         "url": url, "apply_url": apply_url, "other_urls": others,
         "countries": list(dict.fromkeys(c.upper() for c in offer.countries)),

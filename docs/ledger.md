@@ -14,7 +14,7 @@ honestcv ledger draft
 honestcv ledger lint
 ```
 
-`ledger draft` turns every bullet and every job line of your CVs into a claim marked `draft: true`. Identical lines from several CVs become one claim. A draft claim is your own CV line, not yet backed by evidence:
+`ledger draft` turns every bullet and every job line of your CVs into a claim marked `draft: true`, and also every other line the check reads as a claim: the Skills line (a `kind: skill` claim listing each skill on it), profile sentences and headings with a year. Each unchanged CV then checks against its draft with no BLOCK. Identical lines from several CVs become one claim. A draft claim is your own CV line, not yet backed by evidence:
 
 - it does not count as ledger backing;
 - tailoring and the check accept its sentence only word for word, as it stands in your CV (`DRAFT_CLAIM`, a REVIEW);
@@ -129,7 +129,7 @@ WARN:
 
 ## How the check works
 
-The checker reads the file from disk and splits it into lines, bullets and sentences. Headings and comments are skipped, and greetings and sign-offs never count as claims. A line is claim-bearing when it has a verb or state word, a number, a duration, an outcome word, a skill, a language, a degree or certificate, an expertise or seniority word, or a word from a claim's summary.
+The checker reads the file from disk and splits it into lines, bullets and sentences. A Markdown heading is checked like a sentence; comments are skipped. Section titles ("Experience", "Doświadczenie"), greetings, sign-offs and the usual cover-letter openers and closers ("I am writing to apply for ...", "I look forward to ...") never count as claims. A line is claim-bearing when it has a claim signal: a verb or state word, an authorship, outcome or venue word, a number, a duration, a skill, a language, a degree, certificate or award, an expertise or seniority word, or a citation marker. A word it shares with a claim's summary is not a signal on its own. A line with no signal still counts when it is attributed to a claim by the steps below; such a line is never `UNBACKED`.
 
 Each claim-bearing line is matched to one claim:
 

@@ -4,9 +4,11 @@ import importlib.util
 import json
 from pathlib import Path
 
+import httpx
 import pytest
 
 from honestcv.errors import FetchNotAllowed, SourceRefused
+from honestcv.sources import collection_status
 from honestcv.sources.base import run_adapter
 from honestcv.sources.http import OfflineSkip, RobotsUnreadable, SourceError, parse_robots, robots_permits
 from honestcv.sources.remoteok import RemoteOkAdapter
@@ -115,11 +117,12 @@ def test_robots(tmp_path):
     for code in (404, 401):
         net = fakenet.FakeNet({"/api": (200, "[]")}, robots=(code, "Disallow: /"))
         assert net.client(tmp_path / f"c{code}").get("remoteok", API).status == 200
-    # 5xx: the source is skipped for the run, and robots.txt is not asked again
+    # 5xx: the source fails for the run (the run is PARTIAL), and robots.txt is not asked again
     net = fakenet.FakeNet({"/api": (200, "[]")}, robots=(503, ""))
     http = net.client(tmp_path / "c503")
     _, status = run_adapter(RemoteOkAdapter(), http, SearchConfig(), net_today())
-    assert status.state == "skipped" and "robots.txt could not be read" in status.message and net.count("/api") == 0
+    assert status.state == "error" and "robots.txt could not be read" in status.message and net.count("/api") == 0
+    assert status.http_status == 503 and "Results from it are missing" in status.message and "skipped" not in status.message
     with pytest.raises(RobotsUnreadable):
         http.get("remoteok", API)
     assert net.count("/robots.txt") == 1
@@ -177,3 +180,99 @@ def test_cache_files_hold_no_secrets_and_survive_junk(tmp_path):
         p.write_text("{not json", encoding="utf-8")  # a damaged cache file is ignored, not fatal
     net.wall += 1
     assert not http.get("remoteok", API).from_cache
+
+
+def test_robots_unreadable_makes_the_run_partial(tmp_path):
+    ok = run_adapter(RemoteOkAdapter(), fakenet.FakeNet({"/api": (200, "[]")}).client(tmp_path / "ok"), SearchConfig(), net_today())[1]
+    down = run_adapter(RemoteOkAdapter(), fakenet.FakeNet({"/api": (200, "[]")}, robots=(503, "")).client(tmp_path / "down"), SearchConfig(), net_today())[1]
+    assert (ok.state, down.state) == ("empty", "error") and collection_status([ok, down]) == "PARTIAL"
+    assert collection_status([down]) == "FAIL"
+    # robots.txt that cannot be reached at all fails the source the same way
+    net = fakenet.FakeNet({"/api": (200, "[]")})
+
+    def unreachable(request):
+        net.requests.append(request)
+        if request.url.path == "/robots.txt":
+            raise httpx.ConnectError("no route", request=request)
+        return httpx.Response(200, text="[]")
+
+    http = net.client(tmp_path / "unreachable")
+    http._transport = httpx.MockTransport(unreachable)
+    _, status = run_adapter(RemoteOkAdapter(), http, SearchConfig(), net_today())
+    assert status.state == "error" and "robots.txt could not be read (not reachable)" in status.message and net.count("/api") == 0
+    assert collection_status([ok, status]) == "PARTIAL"
+
+
+def test_redirect_to_another_source_is_not_followed(tmp_path):
+    search = "https://himalayas.app/jobs/api/search"
+    net = fakenet.FakeNet({("himalayas.app", "/jobs/api/search"): (302, "", {"Location": "https://remoteok.com/api?q=PRIVATE_CV_TITLE"})})
+    with pytest.raises(SourceError) as caught:
+        net.client(tmp_path / "cache").get("himalayas", search, params={"q": "PRIVATE_CV_TITLE"})
+    assert caught.value.message == "himalayas redirected to another address; honestcv does not follow it."
+    assert {r.url.host for r in net.requests} == {"himalayas.app"}  # not even robots.txt is asked on remoteok.com
+    # through an adapter the source fails and the run is PARTIAL
+    from honestcv.sources.himalayas import HimalayasAdapter
+
+    ok = run_adapter(RemoteOkAdapter(), fakenet.FakeNet({"/api": (200, "[]")}).client(tmp_path / "ok"), SearchConfig(), net_today())[1]
+    _, status = run_adapter(HimalayasAdapter(), net.client(tmp_path / "run"), SearchConfig(keywords=["PRIVATE_CV_TITLE"]), net_today())
+    assert status.state == "error" and "redirected to another address" in status.message and "Results from it are missing" in status.message
+    assert collection_status([ok, status]) == "PARTIAL" and {r.url.host for r in net.requests} == {"himalayas.app"}
+
+
+@pytest.mark.parametrize("location", [
+    "http://remoteok.com/api2",  # https to http on the same host
+    "https://remoteok.com/private",  # a path robots.txt disallows
+    "https://remoteok.com:8443/api2",  # a port other than 443
+    "https://reader" + "@remoteok.com/api2",  # user info
+    "https://remoteok.com:99999/api2",  # a port that is not a port
+    "https://[/api2",  # an address that cannot be read
+])  # fmt: skip
+def test_redirect_that_breaks_a_rule_is_not_followed(tmp_path, location):
+    net = fakenet.FakeNet({"/api": (301, "", {"Location": location}), "/api2": (200, "[]"), "/private": (200, "[]")},
+                          robots="User-agent: *\nDisallow: /private\n")  # fmt: skip
+    with pytest.raises(SourceError) as caught:
+        net.client(tmp_path / "cache").get("remoteok", API)
+    assert caught.value.message == "remoteok redirected to another address; honestcv does not follow it."
+    assert [r.url.path for r in net.requests] == ["/robots.txt", "/api"]  # the target is never requested
+
+
+def test_redirect_on_the_same_host_is_followed(tmp_path):
+    net = fakenet.FakeNet({"/api": (301, "", {"Location": "/api/v2"}), "/api/v2": (308, "", {"Location": "https://remoteok.com:443/api/v3"}),
+                           "/api/v3": (200, '["moved"]')})  # fmt: skip
+    http = net.client(tmp_path / "cache")
+    warm(net, http)
+    assert http.get("remoteok", API).text == '["moved"]'
+    hops = [(r.url.path, t) for r, t in zip(net.requests, net.times) if r.url.path.startswith("/api")]
+    assert [p for p, _ in hops] == ["/api", "/api/v2", "/api/v3"] and all(r.url.scheme == "https" for r in net.requests)
+    assert all(b[1] - a[1] >= 1 for a, b in zip(hops, hops[1:]))  # the min interval holds for every hop
+    # 3 redirects are followed; a 4th is not
+    chain = {f"/r{i}": (302, "", {"Location": f"/r{i + 1}"}) for i in range(4)} | {"/r3": (200, "[]")}
+    assert fakenet.FakeNet(chain).client(tmp_path / "three").get("remoteok", "https://remoteok.com/r0").text == "[]"
+    chain["/r3"] = (302, "", {"Location": "/r4"})
+    longer = fakenet.FakeNet(chain | {"/r4": (200, "[]")})
+    with pytest.raises(SourceError) as caught:
+        longer.client(tmp_path / "four").get("remoteok", "https://remoteok.com/r0")
+    assert "too many redirects" in caught.value.message and longer.count("/r4") == 0
+
+
+def test_no_cookie_is_kept_or_sent(tmp_path):
+    jar_cookie = {"Set-Cookie": "session=server-value; Path=/; Domain=remoteok.com"}
+    net = fakenet.FakeNet({"/api": (200, "[]", jar_cookie), "/next": (302, "", {"Location": "/api", **jar_cookie})})
+    http = net.client(tmp_path / "cache")
+    http.get("remoteok", API)
+    http.get("remoteok", API, params={"page": 2})
+    http.get("remoteok", "https://remoteok.com/next")  # a cookie set on a redirect is not sent to the next hop either
+    assert len(net.requests) == 5 and all("cookie" not in r.headers for r in net.requests)
+    assert list(http._client.cookies.jar) == []
+
+
+def test_response_size_is_capped(tmp_path):
+    big = "x" * (15 * 1024 * 1024 + 1)
+    net = fakenet.FakeNet({"/api": (200, big), "/fits": (200, "[" + " " * (15 * 1024 * 1024 - 2) + "]")})
+    http = net.client(tmp_path / "cache")
+    with pytest.raises(SourceError) as caught:
+        http.get("remoteok", API)
+    assert "more than 15 MB" in caught.value.message
+    assert len(http.get("remoteok", "https://remoteok.com/fits").text) == 15 * 1024 * 1024  # exactly at the limit is read
+    _, status = run_adapter(RemoteOkAdapter(), fakenet.FakeNet({"/api": (200, big)}).client(tmp_path / "run"), SearchConfig(), net_today())
+    assert status.state == "error" and "more than 15 MB" in status.message

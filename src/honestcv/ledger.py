@@ -12,7 +12,7 @@ from pydantic import ValidationError
 
 from honestcv.errors import LedgerError, format_loc, validation_messages
 from honestcv.models import Ledger, LedgerIndex, LintIssue, Profile
-from honestcv.textutil import normalize, safe_name, sentences, tokenize
+from honestcv.textutil import normalize, safe_name, tokenize
 
 ACCEPTED_EVIDENCE = {
     "built": ("repo", "file", "url", "note"), "tested": ("test_record",), "shipped": ("handover_record",),
@@ -227,6 +227,8 @@ _CONFIRM_HINT = {
                  "#   shipped: [{type: handover_record, ref: evidence/handover-note.txt}]",
                  '# then delete "draft: true".'],
     "biography": ["# To confirm: check the years (facts: start_year, end_year), then delete \"draft: true\"."],
+    "skill": ["# Your Skills line. To confirm: keep in skills only what you can show, add a state with its evidence",
+              "#   (for example built: [{type: file, ref: evidence/your-file.txt}]), then delete \"draft: true\"."],
 }  # fmt: skip
 
 
@@ -245,9 +247,12 @@ def _slug(text: str, taken: set[str]) -> str:
 
 
 def _cv_lines(cv_id: str, text: str, profile: Profile | None) -> list[tuple[str, str, int | None, list[int]]]:
-    """(kind, sentence, line number, years) for each bullet and experience line of one CV, in text order."""
-    lines = normalize(text).split("\n")
-    experience: dict[int, list[int]] = {}
+    """(kind, sentence, line number, years) for each bullet and experience line of one normalized CV, in text
+    order. The sentences are the units the check reads, so a wrapped bullet is one claim."""
+    from honestcv.checker import document_units, is_skills_line
+
+    lines = text.split("\n")
+    experience: dict[int, tuple[str, list[int]]] = {}
     extra = []
     for title, dates in profile.experience if profile else []:
         years = [int(y) for y in re.findall(r"(?:19|20)\d{2}", dates)]
@@ -255,39 +260,60 @@ def _cv_lines(cv_id: str, text: str, profile: Profile | None) -> list[tuple[str,
         if no is None:
             extra.append(("biography", f"{title}, {dates}", None, years))
         else:
-            experience.setdefault(no, years)
+            experience.setdefault(no, (title.lower(), years))
     out = []
-    for no, raw in enumerate(lines, 1):
-        if no in experience or _BULLET.match(raw):
-            unit = sentences("- " + raw.strip().lstrip("#").strip() if no in experience else raw.strip())
-            if unit:
-                out.append(("biography" if no in experience else "delivery", unit[0][1], no, experience.get(no, [])))
+    for no, unit in document_units(text):
+        if no in experience and experience[no][0] in unit.lower():
+            out.append(("biography", unit, no, experience[no][1]))
+        elif _BULLET.match(lines[no - 1]):
+            out.append(("skill" if is_skills_line(unit) else "delivery", unit, no, []))
     return out + extra
 
 
 def draft_ledger(profiles: list[Profile], cv_texts: dict[str, str], *, today: dt.date) -> str:
-    """YAML text of a starting ledger: one draft claim per distinct CV bullet or experience line, with comments.
-    Identical lines from several CVs become one claim. It lints with one WARN per draft claim and no ERROR."""
-    from honestcv.checker import skill_terms
+    """YAML text of a starting ledger: one draft claim per distinct CV bullet and experience line, then per other
+    unit the check reads as a claim (the Skills line, profile sentences, headings with a year), with comments.
+    Identical lines from several CVs become one claim. It lints with one WARN per draft claim and no ERROR, and
+    each unchanged CV checks against it without a BLOCK."""
+    from honestcv.checker import claim_units, is_skills_line, skill_terms
 
     by_cv = {p.cv_id: p for p in profiles}
-    out = [_DRAFT_HEAD.format(today=today.isoformat())]
+    texts = {cv_id: normalize(cv_texts[cv_id]) for cv_id in sorted(cv_texts)}
     seen: set[str] = set()
+    drafts: list[tuple[str, str, str, int | None, list[int], list[str]]] = []  # cv_id, kind, sentence, line, years, skills
+
+    def add(cv_id: str, kind: str, sentence: str, no: int | None, years: list[int]) -> None:
+        key = " ".join(sentence.lower().split()).rstrip(".")
+        if key not in seen:
+            seen.add(key)
+            skills = sorted(dict.fromkeys(name for name, s, e in skill_terms(sentence, skills_line=kind == "skill")))
+            drafts.append((cv_id, kind, sentence, no, years, skills))
+
+    for cv_id, text in texts.items():
+        for kind, sentence, no, years in _cv_lines(cv_id, text, by_cv.get(cv_id)):
+            add(cv_id, kind, sentence, no, years)
+    while True:  # a unit can match a claim drafted in the round before, so repeat until no unit is added
+        count = len(drafts)
+        model = [{"id": f"d{i}", "kind": kind, "summary": sentence, "allowed": [sentence], "skills": skills, "draft": True}
+                 for i, (_, kind, sentence, _, _, skills) in enumerate(drafts)]  # fmt: skip
+        ledger = Ledger(schema_version=1, person={}, claims=model)
+        for cv_id, text in texts.items():
+            lines = text.split("\n")
+            for no, unit in claim_units(text, ledger):
+                heading = lines[no - 1].lstrip().startswith("#")
+                years = [int(y) for y in re.findall(r"(?:19|20)\d{2}", unit)] if heading else []
+                add(cv_id, "skill" if is_skills_line(unit) else "biography" if heading else "delivery", unit, no, years)
+        if len(drafts) == count:
+            break
+    out = [_DRAFT_HEAD.format(today=today.isoformat()), "claims:" if drafts else "claims: []"]
     taken: set[str] = set()
     claims = []
-    for cv_id in sorted(cv_texts):
-        for kind, sentence, no, years in _cv_lines(cv_id, cv_texts[cv_id], by_cv.get(cv_id)):
-            key = " ".join(sentence.lower().split()).rstrip(".")
-            if key in seen:
-                continue
-            seen.add(key)
-            skills = sorted(dict.fromkeys(name for name, s, e in skill_terms(sentence)))
-            source = f"cvs/{cv_id}" + (f"#line {no}" if no else "")
-            claim = [f"  - id: {_q(_slug(sentence, taken))}", f"    kind: {kind}", f"    summary: {_q(sentence)}",
-                     f"    skills: [{', '.join(_q(s) for s in skills)}]", "    confirmed: {}", "    allowed:",
-                     f"      - {_q(sentence)}", "    draft: true", f"    draft_source: {_q(source)}"]  # fmt: skip
-            if kind == "biography" and len(years) == 2:
-                claim.append(f"    facts: {{start_year: {years[0]}, end_year: {years[1]}, precision: year}}")
-            claims.append("\n".join(claim + ["    " + h for h in _CONFIRM_HINT[kind]]))
-    out.append("claims:" if claims else "claims: []")
+    for cv_id, kind, sentence, no, years, skills in drafts:
+        source = f"cvs/{cv_id}" + (f"#line {no}" if no else "")
+        claim = [f"  - id: {_q(_slug(sentence, taken))}", f"    kind: {kind}", f"    summary: {_q(sentence)}",
+                 f"    skills: [{', '.join(_q(s) for s in skills)}]", "    confirmed: {}", "    allowed:",
+                 f"      - {_q(sentence)}", "    draft: true", f"    draft_source: {_q(source)}"]  # fmt: skip
+        if kind == "biography" and len(years) == 2:
+            claim.append(f"    facts: {{start_year: {years[0]}, end_year: {years[1]}, precision: year}}")
+        claims.append("\n".join(claim + ["    " + h for h in _CONFIRM_HINT[kind]]))
     return "\n".join(out) + ("\n" + "\n\n".join(claims) if claims else "") + "\n"

@@ -20,6 +20,7 @@ __all__ = ["assign_layer", "best_per_offer", "check_gates", "extract_requirement
            "required_years", "score_all", "score_offer", "soft_spans"]  # fmt: skip
 
 RANK = {"intern": 0, "junior": 1, "mid": 2, "senior": 3, "lead": 4}
+MAX_TEXT = 100_000  # characters of one offer's description that scoring reads; a listing is rarely a tenth of that
 _BULLET = re.compile(r"^\s*(?:[-*+\u2022\u25e6\u25aa\u2023]|\d{1,3}[.)])\s+")
 _NEGATION = re.compile(r"(?<!\w)(?:not|no|isn't|without|nie|bez)(?!\w)")
 
@@ -34,6 +35,11 @@ def _inside(spans: Sequence[tuple[int, int]], pos: int) -> bool:
 
 def _phrases(words: Sequence[str]) -> str:
     return "|".join(re.escape(w) for w in sorted(words, key=len, reverse=True))
+
+
+def _capped(offer: Offer) -> Offer:
+    """The offer with its description cut to MAX_TEXT characters, so one huge listing cannot stall a scan."""
+    return offer if len(offer.description) <= MAX_TEXT else offer.model_copy(update={"description": offer.description[:MAX_TEXT]})
 
 
 # ---------------------------------------------------------------- soft windows, requirement headings
@@ -170,6 +176,7 @@ def assign_layer(offer: Offer, profile: Profile) -> tuple[Layer, bool]:
 
 def check_gates(offer: Offer, prefs: Preferences, index: LedgerIndex | None, today: dt.date) -> Gate | None:
     """The first gate that applies, in the order docs/scoring.md lists them, or None. A gate has a reason and a quote."""
+    offer = _capped(offer)
     whole = offer.title + "\n" + offer.description
     low = whole.lower()
     for token in prefs.deny_titles:
@@ -236,7 +243,7 @@ def _requirements(offer: Offer, profile: Profile, index: LedgerIndex | None) -> 
 def extract_requirements(offer: Offer, profile: Profile, index: LedgerIndex | None) -> list[Requirement]:
     """What the offer asks for: its structured skill lists if it has any, else every known skill in its text.
     Optional ones (a soft word before them) get must=False. Each carries the ledger claims that back it."""
-    return _requirements(offer, profile, index)[0]
+    return _requirements(_capped(offer), profile, index)[0]
 
 
 # ---------------------------------------------------------------- criteria
@@ -448,7 +455,7 @@ def _hard_missing(reqs: list[Requirement], spans: dict[str, list[tuple[int, int]
 
 def score_offer(offer: Offer, profile: Profile, cfg: Config, index: LedgerIndex | None, today: dt.date) -> MatchResult:
     """One offer against one CV: gate, layer, criteria, penalties, match %, surface and confidence."""
-    sc = cfg.scoring
+    sc, offer = cfg.scoring, _capped(offer)
     gate = check_gates(offer, cfg.preferences, index, today)
     layer, assumed = assign_layer(offer, profile)
     if gate:

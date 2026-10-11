@@ -143,3 +143,20 @@ def test_collect_keywords_and_failures(workspace, patched, tmp_path):
     with pytest.raises(ConfigError) as caught:
         collect(Config(search=SearchConfig(sources=["himalaya"])), fresh("d"), offline=False, today=TODAY)
     assert "himalaya" in caught.value.message and "remoteok" in caught.value.hint and net.requests == []
+
+
+def test_collect_keeps_the_keyword_count_next_to_the_offer_count(workspace, patched):
+    routes = route_everything()
+    routes[("remoteok.com", "/api")] = (200, fixture("remoteok/broken_record.json"))
+    patched(fakenet.FakeNet(routes))
+    offers, (status,) = collect(Config(search=SearchConfig(sources=["remoteok"], keywords=["sql"])), workspace, offline=False, today=TODAY)
+    assert [o.title for o in offers] == ["Data Analyst", "Reporting Analyst"] and (status.state, status.offers) == ("ok", 2)
+    assert status.message == "3 offers, 2 match your keywords; 2 offers skipped (unreadable)"
+
+
+def test_collect_robots_unreadable_is_partial(workspace, patched):
+    patched(fakenet.FakeNet(route_everything(), robots=(503, "")))
+    offers, statuses = collect(Config(), workspace, offline=False, today=TODAY)
+    assert offers == [] and {s.state for s in statuses} == {"error"} and collection_status(statuses) == "FAIL"
+    assert collection_status(statuses, inbox_offers=2) == "PARTIAL"
+    assert all("robots.txt could not be read (HTTP 503)" in s.message for s in statuses)

@@ -109,6 +109,9 @@ def validation_messages(exc: Any) -> list[tuple[tuple[Any, ...], str]]:
             text = _TYPE_TEXT[typ]
         elif typ.startswith("greater_than") or typ.startswith("less_than"):
             text = "is out of range"
+        elif typ == "country_code":  # honestcv's own message: keep the upper-case codes in it
+            msg = str(err.get("msg", ""))
+            text = "is not valid (" + msg[:1].lower() + msg[1:] + ")"
         else:
             # pydantic's msg describes the rule, not the input; drop anything after a colon to be safe.
             text = "is not valid (" + str(err.get("msg", "")).split(":")[0].strip().lower() + ")"

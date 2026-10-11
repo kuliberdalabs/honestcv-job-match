@@ -19,16 +19,16 @@ from honestcv.workspace import Workspace, atomic_write, run_lock
 
 
 def search_keywords(cfg: Config, profiles: list[Profile]) -> list[str]:
-    """search.keywords, else the target titles followed by the top 5 skills across all CVs (titles first,
-    because Himalayas searches only the first three keywords)."""
+    """What may leave the computer as a search term: search.keywords, else the target titles typed in honestcv.yml
+    followed by the top 5 skills across all CVs (titles first, because Himalayas searches only the first three
+    keywords). Titles the CV reader found are not used: they can be any dated line of the CV."""
     if cfg.search.keywords:
         return list(cfg.search.keywords)
     first: dict[str, int] = {}
     for p in profiles:
         for i, skill in enumerate(p.skills):
             first[skill] = min(first.get(skill, i), i)
-    titles = [t for p in profiles for t in p.target_titles]
-    return list(dict.fromkeys([*titles, *sorted(first, key=lambda s: (first[s], s))[:5]]))
+    return list(dict.fromkeys([*cfg.profile.target_titles, *sorted(first, key=lambda s: (first[s], s))[:5]]))
 
 
 def _run_id(ws: Workspace, today: dt.date, pinned: bool) -> str:

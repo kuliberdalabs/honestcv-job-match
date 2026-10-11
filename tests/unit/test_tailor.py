@@ -1,6 +1,7 @@
 """Deterministic tailoring: ledger sentences only, checked from disk, blocked lines removed."""
 
 import datetime as dt
+import re
 import shutil
 from pathlib import Path
 
@@ -10,7 +11,7 @@ from honestcv import checker
 from honestcv.checker import strip_markers
 from honestcv.errors import LedgerError
 from honestcv.ledger import load_ledger
-from honestcv.models import MatchResult, Offer, Profile, Requirement
+from honestcv.models import Claim, MatchResult, Offer, Profile, Requirement
 from honestcv.tailor import select_claims, tailor
 from honestcv.workspace import Workspace
 
@@ -134,3 +135,30 @@ def test_tailor_is_blocked_by_lint_errors(ws):
         tailor(OFFER, MATCH, PROFILE, ledger, ws, today=TODAY)
     assert "Tailoring is blocked" in err.value.message and "honestcv ledger lint" in err.value.hint
     assert not (ws.out / "tailored").exists()
+
+
+def test_a_skills_line_is_not_a_highlight():
+    ledger = load_ledger(SAMPLES / "ledger.yml")
+    line = "Skills: SQL, Python, Looker Studio, Excel"
+    ledger.claims.append(Claim(id="skills-line", kind="skill", summary=line, skills=["sql", "python", "looker studio", "excel"],
+                               allowed=[line], draft=True))  # fmt: skip
+    assert [c.id for c, s in select_claims(OFFER, MATCH, ledger)] == ["backlog-dashboard", "churn-capstone"]
+
+
+def test_offer_text_cannot_add_links_or_images(ws):
+    image = "![track](https://attacker.example.invalid/pixel)"
+    offer = OFFER.model_copy(update={"title": f"Data Analyst {image}", "company": "Tallgrove [Analytics](https://attacker.example.invalid/x) <img src=x>",
+                                     "description": f"Requirements\n- Experience deploying ML models to production {image}."})  # fmt: skip
+    match = MATCH.model_copy(update={"requirements": [*MATCH.requirements, Requirement(term=f"<b>dbt</b> {image}", must=True, in_profile=False)]})
+    result = tailor(offer, match, PROFILE, load_ledger(ws.ledger), ws, today=TODAY)
+    out = ws.root / result.out_dir
+    assert sorted(p.name for p in out.iterdir()) == ["check.md", "gaps.md", "highlights.cited.md", "highlights.md"]
+    for path in out.iterdir():
+        text = strip_markers(path.read_text(encoding="utf-8"))
+        assert not re.search(r"(?<!\\)[\[\]<]", text), (path.name, text)  # no tag, link or image can open
+    assert (out / "highlights.md").read_text(encoding="utf-8").startswith("# Highlights for Data Analyst !\\[track\\](https://attacker")
+    assert "&lt;img src=x&gt;" in (out / "highlights.cited.md").read_text(encoding="utf-8")
+    for name in ("gaps.md", "check.md"):  # the ceiling gap quotes the offer sentence; the requirement term is escaped
+        text = (out / name).read_text(encoding="utf-8")
+        assert 'production !track."' in text and "&lt;b&gt;dbt&lt;/b&gt; !\\[track\\](https://attacker" in text
+    assert result.check.verdict == "PASS" and result.removed == []

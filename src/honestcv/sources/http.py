@@ -1,4 +1,4 @@
-"""HttpClient: honest User-Agent, host allow-list, robots.txt, min interval, TTL cache, retries."""
+"""HttpClient: honest User-Agent, host allow-list, robots.txt, min interval, TTL cache, retries, no cookies."""
 
 import hashlib
 import json
@@ -6,6 +6,7 @@ import re
 import time
 from dataclasses import dataclass
 from functools import cache
+from http.cookiejar import CookieJar, DefaultCookiePolicy
 from importlib import resources
 from pathlib import Path
 from urllib.parse import urlencode, urljoin, urlsplit
@@ -24,6 +25,8 @@ RETRY_STATUSES = (429, 500, 502, 503, 504)
 BACKOFF_SECONDS = (2, 4, 8)
 ROBOTS_TTL_SECONDS = 24 * 3600
 TIMEOUT_SECONDS = 20.0
+MAX_REDIRECTS = 3
+MAX_BODY_BYTES = 15 * 1024 * 1024
 
 
 class SourceError(HonestError):
@@ -37,7 +40,7 @@ class OfflineSkip(HonestError):
 
 
 class RobotsUnreadable(HonestError):
-    """robots.txt answered 5xx or could not be reached: the source is skipped for this run."""
+    """robots.txt answered 5xx or could not be reached: the source fails for this run."""
 
 
 @dataclass(frozen=True)
@@ -151,7 +154,7 @@ class HttpClient:
     def robots_allows(self, source_id: str, url: str) -> bool:
         """True when the host's robots.txt (cached 24 h) lets honestcv read this path.
 
-        4xx means no rules. A 5xx or an unreachable robots.txt raises RobotsUnreadable: skip the source for this run.
+        4xx means no rules. A 5xx or an unreachable robots.txt raises RobotsUnreadable: the source fails for this run.
         """
         self._check_host(url)
         parts = urlsplit(url)
@@ -179,27 +182,65 @@ class HttpClient:
         error.http_status = status  # type: ignore[attr-defined]
         return error
 
-    def _send(self, source_id: str, url: str, accept: str, interval: float) -> httpx.Response:
-        """One request (redirects are followed only inside the allow-list), at most one per `interval` seconds per source."""
-        last = self._last_request.get(source_id)
-        if last is not None and last + interval > self._monotonic():
-            self._sleep(last + interval - self._monotonic())
-        self._last_request[source_id] = self._monotonic()
+    def _send(self, source_id: str, url: str, accept: str, interval: float, *, robots: bool = True) -> httpx.Response:
+        """One request, at most one per `interval` seconds per source, and never with a cookie.
+
+        A redirect (at most 3) is followed only to https on the default port, without user info, on one of the
+        source's own hosts, and to a path its robots.txt allows (not checked while fetching robots.txt itself).
+        """
         if self._client is None:
-            self._client = httpx.Client(transport=self._transport, timeout=TIMEOUT_SECONDS, follow_redirects=False)
+            jar = CookieJar(DefaultCookiePolicy(allowed_domains=[]))  # a jar that accepts no cookie from any site
+            self._client = httpx.Client(transport=self._transport, timeout=TIMEOUT_SECONDS, follow_redirects=False, cookies=jar)
         headers = {"User-Agent": self.user_agent, "Accept": accept}
-        for _ in range(4):
-            try:
-                response = self._client.get(url, headers=headers)
-            except httpx.HTTPError as exc:
-                raise SourceError(f"{source_id} could not be reached ({type(exc).__name__}).",
-                                  hint="Check your connection and try again, or import offers by file.") from None  # fmt: skip
-            if response.is_redirect and response.headers.get("location"):
-                url = urljoin(url, response.headers["location"])
-                self._check_host(url)
-                continue
-            return response
+        for hop in range(MAX_REDIRECTS + 1):
+            last = self._last_request.get(source_id)
+            if last is not None and last + interval > self._monotonic():
+                self._sleep(last + interval - self._monotonic())
+            self._last_request[source_id] = self._monotonic()
+            response = self._fetch(self._client, source_id, url, headers)
+            if not (response.is_redirect and response.headers.get("location")):
+                return response
+            if hop == MAX_REDIRECTS:
+                break
+            url = self._redirect_target(source_id, url, response.headers["location"], robots)
         raise SourceError(f"{source_id} sent too many redirects.")
+
+    @staticmethod
+    def _fetch(client: httpx.Client, source_id: str, url: str, headers: dict[str, str]) -> httpx.Response:
+        """One GET with an empty cookie jar. The body is read in pieces and the source fails once it passes MAX_BODY_BYTES."""
+        client.cookies.clear()
+        try:
+            with client.stream("GET", url, headers=headers) as response:
+                body = bytearray()
+                if not response.is_redirect:
+                    for chunk in response.iter_bytes():
+                        body += chunk
+                        if len(body) > MAX_BODY_BYTES:
+                            raise SourceError(f"{source_id} sent more than {MAX_BODY_BYTES // 2**20} MB; honestcv stops reading it.",
+                                              hint="Try again later, or import offers by file.")  # fmt: skip
+        except httpx.HTTPError as exc:
+            raise SourceError(f"{source_id} could not be reached ({type(exc).__name__}).",
+                              hint="Check your connection and try again, or import offers by file.") from None  # fmt: skip
+        kept = [(k, v) for k, v in response.headers.multi_items() if k.lower() not in ("content-encoding", "content-length", "transfer-encoding")]
+        return httpx.Response(response.status_code, headers=kept, content=bytes(body), request=response.request)
+
+    def _redirect_target(self, source_id: str, url: str, location: str, robots: bool) -> str:
+        """The address a redirect points to, when honestcv may follow it; else SourceError."""
+        refused = SourceError(f"{source_id} redirected to another address; honestcv does not follow it.",
+                              hint="Try again later, or import offers by file.")  # fmt: skip
+        try:
+            target = urljoin(url, location)
+            parts = urlsplit(target)
+            port = parts.port
+        except ValueError:
+            raise refused from None
+        self._check_host(target)
+        own_hosts = {h.lower() for h in load_registry().get(source_id, {}).get("hosts", [])}
+        if parts.scheme != "https" or port not in (None, 443) or "@" in parts.netloc or parts.hostname not in own_hosts:
+            raise refused
+        if robots and not self.robots_allows(source_id, target):
+            raise refused
+        return target
 
     def _load_robots(self, source_id: str, scheme: str, host: str) -> list[tuple[bool, str]] | HonestError:
         product = self.user_agent.split("/", 1)[0].lower()
@@ -211,12 +252,14 @@ class HttpClient:
             return []
         try:
             response = self._send(source_id, f"{scheme}://{host}/robots.txt", "text/plain",
-                                  float(load_registry().get(source_id, {}).get("min_interval_s", 2)))  # fmt: skip
+                                  float(load_registry().get(source_id, {}).get("min_interval_s", 2)), robots=False)  # fmt: skip
         except SourceError:
             response = None
         if response is None or response.status_code >= 500:
             code = f"HTTP {response.status_code}" if response is not None else "not reachable"
-            return RobotsUnreadable(f"{source_id}: robots.txt could not be read ({code}); skipped for this run.")
+            error = RobotsUnreadable(f"{source_id}: robots.txt could not be read ({code}).", hint="Try again later, or import offers by file.")
+            error.http_status = response.status_code if response is not None else None  # type: ignore[attr-defined]
+            return error
         body = response.text if response.status_code < 300 else ""
         self._write(path, {"status": response.status_code, "fetched_at": self._wall(), "body": body})
         return parse_robots(body, product)

@@ -2,17 +2,22 @@
 
 import datetime as dt
 import io
+import json
+import random
 import shutil
+import time
 import zipfile
 from pathlib import Path
 
 import pytest
+import yaml
 from pypdf import PdfReader, PdfWriter
 
 from honestcv import profile as prof
 from honestcv.config import Config, ProfileOverrides, load_config
 from honestcv.errors import WorkspaceError
 from honestcv.profile import canonical, extract_profile, load_cv_text, load_profiles, pack
+from honestcv.textutil import _token_regex, hit
 
 TODAY = dt.date(2026, 10, 10)
 NO_OVERRIDES = ProfileOverrides()
@@ -332,3 +337,143 @@ def test_data_packs_are_plain_text_and_complete():
     assert {"go", "r", "c", "make", "excel", "spark", "swift", "access"} <= ambiguous
     assert canonical("K8s") == "kubernetes" and canonical("Postgres") == "postgresql" and canonical("JS") == "javascript"
     assert canonical("Unknown Tool") == "unknown tool"
+
+
+# ---------------------------------------------------------------- empty CVs
+
+
+def test_a_cv_without_text_is_refused_in_every_format(tmp_path):
+    empty_md = tmp_path / "empty.md"
+    empty_md.write_text("", encoding="utf-8")
+    blank_txt = tmp_path / "blank.txt"
+    blank_txt.write_text("  \n\t\r\n \n", encoding="utf-8")
+    controls_only = tmp_path / "controls.txt"
+    controls_only.write_bytes(b"\x1b\x00\x07\n \x7f")
+    no_text_docx = tmp_path / "no-text.docx"
+    no_text_docx.write_bytes(make_docx(para("") + para("   ")))
+    bare_docx = tmp_path / "bare.docx"
+    bare_docx.write_bytes(make_docx(""))
+    for path in (empty_md, blank_txt, controls_only, no_text_docx, bare_docx):
+        with pytest.raises(WorkspaceError) as err:
+            load_cv_text(path)
+        assert err.value.message == f"{path.name} has no readable text."
+        assert err.value.path == path.name and err.value.hint  # names the file and says how to fix it
+        assert "docx" in err.value.hint.lower()
+
+    one_word = tmp_path / "one.md"
+    one_word.write_text("Python", encoding="utf-8")
+    assert load_cv_text(one_word).text == "Python"  # any text at all is readable
+
+
+def test_an_empty_cv_stops_profile_loading_with_the_same_error(sample_workspace):
+    ws = sample_workspace
+    (ws.cvs / "empty.md").write_text("\n", encoding="utf-8")
+    with pytest.raises(WorkspaceError) as err:
+        load_profiles(ws, Config(), today=TODAY, cache=False)
+    assert err.value.message == "empty.md has no readable text."
+
+
+# ---------------------------------------------------------------- scan_skills against the pre-fix reference
+
+
+def _reference_sentence_start(low: str, pos: int) -> int:
+    k = low.rfind(". ", 0, pos)
+    return max(low.rfind("\n", 0, pos) + 1, k + 2 if k >= 0 else 0, pos - 40, 0)
+
+
+def _reference_negated(low: str, s: int, e: int) -> bool:
+    cues, after = pack("skills.yml"), e + 40
+    for sep in ("\n", ". "):
+        k = low.find(sep, e)
+        after = min(after, k) if k >= 0 else after
+    before_text, after_text = low[_reference_sentence_start(low, s) : s], low[e:after]
+    return any(hit(before_text, n) for n in cues["negations_before"]) or any(hit(after_text, n) for n in cues["negations_after"])
+
+
+def _reference_found(low: str, direct: bool) -> set[tuple[str, int, int]]:
+    found = set()
+    for name, (free, every) in prof._skills().items():
+        for token in dict.fromkeys(every if direct else free):
+            found.update((name, m.start(), m.end()) for m in _token_regex(token).finditer(low) if not _reference_negated(low, m.start(), m.end()))
+    return found
+
+
+def _reference_scan_skills(found: set[tuple[str, int, int]]) -> tuple[tuple[str, int, int], ...]:
+    """The containment rule as it was before the linear version: every pair of mentions compared."""
+    inside = {h for h in found for o in found if o[0] != h[0] and o[1] <= h[1] and h[2] <= o[2] and o[2] - o[1] > h[2] - h[1]}
+    return tuple(sorted(found - inside, key=lambda h: (h[1], h[2], h[0])))
+
+
+def _golden_texts() -> list[str]:
+    def leaves(node):
+        if isinstance(node, dict):
+            for value in node.values():
+                yield from leaves(value)
+        elif isinstance(node, list):
+            for value in node:
+                yield from leaves(value)
+        elif isinstance(node, str) and len(node) > 20:
+            yield node
+
+    golden = Path(__file__).resolve().parents[1] / "golden"
+    out: list[str] = []
+    for path in sorted(golden.glob("*.yml")):
+        out += list(leaves(yaml.safe_load(path.read_text(encoding="utf-8"))))
+    for path in sorted(golden.glob("*.json")):
+        out += list(leaves(json.loads(path.read_text(encoding="utf-8"))))
+    for path in sorted(golden.rglob("*.txt")):
+        out.append(path.read_text(encoding="utf-8"))
+    return out
+
+
+def _random_texts(count: int) -> list[str]:
+    rng = random.Random(20261011)
+    tokens = sorted({t for e in pack("skills.yml")["skills"] for t in (e["name"], *e.get("aliases", []))})
+    cues = sorted({*pack("skills.yml")["negations_before"], *pack("skills.yml")["negations_after"]})
+    pieces = [*tokens, *cues, "experience with", "we need", "nice to have", "required", "team", "and", "or", "of", "the"]
+    glue = [" ", " ", " ", ", ", ". ", ".\n", "\n", "\n- ", "; ", " / "]
+    texts = []
+    for _ in range(count):
+        parts = []
+        for _ in range(rng.randint(3, 60)):
+            word = rng.choice(pieces)
+            parts.append(word[:-1] + rng.choice(["", "3", "ista", "s"]) if word.endswith("*") else word)
+            parts.append(rng.choice(glue))
+        texts.append("".join(parts))
+    return texts
+
+
+def test_scan_skills_gives_the_same_answer_as_the_all_pairs_reader(samples_dir):
+    samples = [p.read_text(encoding="utf-8") for p in sorted(samples_dir.rglob("*")) if p.suffix in (".md", ".txt")]
+    offers = json.loads((samples_dir / "offers" / "inbox" / "sample-offers.json").read_text(encoding="utf-8"))["offers"]
+    samples += [str(o.get("description", "")) + "\n" + str(o.get("title", "")) for o in offers]
+    every_token = [t for e in pack("skills.yml")["skills"] for t in (e["name"], *e.get("aliases", []))]
+    inputs = [*samples, *_golden_texts(), *every_token, *(f"We need {t} and {t} experience, not {t}." for t in every_token), *_random_texts(200)]
+    assert len(samples) >= 10 and len(inputs) > 600
+    dropped = 0
+    for text in inputs:
+        low = text.lower()
+        for direct in (False, True):
+            found = _reference_found(low, direct)
+            expected = _reference_scan_skills(found)
+            dropped += len(found) - len(expected)
+            assert prof.scan_skills.__wrapped__(low, direct) == expected, (direct, text[:200])
+    assert dropped > 100  # the inputs do contain mentions that sit inside a longer mention of another skill
+    # the case the containment rule exists for
+    assert [h[0] for h in prof.scan_skills("reports in looker studio and looker")] == ["looker studio", "looker"]
+
+
+def test_scan_skills_of_a_huge_text_is_fast():
+    def best_of_three(text: str) -> tuple[float, tuple]:
+        times = []
+        for _ in range(3):
+            prof.scan_skills.cache_clear()
+            start = time.perf_counter()
+            result = prof.scan_skills(text)
+            times.append(time.perf_counter() - start)
+        return min(times), result
+
+    seconds, result = best_of_three("python sql " * 10000)
+    assert len(result) == 20000 and seconds < 0.5, seconds
+    seconds, result = best_of_three("looker studio " * 5000)  # every mention holds a shorter mention of another skill
+    assert [h[0] for h in result] == ["looker studio"] * 5000 and seconds < 2.0, seconds

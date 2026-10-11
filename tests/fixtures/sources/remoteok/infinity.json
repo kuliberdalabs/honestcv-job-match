@@ -1,0 +1,36 @@
+[
+  {
+    "last_updated": 1791551358,
+    "legal": "Fictional legal notice for tests. Link back to the listing and name the source."
+  },
+  {
+    "slug": "remote-data-analyst-tallgrove",
+    "id": "900011",
+    "epoch": 1791551358,
+    "date": "2026-10-09T13:09:18+00:00",
+    "company": "Tallgrove Analytics",
+    "position": "Data Analyst",
+    "tags": ["analyst", "sql"],
+    "description": "<p>Work with <b>SQL</b> on delivery data.</p>",
+    "location": "Worldwide",
+    "salary_min": "Infinity",
+    "salary_max": "Infinity",
+    "apply_url": "https://remoteok.invalid/remote-jobs/remote-data-analyst-tallgrove-900011",
+    "url": "https://remoteok.invalid/remote-jobs/remote-data-analyst-tallgrove-900011"
+  },
+  {
+    "slug": "remote-reporting-analyst-mossby",
+    "id": "900012",
+    "epoch": 1791500000,
+    "date": "2026-10-08T12:00:00+00:00",
+    "company": "Mossby Support Services",
+    "position": "Reporting Analyst",
+    "tags": ["reporting"],
+    "description": "<p>Weekly reports for the support team.</p>",
+    "location": "",
+    "salary_min": "Infinity",
+    "salary_max": 60000,
+    "apply_url": "https://remoteok.invalid/remote-jobs/remote-reporting-analyst-mossby-900012",
+    "url": "https://remoteok.invalid/remote-jobs/remote-reporting-analyst-mossby-900012"
+  }
+]

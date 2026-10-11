@@ -11,7 +11,7 @@ from html.parser import HTMLParser
 from importlib import resources
 from pathlib import Path
 
-from honestcv.models import DurationMention, NumberMention
+from honestcv.models import DurationMention, NumberMention, strip_controls
 
 # ---------------------------------------------------------------- normalize, plain
 
@@ -21,9 +21,10 @@ _LINE_END_HYPHEN = re.compile(r"([^\W\d_])-[ \t]*\n[ \t]*([^\W\d_])")
 
 
 def normalize(text: str) -> str:
-    """NFKC (ligatures, decomposed Polish letters), drop soft hyphens and zero-width marks, straight quotes,
-    \\n line ends, and join a word hyphenated across lines when the next line goes on in lower case."""
-    text = unicodedata.normalize("NFKC", text.replace("\r\n", "\n").replace("\r", "\n"))
+    """NFKC (ligatures, decomposed Polish letters), drop control characters (all but tab and newline), soft hyphens
+    and zero-width marks, straight quotes, \\n line ends, and join a word hyphenated across lines when the next
+    line goes on in lower case."""
+    text = unicodedata.normalize("NFKC", strip_controls(text))
     text = text.translate(_DROP).translate(_STRAIGHT)
     return _LINE_END_HYPHEN.sub(lambda m: m.group(1) + m.group(2) if m.group(2).islower() else m.group(0), text)
 

@@ -1,5 +1,5 @@
-# Units that are never claim-bearing: salutations, sign-offs, "References available on request" and the
-# Polish data-processing consent clause. Hand-written for honestcv.
+# Units that are never claim-bearing: salutations, sign-offs, letter openers and closers, section titles,
+# "References available on request" and the Polish data-processing consent clause. Hand-written for honestcv.
 #
 # Each entry is a regular expression matched against the whole unit (case ignored), after trailing
 # punctuation and spaces are removed. A matching unit gets no flag from the claim guards; the document-wide
@@ -13,10 +13,24 @@ units:
   - 'regards'
   - '(yours\s+)?(sincerely|faithfully|truly)'
   - 'yours sincerely|yours faithfully'
-  - '(many\s+)?thanks|thank you(\s+for your (time|consideration))?'
+  - '(many\s+)?thanks|thank you(\s+for your (time|consideration)(\s+and (consideration|attention))?)?'
   - 'with (best|kind) wishes|best wishes|all the best|cheers'
   - 'z poważaniem|z wyrazami szacunku|pozdrawiam(\s+serdecznie)?|serdecznie pozdrawiam|łączę pozdrowienia'
-  - 'dziękuję( za uwagę| za poświęcony czas)?'
+  - 'dziękuję( państwu)?( za (uwagę|poświęcony czas)( i uwagę)?)?'
+  # letter openers and closers: the rest names the role, the company or the next step, in at most twelve
+  # words with no digit and no comma inside, so "I am writing to apply, having built ..." stays a claim
+  - '(i am|i''m) writing to (apply|express my interest)(\s+[^\s\d,;:]+){0,12}'
+  - '(i am|i''m) (excited|delighted|thrilled) (about|by) the (opportunity|chance|prospect)(\s+[^\s\d,;:]+){0,12}'
+  - 'i would (welcome|appreciate|love) the (chance|opportunity)(\s+[^\s\d,;:]+){0,12}'
+  - 'i look forward to(\s+[^\s\d,;:]+){0,12}'
+  - 'z (dużym )?zainteresowaniem (przeczytał\w*|zapoznał\w*)(\s+[^\s\d,;:]+){0,12}'
+  - 'chciał(a|)bym (aplikować|zgłosić swoją kandydaturę|ubiegać się)(\s+[^\s\d,;:]+){0,12}'
+  - 'chętnie porozmawiam(\s+[^\s\d,;:]+){0,12}'
+  - 'czekam na (odpowiedź|kontakt|wiadomość)(\s+[^\s\d,;:]+){0,8}'
+  # section titles of a CV or letter, and the title honestcv tailor writes
+  - '(about me|profile|summary|professional summary|experience|work experience|professional experience|employment( history)?|education|skills|key skills|technical skills|languages|certifications?|certificates?|courses|training|projects|publications|awards?|honou?rs|achievements|interests|hobbies|volunteering|references|contact( details)?)'
+  - '(o mnie|profil|podsumowanie|doświadczenie( zawodowe)?|wykształcenie|edukacja|umiejętności|języki( obce)?|certyfikaty|kursy|szkolenia|projekty|publikacje|nagrody|osiągnięcia|zainteresowania|kontakt)'
+  - 'highlights for .+'
   # references
   - 'references (are )?available (up)?on request'
   - 'referencje (dostępne )?na (życzenie|prośbę)'

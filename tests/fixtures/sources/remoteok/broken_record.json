@@ -1,0 +1,58 @@
+[
+  {
+    "last_updated": 1791551358,
+    "legal": "Fictional legal notice for tests. Link back to the listing and name the source."
+  },
+  {
+    "slug": "remote-data-analyst-tallgrove",
+    "id": "900021",
+    "date": "2026-10-09T13:09:18+00:00",
+    "company": "Tallgrove Analytics",
+    "position": "Data Analyst",
+    "tags": ["analyst", "sql"],
+    "description": "<p>Work with <b>SQL</b> on delivery data.</p>",
+    "location": "Worldwide",
+    "salary_min": 70000,
+    "salary_max": 90000,
+    "url": "https://remoteok.invalid/remote-jobs/remote-data-analyst-tallgrove-900021"
+  },
+  {
+    "slug": "remote-broken-link",
+    "id": "900022",
+    "date": "2026-10-09T10:00:00+00:00",
+    "company": "Example Cloud",
+    "position": "Platform Engineer",
+    "description": "<p>The link of this entry cannot be read.</p>",
+    "url": "http://["
+  },
+  {
+    "slug": "remote-support-agent-mossby",
+    "id": "900023",
+    "date": "2026-10-07T09:00:00+00:00",
+    "company": "Mossby Support Services",
+    "position": "Customer Support Agent",
+    "tags": ["support"],
+    "description": "<p>Answer tickets in English.</p>",
+    "location": "Europe",
+    "url": "https://remoteok.invalid/remote-jobs/remote-support-agent-mossby-900023"
+  },
+  {
+    "slug": "remote-no-position",
+    "id": "900024",
+    "date": "2026-10-07T08:00:00+00:00",
+    "company": "Example Cloud",
+    "description": "<p>This entry has no position field.</p>",
+    "url": "https://remoteok.invalid/remote-jobs/remote-no-position-900024"
+  },
+  {
+    "slug": "remote-reporting-analyst-vossgrind",
+    "id": "900025",
+    "date": "2026-10-06T08:00:00+00:00",
+    "company": "Vossgrind Labs",
+    "position": "Reporting Analyst",
+    "tags": ["reporting", "sql"],
+    "description": "<p>Monthly reports in SQL.</p>",
+    "location": "Worldwide",
+    "url": "https://remoteok.invalid/remote-jobs/remote-reporting-analyst-vossgrind-900025"
+  }
+]

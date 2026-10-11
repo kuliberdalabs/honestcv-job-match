@@ -15,6 +15,14 @@ honestcv add-offer --paste
 
 The first heading or the first line becomes the title, unless you give `--title "Data Analyst"`. `--company "Example Bank"` sets the company.
 
+honestcv also reads the city and country, the work mode, the contract form and the pay from the text when it states them, in English or Polish, for example "Kraków, hybrid, umowa o pracę" and "14 000 - 18 000 zł brutto miesięcznie". The offer is then scored on place and salary too. A fact the text gives two different ways, such as two different pay ranges, stays unknown.
+
+A clipboard that holds only a link is refused, because honestcv never opens pages:
+
+> That is only a link. honestcv does not open links. Open the offer in your browser, copy its text, then run: honestcv add-offer --paste
+
+To keep just the link, use `honestcv add-offer --url LINK` (below).
+
 The clipboard is read with `pbpaste` on macOS, `Get-Clipboard` in Windows PowerShell, and `wl-paste` or `xclip` on Linux when one of them is installed.
 
 For scripts, `--text` takes the text as an argument, or reads it from standard input when there is no argument:
@@ -35,6 +43,11 @@ Most job boards can send you new offers by e-mail. Save those e-mails as `.eml` 
 
 Menu names differ between versions and languages. Look for "Download message" or "Save as", and keep the `.eml` file type.
 
+The two ways differ in what stays on disk:
+
+- `honestcv add-offer alert.eml` reads the e-mail, saves only the offers it finds as `offers/inbox/added-<date>-<name>.json` (the JSON format below), and does not copy the e-mail. Your `alert.eml` stays where you saved it.
+- An `.eml` file you put into `offers/inbox/` yourself, or that your agent saved there, stays your own file, headers included. honestcv reads it at each scan and keeps only the offers it extracts in its reports and in `out/`. The e-mail file stays where you put it until you delete it.
+
 What honestcv takes from an e-mail:
 
 - Offers described as schema.org `JobPosting` data inside the message, when the board includes it.
@@ -42,7 +55,7 @@ What honestcv takes from an e-mail:
 - Links whose text is "unsubscribe", "manage alerts", "wypisz", "zrezygnuj" or "ustawienia powiadomień" are dropped.
 - A link that goes through the mail service's redirect host is kept as it is and marked "tracking link from your e-mail".
 
-What it never keeps: the sender, the recipients, the headers, or any text that is not part of an offer. E-mail addresses and phone numbers in offer descriptions are removed.
+What honestcv keeps from an e-mail, in its reports and in the file `add-offer` writes: the offers only. It leaves out the sender, the recipients, the headers and any text that is not part of an offer, and it removes e-mail addresses and phone numbers from offer descriptions, and e-mail addresses from links. This applies to what honestcv writes. It does not delete or change an `.eml` file that you saved yourself.
 
 ## Saved pages (.html)
 
@@ -52,7 +65,7 @@ Safari: save as Page Source, not as Web Archive. honestcv cannot read `.webarchi
 
 ## Text files (.txt, .md)
 
-One file is one offer. The first heading or line is the title. On a Mac, TextEdit saves rich text by default: choose Format, then Make Plain Text, before you save.
+One file is one offer. The first heading or line is the title, and the city, country, work mode, contract form and pay are read from the text as for a paste. On a Mac, TextEdit saves rich text by default: choose Format, then Make Plain Text, before you save.
 
 ## CSV and JSON
 
@@ -78,7 +91,7 @@ For a list of offers you keep yourself. A CSV file can use a comma, a semicolon 
 | `posted_at`, `valid_through` | no | Dates as `2026-10-10` |
 | `requisition_id` | no | The employer's own id for the job; two listings with the same id are merged |
 
-A row without `title`, or without both `description` and `url`, is skipped with a note. Unknown columns are ignored with one note per file. An offer with no description is treated like an alert link: listed, never ranked.
+A row without `title`, or without both `description` and `url`, is skipped with a note. A `url` that is not a web link is left out with a note, so a row with no description and such a url is skipped too. Unknown columns are ignored with one note per file. An offer with no description is treated like an alert link: listed, never ranked.
 
 CSV example (`offers.csv`). A cell that holds the column separator, such as a skills list separated by `;` in a `;` file, goes in double quotes:
 
@@ -106,6 +119,12 @@ JSON example (`offers.json`): a list of offer objects, or an object with an `off
   }
 ]
 ```
+
+## Limits
+
+- honestcv keeps the first 100,000 characters of an offer text, from any file, paste or source.
+- A CSV field can hold up to 2,000,000 characters. A file with a longer field is reported with a note naming the file, and the other files still import.
+- A JSON file nested deeper than 50 levels is reported as unreadable.
 
 ## A link only (--url)
 

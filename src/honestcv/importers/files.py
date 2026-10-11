@@ -7,10 +7,14 @@ import re
 from pathlib import Path
 
 from honestcv.errors import HonestError
-from honestcv.importers.urls import country_code, finalize_offer, make_salary, map_contract, to_date
+from honestcv.importers.facts import with_text_facts
+from honestcv.importers.urls import country_code, finalize_offer, make_salary, map_contract, to_date, web_link
 from honestcv.models import Offer
 from honestcv.textutil import plain
 
+CSV_FIELD_LIMIT = 2_000_000  # characters in one CSV field; the library default of 131,072 is too small for a long offer text
+csv.field_size_limit(CSV_FIELD_LIMIT)
+MAX_JSON_DEPTH = 50  # an offers file is a few levels deep; newer Pythons parse far deeper files than older ones
 KNOWN_KEYS = frozenset("""title company url location countries remote contract level skills skills_nice languages salary_min
     salary_max currency salary_unit description posted_at valid_through requisition_id""".split())  # fmt: skip
 _CHOICES = {
@@ -44,7 +48,18 @@ def text_offer(text: str, *, title: str | None, company: str | None, url: str | 
     guess = re.sub(r"^[#>*\-\s]+", "", first).strip(" *_#")[:120].strip()
     offer = Offer(id="", source=source, attribution=attribution, title=(title or "").strip() or guess or "Untitled offer",
                   company=company, url=url, description=body, thin=len(body) < 40)  # fmt: skip
-    return finalize_offer(offer)
+    return finalize_offer(with_text_facts(offer))
+
+
+def _depth(data: object) -> int:
+    """How many lists and objects are nested in parsed JSON, counted without recursion."""
+    deepest, stack = 0, [(data, 1)]
+    while stack:
+        node, depth = stack.pop()
+        if isinstance(node, (dict, list)):
+            deepest = max(deepest, depth)
+            stack.extend((child, depth + 1) for child in (node.values() if isinstance(node, dict) else node))
+    return deepest
 
 
 def read_offer_file(path: Path) -> tuple[list[Offer], list[str]]:
@@ -59,6 +74,8 @@ def read_offer_file(path: Path) -> tuple[list[Offer], list[str]]:
         except json.JSONDecodeError as exc:
             raise HonestError(f"{name} is not valid JSON ({exc.msg}).", path=name, line=exc.lineno,
                               hint="Check the commas and quotes near that line, or use a CSV file.") from None  # fmt: skip
+        if _depth(data) > MAX_JSON_DEPTH:
+            raise RecursionError(f"{name} is nested deeper than {MAX_JSON_DEPTH} levels")
         if isinstance(data, dict):
             data = data["offers"] if "offers" in data else [data]
         if not isinstance(data, list):
@@ -104,7 +121,10 @@ def offer_from_record(record: object, *, source: str, attribution: str, where: s
         return _CHOICES[key].get(value)
 
     title, url, description = text("title"), text("url"), plain(text("description"))
-    if not title or not (description or url):
+    link = web_link(url)
+    if url and not link:
+        notes.append(f"{where}: the url is not a web link and was left out")
+    if not title or not (description or link):
         notes.append(f"{where}: skipped, an offer needs a title and a description or a url")
         return None
     contract = []
@@ -114,7 +134,7 @@ def offer_from_record(record: object, *, source: str, attribution: str, where: s
         if not found:
             notes.append(f"{where}: contract '{item[:30]}' is not recognized and was left out")
     offer = Offer(
-        id="", source=source, attribution=attribution, title=title, company=text("company") or None, url=url or None,
+        id="", source=source, attribution=attribution, title=title, company=text("company") or None, url=link,
         location=text("location") or None, countries=[c for c in map(country_code, _items(record.get("countries"), sep)) if c],
         remote=choice("remote"), contract=list(dict.fromkeys(contract)), level=choice("level"),
         skills=[s.lower() for s in _items(record.get("skills"), sep)], skills_nice=[s.lower() for s in _items(record.get("skills_nice"), sep)],

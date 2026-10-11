@@ -1,6 +1,9 @@
 """Ledger: load with line numbers, lint, draft from CVs, and the index scoring reads."""
 
 import datetime as dt
+import os
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -276,7 +279,10 @@ def test_ledger_draft(tmp_path):
     assert [i.path for i in issues] == [f"claims[{n}].draft" for n in range(len(ledger.claims))]
     assert all(c.draft and c.allowed == [c.summary] and c.confirmed == {} for c in ledger.claims)
     summaries = [c.summary for c in ledger.claims]
-    assert len(summaries) == len(set(summaries)) == 10  # 2 + 6 lines from the first CV, 2 more from the second
+    # 2 job lines + 6 bullets from the first CV, 2 more bullets from the second; then the other units the check
+    # reads as claims: profile sentence, Skills line, languages line and course heading of the first CV,
+    # headline, Skills line and profile sentence of the second
+    assert len(summaries) == len(set(summaries)) == 17
     assert len({c.id for c in ledger.claims}) == len(ledger.claims)
     by_summary = {c.summary: c for c in ledger.claims}
     dashboard = by_summary["Built the weekly ticket-backlog dashboard that three support teams use in their Monday reviews."]
@@ -306,3 +312,54 @@ def test_draft_with_no_cv_lines_is_an_empty_ledger(tmp_path):
     path = tmp_path / "ledger.yml"
     path.write_text(text, encoding="utf-8")
     assert "claims: []" in text and load_ledger(path) is None
+
+
+@pytest.mark.parametrize("name", ["maya-analytics.md", "maya-support-ops.md"])
+def test_the_unchanged_cv_checks_clean_against_its_own_draft(tmp_path, name):
+    profiles, texts = _sample_profiles()
+    path = tmp_path / "ledger.yml"
+    path.write_text(draft_ledger([p for p in profiles if p.cv_id == name], {name: texts[name]}, today=TODAY), encoding="utf-8")
+    ledger = load_ledger(path)
+    skills = [c for c in ledger.claims if c.kind == "skill"]
+    assert len(skills) == 1 and skills[0].summary.startswith("Skills: ") and skills[0].draft
+    assert "excel" in skills[0].skills and "google sheets" in skills[0].skills  # every skills.yml term of the line
+    result = check_document(SAMPLES / "cvs" / name, ledger, ws_root=tmp_path, today=TODAY)
+    assert result.verdict == "REVIEW" and {(f.rule, f.severity) for f in result.flags} == {("DRAFT_CLAIM", "REVIEW")}
+    assert all("confirm it in ledger.yml" in f.message for f in result.flags)
+    skills_line = next(n for n, line in enumerate(texts[name].split("\n"), 1) if line.startswith("Skills: "))
+    assert [f.claim_id for f in result.flags if f.line == skills_line] == [skills[0].id]
+
+
+def test_draft_follows_the_units_the_check_reads(tmp_path):
+    cv = ("## Experience\n\n### Analyst, Example Freight, 2021-2024\n\n- Built the weekly finance report pack and\n"
+          "  wrote its SQL checks.\n- Trained two new agents.\n\nCertified Scrum Master, 2023.\n\n"
+          "### BSc Economics, Example University, 2017-2020\n")  # fmt: skip
+    profile = Profile(cv_id="cv.md", cv_sha256="0" * 64, skills=[], titles=["Analyst"], target_titles=[], years=3, level=None,
+                      languages={}, experience=[("Analyst", "2021-2024")])  # fmt: skip
+    path = tmp_path / "ledger.yml"
+    path.write_text(draft_ledger([profile], {"cv.md": cv}, today=TODAY), encoding="utf-8")
+    ledger = load_ledger(path)
+    by_summary = {c.summary: c for c in ledger.claims}
+    assert "Built the weekly finance report pack and wrote its SQL checks." in by_summary  # a wrapped bullet is one unit
+    assert by_summary["BSc Economics, Example University, 2017-2020"].facts == {"start_year": 2017, "end_year": 2020, "precision": "year"}
+    assert "Certified Scrum Master, 2023." in by_summary and "Experience" not in by_summary
+    doc = tmp_path / "cv.md"
+    doc.write_text(cv, encoding="utf-8")
+    result = check_document(doc, ledger, ws_root=tmp_path, today=TODAY)
+    assert {(f.rule, f.severity) for f in result.flags} == {("DRAFT_CLAIM", "REVIEW")}
+
+
+def test_cli_init_draft_and_check_of_the_same_cv(tmp_path):
+    home = tmp_path / "home"
+    home.mkdir()
+    env = {k: v for k, v in os.environ.items() if not k.startswith(("PYTHON", "HONESTCV"))} | {"HOME": str(home), "USERPROFILE": str(home)}
+
+    def run(*args: str) -> subprocess.CompletedProcess:
+        cmd = [sys.executable, "-m", "honestcv", *args, "--today", "2026-10-11"]
+        return subprocess.run(cmd, cwd=tmp_path, env=env, capture_output=True, text=True, encoding="utf-8", timeout=180, check=False)
+
+    assert run("init", "--cv", str(SAMPLES / "cvs" / "maya-analytics.md")).returncode == 0
+    assert run("ledger", "draft").returncode == 0
+    checked = run("check", str(home / "honestcv" / "cvs" / "maya-analytics.md"))
+    assert checked.returncode == 0, checked.stdout + checked.stderr
+    assert checked.stdout.startswith("REVIEW · 0 lines blocked · 12 lines to review · 0 lines passed")

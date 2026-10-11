@@ -64,7 +64,7 @@ Greenhouse, Lever and Ashby are read only for the companies you list in `honestc
 
 ## Data files
 
-Every file in `src/honestcv/data/` was written by hand for honestcv and is covered by its MIT licence. None is copied from a third-party list, from ESCO, or from a job board's taxonomy.
+Every file in `src/honestcv/data/` was written for this project, not copied from a third-party list or a job board's taxonomy, and is covered by its MIT licence.
 
 | File | Contents |
 |---|---|

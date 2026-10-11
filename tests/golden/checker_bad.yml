@@ -443,3 +443,39 @@ lines:
     lint_errors: 2
     verdict: BLOCK
     why: Same ledger, same two LEDGER_LINT flags; no other step runs.
+
+  # ---------------- claim words, and headings checked like sentences
+  - id: maya-nobel-prize
+    ledger: src/honestcv/samples/en/ledger.yml
+    text: "I won the Nobel Prize in Physics."
+    expect:
+      - {rule: UNBACKED, severity: BLOCK}
+    exact: true
+    verdict: BLOCK
+    why: '"won the" and "prize" are claim words; no claim shares a token.'
+
+  - id: maya-doctorate
+    ledger: src/honestcv/samples/en/ledger.yml
+    text: "I possess a doctorate in data science."
+    expect:
+      - {rule: UNBACKED, severity: BLOCK}
+    exact: true
+    verdict: BLOCK
+    why: '"doctorate" is a claim word; support for every claim is below the ambiguous threshold.'
+
+  - id: maya-heading-deployed
+    ledger: src/honestcv/samples/en/ledger.yml
+    text: "# I deployed our churn model to production."
+    matched_claim: churn-capstone
+    expect:
+      - {rule: CEILING_BREACH, severity: BLOCK}
+      - {rule: STATE_OVERSTATED, severity: BLOCK}
+      - {rule: NOT_CONFIRMED, severity: BLOCK}
+      - {rule: SCOPE_INFLATION, severity: BLOCK}
+      - {rule: MISSING_QUALIFIER, severity: REVIEW}
+    exact: true
+    verdict: BLOCK
+    why: >-
+      A heading is a unit like any sentence: the same flags as the line without "#". forbidden_here[0] of
+      ml-production-ceiling matches; "deployed" implies shipped, above tested; not_confirmed[2] "deployed";
+      "production" is not in scope_words_allowed; "course capstone" is missing.

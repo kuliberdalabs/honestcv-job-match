@@ -9,6 +9,7 @@ import shutil
 import sys
 import time
 import traceback
+import unicodedata
 import webbrowser
 from pathlib import Path
 
@@ -39,13 +40,19 @@ def _utf8() -> None:
             pass
 
 
+def _clean(text: str) -> str:
+    """Text that came from an offer, a file name or a source, made safe to print. Control characters other than newline
+    and tab go: ESC starts the sequences that clear the screen, retitle the window or write to the clipboard."""
+    return "".join(ch for ch in text if ch in "\n\t" or unicodedata.category(ch) != "Cc")
+
+
 def _fail(exc: HonestError) -> None:
     lines = [f"Error: {exc.message}"]
     where = exc.where()
     if where:
         lines.append(f"Where: {home_relative(Path(where)) if Path(where).is_absolute() else where}")
     lines.append(f"Fix: {exc.hint or 'Run: honestcv doctor'}")
-    typer.echo("\n".join(lines), err=True)
+    typer.echo(_clean("\n".join(lines)), err=True)
 
 
 def command(group: typer.Typer, name: str, **settings):
@@ -259,18 +266,28 @@ _RECORD = ("title", "company", "url", "location", "countries", "remote", "contra
            "description", "posted_at", "valid_through", "requisition_id")  # fmt: skip
 
 
-def _save_offer(ws: Workspace, offer, day: dt.date) -> Path:
-    """offers/inbox/added-<date>-<name>.json in the import schema (docs/import.md)."""
+def _record(offer) -> dict:
     record = {k: v for k, v in offer.model_dump(mode="json").items() if k in _RECORD and v not in (None, "", [])}
     if offer.salary:
         record.update({k: v for k, v in (("salary_min", offer.salary.min), ("salary_max", offer.salary.max), ("currency", offer.salary.currency),
                                          ("salary_unit", offer.salary.unit)) if v is not None})  # fmt: skip
-    base, n = f"added-{day.isoformat()}-{safe_name(offer.title)}", 2
+    return record
+
+
+def _save_offers(ws: Workspace, offers: list, day: dt.date, name: str, *, reuse: bool = False) -> Path:
+    """offers/inbox/added-<date>-<name>.json in the import schema (docs/import.md). With reuse, a file that already
+    holds exactly these offers is the answer."""
+    text = json.dumps([_record(o) for o in offers], indent=1, ensure_ascii=False) + "\n"
+    base, n = f"added-{day.isoformat()}-{safe_name(name)}", 2
     path = ws.inbox / f"{base}.json"
-    while path.exists():
+    while path.exists() and not (reuse and path.read_text(encoding="utf-8") == text):
         path, n = ws.inbox / f"{base}-{n}.json", n + 1
-    atomic_write(path, json.dumps([record], indent=1, ensure_ascii=False) + "\n")
+    atomic_write(path, text)
     return path
+
+
+def _save_offer(ws: Workspace, offer, day: dt.date) -> Path:
+    return _save_offers(ws, [offer], day, offer.title)
 
 
 @command(app, "add-offer", context_settings=EXTRA)
@@ -293,17 +310,24 @@ def add_offer(
         raise HonestError("add-offer needs exactly one of: FILE, --paste, --text or --url.", hint="For example: honestcv add-offer --paste")
     if url:
         offer = importers.import_url(url, title=title)
-        typer.echo(f'Saved the link as an offer with no text: "{offer.title}". It is listed under "Needs the full text" after the next scan.')
+        typer.echo(_clean(f'Saved the link as an offer with no text: "{offer.title}". It is listed under "Needs the full text" after the next scan.'))
         typer.echo(f"{_show(ws, _save_offer(ws, offer, day))}\n{UNLISTED_HOST_MESSAGE}")
         return
     if file and not text:
         src = _joined(ctx, file)
         offers, notes = importers.read_path(src, day)
+        if src.suffix.lower() == ".eml":  # the offers are kept, the e-mail with its sender, recipients and headers is not
+            if not offers:
+                raise HonestError(f"honestcv found no offers in {src.name}.", hint="Copy an offer's text and run: honestcv add-offer --paste")
+            saved = _save_offers(ws, offers, day, src.stem, reuse=True)
+            typer.echo(_clean("\n".join([f"Imported {len(offers)} offer{'s' * (len(offers) != 1)} from {src.name}. They join the next scan.",
+                                         f"Saved as {_show(ws, saved)}. The e-mail itself was not copied.", *notes])))  # fmt: skip
+            return
         target, n = ws.inbox / src.name, 2
         while target.exists() and target.read_bytes() != src.read_bytes():
             target, n = ws.inbox / f"{src.stem}-{n}{src.suffix}", n + 1
         atomic_write(target, src.read_bytes())
-        typer.echo("\n".join([f"Copied to {_show(ws, target)}: {len(offers)} offer{'s' * (len(offers) != 1)}. They join the next scan.", *notes]))
+        typer.echo(_clean("\n".join([f"Copied to {_show(ws, target)}: {len(offers)} offer{'s' * (len(offers) != 1)}. They join the next scan.", *notes])))
         return
     where = "the clipboard" if paste else "your text"
     body = importers.read_clipboard() if paste else " ".join([file, *ctx.args]) if file else sys.stdin.read()
@@ -312,7 +336,7 @@ def add_offer(
     offer = importers.import_text(body, title=title, company=company)
     origin = "" if title else " (title from the first line)"
     path = _save_offer(ws, offer, day)
-    typer.echo(f'Imported 1 offer from {where}: "{offer.title}"{origin}. It joins the next scan.\nSaved as {_show(ws, path)}')
+    typer.echo(_clean(f'Imported 1 offer from {where}: "{offer.title}"{origin}. It joins the next scan.\nSaved as {_show(ws, path)}'))
 
 
 # ---- ledger ----
@@ -409,7 +433,7 @@ def _scan_lines(ws: Workspace, run, opened: bool) -> list[str]:
               f"Matches   out/matches.csv  +{len(ranked(run))} rows (one per surfaced offer) · out/latest.json"]  # fmt: skip
     if not any(s.id == "inbox" and s.offers for s in run.sources):
         lines.append(NO_IMPORTS)
-    return lines
+    return [_clean(line) for line in lines]
 
 
 @command(app, "scan")
@@ -523,13 +547,13 @@ def tailor(
     unbacked = f"{len(skills)} required skill{'s have' if len(skills) != 1 else ' has'} no ledger backing: {', '.join(skills)} (listed in gaps.md, added nowhere)" if skills else "every required skill has ledger backing"
     removed = f"; removed {len(result.removed)} blocked line{'s' * (len(result.removed) != 1)}, see check.md" if result.removed else ""
     which = "CV" if cv else "best CV"
-    typer.echo("\n".join([
+    typer.echo(_clean("\n".join([
         f"Offer   {offer.title}" + (f" · {offer.company}" if offer.company else "") + f" ({match.match_pct}%, {match.layer}, {which} {match.cv_id})",
         "Mode    deterministic: selects and orders your ledger sentences, never rewrites them",
         f"Picked  {claims} claim{'s' * (claims != 1)} · {unbacked}", f"Check   {result.check.verdict} (read back from disk){removed}",
         f"Wrote {bullets} bullet{'s' * (bullets != 1)} to paste into your CV", f"        {result.out_dir}/",
         "        highlights.md  highlights.cited.md  check.md  gaps.md",
-        "Before you send the final CV or letter, run: honestcv check FILE"]))  # fmt: skip
+        "Before you send the final CV or letter, run: honestcv check FILE"])))  # fmt: skip
 
 
 @command(app, "check", context_settings=EXTRA)
@@ -556,7 +580,7 @@ def check(
     if json_:
         typer.echo(result.model_dump_json(by_alias=True, indent=1))
     else:
-        typer.echo(render_check(result).rstrip("\n"))
+        typer.echo(_clean(render_check(result).rstrip("\n")))
         typer.echo("Your file was not changed." + (" Fix the lines yourself, then run the check again before sending." if result.verdict != "PASS" else ""))
         if result.verdict == "BLOCK":
             typer.echo(f"Exit code {EXIT_BLOCK} (BLOCK)")

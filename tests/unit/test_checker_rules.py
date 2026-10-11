@@ -110,6 +110,124 @@ def test_non_claim_lines_still_get_document_wide_guards(tmp_path, maya):
     assert result.units_claim_bearing == 0 and _rules(result) == {"FORBIDDEN_PHRASE"}
 
 
+@pytest.mark.parametrize("text", ["I won the Nobel Prize in Physics.", "I possess a doctorate in data science.", "Winner of a data hackathon.",
+                                  "Awarded a patent for parcel sorting.", "Keynote speaker at a data conference.",
+                                  "Master's degree in statistics.", "Bachelor's degree in economics.", "Licensed accountant.",
+                                  "Diploma in data analysis.", "Wygrałam konkurs analityczny.", "Mam doktorat z ekonomii.",
+                                  "Laureatka nagrody dla analityków.", "Dyplom z wyróżnieniem.", "Licencjonowany doradca.",
+                                  "Opublikowałam artykuł o analizie danych.", "Certyfikat Scrum Master."])  # fmt: skip
+def test_distinctions_and_degrees_are_claim_words(tmp_path, maya, text):
+    ctx = checker._Ctx.build(maya, TODAY)
+    assert checker._claim_bearing(checker._unit(1, text, ctx), ctx)
+    assert "UNBACKED" in _rules(_check(tmp_path, maya, text))
+
+
+def test_wont_is_not_won(maya):
+    ctx = checker._Ctx.build(maya, TODAY)
+    assert not checker._claim_bearing(checker._unit(1, "I won't be available until March.", ctx), ctx)
+
+
+LETTER = ["Dear Hiring Manager,", "I am writing to apply for the Data Analyst position at Tallgrove Analytics.",
+          "I am excited about the opportunity to join your team.", "I would welcome the chance to discuss my application.",
+          "I look forward to hearing from you.", "Thank you for your time and consideration.", "Kind regards,",
+          "Szanowni Państwo,", "Z zainteresowaniem przeczytałam ogłoszenie na stanowisko Analityka danych w Example Bank.",
+          "Chciałabym aplikować na stanowisko analityka danych.", "Chętnie porozmawiam o szczegółach.",
+          "Dziękuję za poświęcony czas.", "Z poważaniem,"]  # fmt: skip
+
+
+def _drafted_maya(tmp_path: Path) -> Ledger:
+    from honestcv.ledger import draft_ledger
+    from honestcv.models import Profile
+
+    cv = (SAMPLES / "cvs" / "maya-analytics.md").read_text(encoding="utf-8")
+    experience = [("Support Operations Analyst", "2020-2026"), ("Customer Support Agent", "2016-2020")]
+    profile = Profile(cv_id="maya-analytics.md", cv_sha256="0" * 64, skills=[], titles=[t for t, d in experience], target_titles=[],
+                      years=10, level=None, languages={}, experience=experience)  # fmt: skip
+    path = tmp_path / "drafted.yml"
+    path.write_text(draft_ledger([profile], {"maya-analytics.md": cv}, today=TODAY), encoding="utf-8")
+    return load_ledger(path)
+
+
+@pytest.mark.parametrize("drafted", [False, True], ids=["sample-ledger", "drafted-ledger"])
+def test_letter_openers_and_closers_are_not_claims(tmp_path, maya, drafted):
+    ledger = _drafted_maya(tmp_path) if drafted else maya
+    result = _check(tmp_path, ledger, "\n\n".join(LETTER), ws_root=tmp_path if drafted else SAMPLES)
+    assert result.flags == [] and result.verdict == "PASS" and result.units_claim_bearing == 0
+
+
+def test_a_word_shared_with_a_summary_is_not_a_signal(tmp_path, maya):
+    # no claim signal: such a line counts only when attribution finds a claim, and it is never UNBACKED
+    ctx = checker._Ctx.build(maya, TODAY)
+    for text in ["Data analyst position at a parcel company.", "Joining your team would mean a lot."]:
+        assert not checker._signal(checker._unit(1, text, ctx))
+        assert _check(tmp_path, maya, text).flags == []
+    assert _rules(_check(tmp_path, maya, "Weekly backlog summaries for the finance and procurement department.")) == {"AMBIGUOUS"}
+    # a draft found only on the ambiguous path is not backing either
+    drafted = _drafted_maya(tmp_path)
+    line = "Support operations analyst moving into data analyst roles."
+    path, claim, _ = checker._attribute(checker._unit(1, line, checker._Ctx.build(drafted, TODAY)), checker._Ctx.build(drafted, TODAY), None)
+    assert path == "ambiguous" and claim.draft
+    assert _check(tmp_path, drafted, line, ws_root=tmp_path).flags == []
+
+
+# ---------------------------------------------------------------- headings
+
+
+def _flags(result) -> list[tuple]:
+    return sorted((f.rule, f.severity, f.claim_id, f.field, f.message, f.quote) for f in result.flags)
+
+
+def test_a_heading_is_checked_like_the_same_sentence(tmp_path, maya):
+    line = "I deployed our churn model to production."
+    plain = _check(tmp_path, maya, line)
+    for prefix in ("# ", "## ", "### "):
+        heading = _check(tmp_path, maya, prefix + line)
+        assert _flags(heading) == _flags(plain) and heading.verdict == plain.verdict == "BLOCK"
+        assert heading.units_claim_bearing == plain.units_claim_bearing == 1
+
+
+def test_section_titles_and_commented_headings(tmp_path, maya):
+    titles = "\n\n".join(["# Maya Lindqvist", "## Profile", "## Experience", "## Skills", "## Education", "## Languages",
+                          "## Certifications", "## Doświadczenie zawodowe", "## Umiejętności"])  # fmt: skip
+    result = _check(tmp_path, maya, titles)
+    assert result.flags == [] and result.units_claim_bearing == 0 and result.units_total == 9
+    hidden = _check(tmp_path, maya, "<!--\n# I deployed our churn model to production.\n-->\nKind regards,")
+    assert hidden.flags == [] and hidden.units_total == 1
+
+
+def test_tailor_mode_does_not_check_its_own_heading(tmp_path, maya):
+    result = _check(tmp_path, maya, "# Highlights for Senior Python Developer\n\n- Kind regards", require_markers=True)
+    assert {f.line for f in result.flags} == {3} and result.units_total == 1
+    # the same file checked as a document: the honestcv heading is not a claim either
+    plain = _check(tmp_path, maya, "# Highlights for Python Developer · Example Freight\n\n- Kind regards")
+    assert plain.flags == [] and plain.units_claim_bearing == 0
+
+
+# ---------------------------------------------------------------- drafts of the CV itself
+
+
+def test_a_drafted_skills_line_is_a_draft_claim_never_a_block(tmp_path):
+    line = "Skills: SQL, Python, Excel, Zendesk"
+    claim = {"id": "skills-line", "kind": "skill", "summary": line, "skills": ["excel", "python", "sql", "zendesk"], "allowed": [line], "draft": True}
+    result = _check(tmp_path, _ledger([claim]), line)
+    assert [(f.rule, f.severity) for f in result.flags] == [("DRAFT_CLAIM", "REVIEW")] and result.verdict == "REVIEW"
+    assert "confirm it in ledger.yml" in result.flags[0].message and result.flags[0].field == "claims[0].draft"
+    longer = _check(tmp_path, _ledger([claim]), line + ", Tableau")
+    assert _rules(longer) == {"UNBACKED_SKILL"} and longer.verdict == "BLOCK"
+
+
+def test_markdown_report_escapes_quotes_and_gaps(tmp_path, maya):
+    image = "![track](https://attacker.example.invalid/pixel)"
+    offer = Offer(id="0123456789", source="import:json", title="Data Analyst", company="Example Freight", attribution="your file",
+                  description=f"Requirements\n- Deploying ML models to production {image}.")  # fmt: skip
+    reqs = [Requirement(term=f"sql {image}", must=True, in_profile=False)]
+    result = _check(tmp_path, maya, f"Expert in Kubernetes <img src=x> {image}.", offer=offer, requirements=reqs)
+    md = render_check(result, markdown=True)
+    assert "](" not in md.replace("\\](", "") and "![" not in md and "<img" not in md
+    assert "!\\[track\\](https://attacker.example.invalid/pixel)" in md and "&lt;img src=x&gt;" in md
+    assert image in render_check(result)  # the terminal text stays as written
+
+
 # ---------------------------------------------------------------- numbers and clauses
 
 

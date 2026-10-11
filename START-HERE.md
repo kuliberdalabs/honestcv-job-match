@@ -24,9 +24,9 @@ If the shell says `honestcv` is not found, run `uv tool update-shell`, close the
 ## 2. See the demo (2 minutes)
 
 ```
-$ honestcv demo
+$ honestcv demo --out ~/honestcv-demo
 honestcv 0.1.0 · demo · offline · no API keys · sample data only · sample date 2026-10-10
-Workspace: /private/tmp/honestcv-demo-ohgg0nn8/   (English sample: Maya Lindqvist, fictional)
+Workspace: ~/honestcv-demo/   (English sample: Maya Lindqvist, fictional)
 
 Read 8 sample offers; scored 4 against 2 CV variants.
 
@@ -50,15 +50,15 @@ Claims check of a planted cover letter (letters/cover-letter-planted.md):
           DURATION_MISMATCH  (support-career)
   line 9  "My tag cleanup reduced handling time by 25% across the company."
           NOT_CONFIRMED, QUANTITY_MISMATCH, SCOPE_INFLATION, UNBACKED_OUTCOME  (tag-cleanup)
-Report: /private/tmp/honestcv-demo-ohgg0nn8/out/report-latest.html
+Report: ~/honestcv-demo/out/report-latest.html
 Next: honestcv init --cv path/to/your-cv.pdf
 ```
 
-The report opens in your browser. Each offer card shows why it got its %. The layer says the direction of the role: CORE is your level, STRETCH is a step up, DOWNSHIFT a step down.
+`--out ~/honestcv-demo` keeps the demo in a folder in your home folder; without it the demo uses a temporary folder. Steps 3 and 6 below take files from it. The report opens in your browser. Each offer card shows why it got its %. The layer says the direction of the role: CORE is your level, STRETCH is a step up, DOWNSHIFT a step down.
 
 ## 3. Create your workspace with your CV (2 minutes)
 
-Your CV can be PDF, DOCX, Markdown or plain text. A file name with spaces goes in quotes, or drag the file into the window.
+Your CV can be PDF, DOCX, Markdown or plain text. A file name with spaces goes in quotes, or drag the file into the window. The screens on this page use Maya's CV from the demo folder, copied to your home folder as `maya-cv.md`: `~/honestcv-demo/cvs/maya-analytics.md`.
 
 ```
 $ honestcv init --cv maya-cv.md
@@ -99,15 +99,15 @@ preferences:
 
 ```
 $ honestcv ledger draft
-Drafted 8 claims from 1 CV into ledger.yml. All are marked draft: true.
+Drafted 12 claims from 1 CV into ledger.yml. All are marked draft: true.
 A draft claim does not count as ledger backing until you confirm it. Tailoring and the check accept it only word for word, as it stands in your CV.
 To confirm a claim, add its state (built, tested, shipped, used, ...), its evidence and the sentence you want to use.
 Each claim has comments showing what to fill. Then run: honestcv ledger lint
 
 $ honestcv ledger lint
-ledger.yml: 8 claims · 0 confirmed · 8 draft
+ledger.yml: 12 claims · 0 confirmed · 12 draft
 WARN   line 25  support-operations-analyst-brennvik-parcel: draft: your own CV line, not yet backed by evidence
-       (7 more draft claims with the same WARN)
+       (11 more draft claims with the same WARN)
 No ERROR lines: tailoring and the check can use this ledger.
 ```
 
@@ -119,10 +119,10 @@ You can go on with draft claims. Confirm them later, one at a time: [docs/ledger
 $ honestcv scan
 ```
 
-honestcv reads the job APIs in `honestcv sources`, adds the offers in `offers/inbox/`, scores everything and opens the report. Offers from boards it does not read come in by paste, e-mail or saved page ([docs/import.md](docs/import.md)):
+honestcv reads the job APIs in `honestcv sources`, adds the offers in `offers/inbox/`, scores everything and opens the report. Offers from boards it does not read come in by paste, e-mail or saved page ([docs/import.md](docs/import.md)). To follow the screens below, add the sample offers from the demo folder of step 2:
 
 ```
-$ honestcv add-offer sample-offers.json
+$ honestcv add-offer ~/honestcv-demo/offers/inbox/sample-offers.json
 Copied to offers/inbox/sample-offers.json: 8 offers. They join the next scan.
 ```
 
@@ -138,7 +138,7 @@ Report    out/report-latest.html  (also out/report-2026-10-11.md)
 Matches   out/matches.csv  +4 rows (one per surfaced offer) · out/latest.json
 ```
 
-`Status` says PARTIAL and names the source when a job API refused access or sent data honestcv could not read. A failed source is never shown as "no matches".
+`Status` says PARTIAL and names the source when a job API refused access, its robots.txt could not be read, or it sent data honestcv could not read. A failed source is never shown as "no matches".
 
 ## 7. Tailor highlights for one offer (2 minutes)
 
@@ -167,13 +167,13 @@ $ honestcv check ~/honestcv/out/tailored/2026-10-11-tallgrove-analytics-data-ana
 REVIEW · 0 lines blocked · 2 lines to review · 0 lines passed
 
 line 3  "Built a churn prediction model in Python with pandas and scikit-learn as a course capstone."
-  DRAFT_CLAIM        built-churn-prediction-model-python is a draft: your own CV line, not yet backed by evidence (REVIEW)  [claims[7].draft]
+  DRAFT_CLAIM        built-churn-prediction-model-python is a draft: your own CV line, not yet backed by evidence; confirm it in ledger.yml (REVIEW)  [claims[7].draft]
   safe: "Built a churn prediction model in Python with pandas and scikit-learn as a course capstone."
 line 4  "Wrote the SQL queries behind the monthly ticket volume report."
-  DRAFT_CLAIM        wrote-sql-queries-monthly-ticket is a draft: your own CV line, not yet backed by evidence (REVIEW)  [claims[3].draft]
+  DRAFT_CLAIM        wrote-sql-queries-monthly-ticket is a draft: your own CV line, not yet backed by evidence; confirm it in ledger.yml (REVIEW)  [claims[3].draft]
   safe: "Wrote the SQL queries behind the monthly ticket volume report."
 
-Ledger: 8 warnings. Run: honestcv ledger lint
+Ledger: 12 warnings. Run: honestcv ledger lint
 Your file was not changed. Fix the lines yourself, then run the check again before sending.
 ```
 
@@ -187,8 +187,8 @@ honestcv 0.1.0 · Python 3.11.15 · macOS 27
 OK    workspace   ~/honestcv
 OK    config      honestcv.yml valid · criteria weights sum to 100
 OK    cvs         1 readable (maya-cv.md)
-WARN  ledger      8 draft claims; tailoring and the check accept them only word for word
-OK    sources     4 enabled · last scan PASS 2026-10-11 02:36
+WARN  ledger      12 draft claims; tailoring and the check accept them only word for word
+OK    sources     4 enabled · last scan PASS 2026-10-11 13:09
 SKIP  network     run honestcv doctor --online to test the sources
 0 errors · 1 warning
 ```

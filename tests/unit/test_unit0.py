@@ -12,12 +12,12 @@ from pathlib import Path
 
 import pytest
 import yaml
-from pydantic import TypeAdapter
+from pydantic import TypeAdapter, ValidationError
 
 from honestcv import errors, textutil, workspace
 from honestcv.config import Config, ScoringConfig, config_digest, default_config_text, load_config, validate_scoring
 from honestcv.errors import ConfigError, HonestError, WorkspaceError
-from honestcv.models import Ledger, LedgerIndex, Offer, RuleCode, Salary, ScanRun, Severity
+from honestcv.models import Ledger, LedgerIndex, Offer, Preferences, RuleCode, Salary, ScanRun, Severity
 from honestcv.textutil import durations, hit, normalize, numbers, safe_name, sentences
 
 REPO = Path(__file__).resolve().parents[2]
@@ -962,3 +962,52 @@ def test_checker_golden_files_are_well_formed():
             if not claim.draft:
                 for sentence in claim.allowed:
                     assert (ledger_path, sentence) in good_texts, sentence
+
+
+# ---------------------------------------------------------------- preferences.countries
+
+COUNTRY_NAMES = {
+    "PL": ["Polska", "Poland"], "SE": ["Sverige", "Sweden"], "DE": ["Deutschland", "Germany", "Niemcy"],
+    "GB": ["United Kingdom", "UK", "Great Britain"], "US": ["United States", "USA", "US"],
+    "NL": ["Netherlands", "Nederland", "Holandia"], "ES": ["Spain", "España", "Hiszpania"], "FR": ["France", "Francja"],
+    "CZ": ["Czechia", "Czech Republic", "Czechy"], "IE": ["Ireland", "Irlandia"], "NO": ["Norway", "Norge", "Norwegia"],
+    "DK": ["Denmark", "Danmark", "Dania"], "FI": ["Finland", "Suomi", "Finlandia"], "AT": ["Austria"],
+    "CH": ["Switzerland", "Szwajcaria"], "PT": ["Portugal", "Portugalia"], "IT": ["Italy", "Włochy"],
+}  # fmt: skip
+
+
+def test_country_names_map_to_two_letter_codes():
+    for code, names in COUNTRY_NAMES.items():
+        for name in names:
+            assert Preferences(countries=[name]).countries == [code], name
+            assert Preferences(countries=[f"  {name.upper()} "]).countries == [code], name  # case and spaces do not matter
+    assert Preferences(countries=["Espana", "wlochy", "SVERIGE", "se", "uk", "Pl"]).countries == ["ES", "IT", "SE", "SE", "GB", "PL"]
+    assert Preferences(countries=["Poland", "SE", "Niemcy"]).countries == ["PL", "SE", "DE"]  # names and codes mix
+    assert Preferences().countries == []
+
+
+@pytest.mark.parametrize("value", ["Atlantis", "POL", "P", "", "  ", "P1", "ąę", "Sweden!", "SE,PL"])
+def test_a_country_that_is_not_a_code_or_a_known_name_is_refused(value):
+    with pytest.raises(ValidationError) as err:
+        Preferences(countries=["PL", value])
+    assert "Use two-letter country codes, for example PL or SE" in str(err.value)
+    assert [e["loc"] for e in err.value.errors()] == [("countries",)]
+
+
+def test_a_bad_country_in_honestcv_yml_is_reported_with_its_line(tmp_path):
+    path = tmp_path / "honestcv.yml"
+    path.write_text("preferences:\n  remote: [remote]\n  countries: [Atlantis]\n", encoding="utf-8")
+    with pytest.raises(ConfigError) as err:
+        load_config(path)
+    assert err.value.message.startswith("'countries' is not valid (use two-letter country codes") and "countries: [PL, SE]" in err.value.message
+    assert err.value.line == 3 and "Atlantis" not in err.value.message
+    path.write_text("preferences:\n  countries: [Polska, Sweden, de]\n", encoding="utf-8")
+    assert load_config(path).preferences.countries == ["PL", "SE", "DE"]
+
+
+def test_the_country_hint_keeps_the_codes_in_upper_case(tmp_path):
+    path = tmp_path / "honestcv.yml"
+    path.write_text("preferences:\n  countries: [Atlantis]\n", encoding="utf-8")
+    with pytest.raises(ConfigError) as err:
+        load_config(path)
+    assert err.value.message == "'countries' is not valid (use two-letter country codes, for example PL or SE), for example: countries: [PL, SE]"

@@ -10,7 +10,8 @@ from email.message import Message
 from html.parser import HTMLParser
 from pathlib import Path
 
-from honestcv.importers.jsonld import job_postings, posting_to_offer
+from honestcv.importers.facts import with_text_facts
+from honestcv.importers.jsonld import job_postings, json_ld_blocks, posting_to_offer
 from honestcv.importers.urls import finalize_offer, web_link
 from honestcv.models import Offer
 
@@ -58,15 +59,6 @@ def _body(part: Message) -> str:
         return (part.get_payload(decode=True) or b"").decode("utf-8", errors="replace")
 
 
-def _scrub(url: str | None) -> str | None:
-    """The link without query parameters that carry an e-mail address (recipient tokens are common in alerts)."""
-    if not url or "?" not in url:
-        return url
-    base, query = url.split("?", 1)
-    kept = [seg for seg in query.split("&") if "@" not in seg and "%40" not in seg.lower()]
-    return base + ("?" + "&".join(kept) if kept else "")
-
-
 def _is_tracker(url: str) -> bool:
     host_and_path = re.match(r"https?://([^/?#]+)([^?#]*)", url)
     return bool(host_and_path and (_TRACKER_HOST.match(host_and_path.group(1)) or _TRACKER_PATH.match(host_and_path.group(2))))
@@ -81,7 +73,7 @@ def read_eml(path: Path) -> tuple[list[Offer], list[str]]:
         if kind in ("text/plain", "text/html") and part.get_content_disposition() != "attachment":
             (pages if kind == "text/html" else texts).append(_body(part))
     source, attribution = "import:eml", f"your file {Path(path).name}"
-    offers = [o for page in pages for p in job_postings(re.findall(r"<script[^>]*ld\+json[^>]*>(.*?)</script>", page, re.S | re.I))
+    offers = [with_text_facts(o) for page in pages for p in job_postings(json_ld_blocks(page))
               if (o := posting_to_offer(p, source=source, attribution=attribution))]  # fmt: skip
     known = {o.url for o in offers}
     candidates: dict[str, str] = {}  # cleaned link -> longest anchor text
@@ -95,7 +87,7 @@ def read_eml(path: Path) -> tuple[list[Offer], list[str]]:
             lines = [line.strip() for line in text.splitlines()]
             pairs += [(line, lines[i - 1]) for i, line in enumerate(lines) if i and re.fullmatch(r"https?://\S+", line)]
     for href, label in pairs:
-        link = _scrub(web_link(href))
+        link = web_link(href)  # no tracking parameters, no e-mail addresses
         if link and link not in known and 3 <= len(label) <= 150 and re.search(r"[^\W\d_]", label) and not _DROP_LINK.search(label) \
                 and not _NOT_A_TITLE.match(label) and len(label) > len(candidates.get(link, "")):  # fmt: skip
             candidates[link] = label
