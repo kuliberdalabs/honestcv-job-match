@@ -41,9 +41,15 @@ _SALARY_WORD = re.compile(r"wynagrodz|zarob|stawk|widełk|pensj|salary|(?<!\w)pa
 _GROSS_NET = re.compile(r"\s*(?:brutto|netto|gross|net)(?!\w)", re.IGNORECASE)
 _MAX_PAY = 1_000_000
 # A sentence of running text is read for pay only when it carries a pay word and no word for a budget, a price or a customer.
-_PAY_WORD = re.compile(r"(?<!\w)(?:salar(?:y|ies)|pay|oferujemy|we\s+offer|zarobk\w*|zarabia\w*|earn(?:s|ing)?|miesi[eę]cznie|compensation|wages?|rates?|wynagrodz\w*|pensj\w*|stawk\w*|wide[łl]k\w*|brutto|netto|gross|net)(?!\w)", re.IGNORECASE)
+_PAY_WORD = re.compile(r"(?<!\w)(?:salar(?:y|ies)|pay|zarobk\w*|zarabia\w*|earn(?:s|ing)?|compensation|wages?|rates?|wynagrodz\w*|pensj\w*|stawk\w*|wide[łl]k\w*|brutto|netto|gross|net)(?!\w)", re.IGNORECASE)
 _NOT_PAY = re.compile(r"(?<!\w)(?:budget\w*|bud[zż]et\w*|costs?|koszt\w*|pric(?:e|es|ing)|cen[aęyą]|cenie|cenach|revenues?|przych[oó]d\w*|turnover|obr[oó]t\w*"
                       r"|clients?|klient\w*|funding|training\w*|szkole\w*|bonus\s+pool)(?!\w)", re.IGNORECASE)  # fmt: skip
+# "We offer" / "Oferujemy" counts as a pay word only next to a pay period ("12 000 zł miesięcznie", "per month").
+_OFFER_WORD = re.compile(r"(?<!\w)(?:oferujemy|we\s+offer)(?!\w)", re.IGNORECASE)
+# In running text, an amount next to these is a perk or the value of a thing, not the pay.
+_NOT_PAY_PROSE = re.compile(r"(?<!\w)(?:laptop\w*|equipment|sprz[eę]t\w*|allowance\w*|dodat\w*|relocat\w*|relokac\w*|referral\w*|poleceni\w*"
+                            r"|vouchers?|benefit\w*|worth|warto[sś]\w*|rewards?|nagrod\w*|stipend\w*|reimburs\w*|zwrot\w*|insurance|ubezpiecz\w*|dofinans\w*)(?!\w)",
+                            re.IGNORECASE)  # fmt: skip
 _SENTENCES = re.compile(r"(?<=[.!?;])\s+(?=[A-ZĄĆĘŁŃÓŚŹŻ0-9€$£])")
 _PAY_TAIL = re.compile(rf"(?:/|(?<!\w)(?:per|a|an|na|za)(?!\w))[ \t]*(?:{'|'.join(w for _, w in _UNIT_AFTER)})(?!\w)"
                        rf"|(?<!\w)(?:{'|'.join(w for _, w in _UNIT_WORD)})(?!\w)", re.IGNORECASE)  # fmt: skip
@@ -68,9 +74,14 @@ def _unit(tail: str) -> str | None:
     return min(found)[1] if found else None
 
 
-def _collect_pay(text: str, found: set[tuple[float | None, float | None, str]], units: set[str]) -> None:
-    """Add every pay range in `text` to `found`, and the pay periods named next to them to `units`."""
+def _collect_pay(text: str, found: set[tuple[float | None, float | None, str]], units: set[str], *, prose: bool = False) -> None:
+    """Add every pay range in `text` to `found`, and the pay periods named next to them to `units`. In running text
+    (`prose`) an amount with a perk or a thing of value right next to it ("a laptop worth 2000 EUR") is skipped."""
     for m in _PAY.finditer(text):
+        if prose:  # the words around the amount, within its own clause
+            near = re.split(r"[,;]\s|\.\s", text[max(0, m.start() - 40): m.start()])[-1] + m[0] + re.split(r"[,;.]", text[m.end(): m.end() + 25])[0]
+            if _NOT_PAY_PROSE.search(near):
+                continue
         codes = {_CODES.get(c.casefold(), c.upper()) for c in (m["pre"], m["mid"], m["mid2"], m["post"]) if c}
         if len(codes) != 1:
             continue
@@ -109,8 +120,9 @@ def read_salary(text: str) -> Salary | None:
                 _collect_pay(line, found, units)
             continue
         for sentence in _SENTENCES.split(line):
-            if _PAY_WORD.search(sentence) and not _NOT_PAY.search(sentence):
-                _collect_pay(sentence, found, units)
+            pay_word = _PAY_WORD.search(sentence) or (_OFFER_WORD.search(sentence) and _PAY_TAIL.search(sentence))
+            if pay_word and not _NOT_PAY.search(sentence):
+                _collect_pay(sentence, found, units, prose=True)
     if len(found) != 1 or len(units) > 1:
         return None
     lo, hi, code = next(iter(found))
@@ -124,7 +136,8 @@ _NOT_A_MODE = r"teams?|stakeholders?|colleagues|candidates?|employees|workers?|i
 _DAYS = r"(?:[1-4]|one|two|three|four|jeden|dwa|dwie|trzy|cztery)"
 _DAYS_IN_OFFICE = (rf"{_DAYS}\s+(?:days?|dni|dzie[nń])\s+(?:(?:a|per|each|every)\s+week\s+|w\s+tygodniu\s+|tygodniowo\s+)?(?:in|at|w)\s+(?:the\s+|our\s+)?(?:office|biurze)"
                    rf"|in\s+the\s+office\s+{_DAYS}\s+days?|w\s+biurze\s+{_DAYS}\s+(?:dni|dzie[nń])")
-_ALONE = r"(?=\s*(?:$|[.!?)\]/|(]|\s(?:or|and|lub|albo|i|oraz)\b))"  # the word stands alone, not in front of a noun
+# the word ends the clause ("This role is remote.") or is one of two work modes ("Remote or on-site"), never "remote and local users"
+_ALONE = r"(?=\s*(?:$|[.!?)\]/|(]|\s(?:or|and|lub|albo|i|oraz)\s+(?:on-?site|hybrid\w*|hybrydow\w*|stacjonarn\w*|in[- ]office|office|biur\w*|zdaln\w*)))"
 _MODES = (("hybrid", rf"hybrid\w*|hybrydow\w*|{_DAYS_IN_OFFICE}"),
           ("remote", rf"remote(?!\s+(?:{_NOT_A_MODE}))|zdaln\w*|work from home|wfh"),
           ("onsite", r"on-?site|on site|stacjonarn\w*|w biurze|in[- ]the[- ]office|in-office|office-based"))  # fmt: skip
@@ -217,13 +230,19 @@ _WORK_PLACE = re.compile(
     r"|prac(?:a|y|ę|e|ujesz|ujemy)\s+w(?:e)?|biur[oa]\s+w(?:e)?|siedzib[aąy]\s+w(?:e)?|lokalizacja)\s+(?P<tail>[^.;:!?\n]{1,50})",
     re.IGNORECASE,
 )  # fmt: skip
+_NOT_ROLE_PLACE = re.compile(r"(?<!\w)(?:customers?|clients?|klient\w*|users?|u[żz]ytkownik\w*|partners?|partner\w*|markets?|rynk\w*|rynek|sell\w*"
+                             r"|sprzeda\w*|suppliers?|dostawc\w*|vendors?|shipping|wysy[łl]\w*|ship(?:s|ped)?)(?!\w)", re.IGNORECASE)  # fmt: skip
 _TAIL_CUT = re.compile(r",\s+(?!the\s)(?=[a-ząćęłńóśźż])|\s(?:dla|for|with|where|which|that|but|while|ale|gdzie|aby|żeby)\s")
 _HEADER_LINES = 12
 
 
 def _work_places(line: str) -> list[str]:
     """What follows a work-location phrase ("based in", "office in", "praca w", "biuro w", "lokalizacja") in the line."""
-    return [_TAIL_CUT.split(m["tail"])[0] for m in _WORK_PLACE.finditer(line)]
+    places = []
+    for m in _WORK_PLACE.finditer(line):
+        if not _NOT_ROLE_PLACE.search(re.split(r"[.!?;]\s", line[: m.start()])[-1]):  # "Our customers are based in ..."
+            places.append(_TAIL_CUT.split(m["tail"])[0])
+    return places
 
 
 def read_place(text: str) -> tuple[list[str], str | None]:
@@ -294,7 +313,7 @@ def _label(line: str) -> _Label | None:
     text = line.strip()
     if len(text) > _META_MAX or not (m := _LABEL.match(text)) or len(m["label"].split()) > 3:
         return None
-    place = bool(_PLACE_KEYS.search(m["label"]))
+    place = bool(_PLACE_KEYS.search(m["label"])) and not _NOT_ROLE_PLACE.search(m["label"])  # not "Customer location"
     return _Label(m["value"], place) if place or _LABEL_KEYS.search(m["label"]) else None
 
 

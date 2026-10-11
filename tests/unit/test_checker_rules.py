@@ -156,6 +156,10 @@ def test_an_opener_or_closer_neutralises_only_itself(tmp_path, maya, text):
     "I am writing to express my interest in the Senior Reporting Analyst role.",
     "I am excited about the opportunity to join your team.",
     "Chciałabym aplikować na stanowisko Młodszego Analityka Danych w Example Bank.",
+    "I am writing to apply for the Senior SQL Analyst role at Example Bank.",
+    "Dear Hiring Manager,",
+    "Highlights for Junior Reporting Analyst at Example Bank",
+    "Highlights for Python Developer at Example Cloud",
 ])  # fmt: skip
 def test_the_job_an_opener_names_is_not_a_claim(tmp_path, maya, text):
     assert _check(tmp_path, maya, text).units_claim_bearing == 0
@@ -165,6 +169,11 @@ def test_the_job_an_opener_names_is_not_a_claim(tmp_path, maya, text):
     "I am writing to apply for the Senior Data Analyst position with a doctorate in data science.",
     "I am writing to apply for the Data Analyst position after 12 years in support.",
     "Chciałabym aplikować na stanowisko analityka, mając doktorat z fizyki.",
+    "Chciałbym aplikować na stanowisko analityka i mam 20 lat doświadczenia.",
+    "Chciałbym aplikować na stanowisko analityka i posiadam doktorat.",
+    "I am writing to apply for the I hold a doctorate position.",
+    "Hello I hold a doctorate",
+    "Highlights for I won the Nobel Prize in Physics",
 ])  # fmt: skip
 def test_a_claim_after_the_job_an_opener_names_is_still_checked(tmp_path, maya, text):
     assert _check(tmp_path, maya, text).units_claim_bearing == 1

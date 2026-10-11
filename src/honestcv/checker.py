@@ -32,13 +32,20 @@ _WORD = re.compile(r"[^\W_]+(?:'[^\W_]+)*")
 _CLAUSE_END = re.compile(r"[;:]|[.!?](?=\s|$)")
 _HEADING = re.compile(r"^#{1,6}\s+(.+?)(?:\s+#+)?$")
 _LIST_GAP = re.compile(r"(?:[\s,;|/\u00b7]|\band\b|\bi\b)*", re.IGNORECASE)  # what may stand between two skills
-# the job an opener names ("for the Junior Data Analyst position", "na stanowisko Młodszego Analityka"): words about the
-# job, not about the person; the rest of the sentence is still checked
+# the job an opener names ("for the Junior Data Analyst position", "na stanowisko Młodszego Analityka"). Inside it the
+# level words and skill names describe the job, not the person, so only those are set aside; every other word is checked
 _ROLE_REF = re.compile(
     r"\s*(?:(?:for|to|in)\s+(?:the|this|your|a|an)\s+(?:[^\s,.;:!?]+\s+){0,7}?(?:position|role|job|opening|vacancy|post)\b"
-    r"|(?:na|w\s+sprawie)\s+(?:stanowisk\w*|rol\w*|ofert\w*)\b[^,.;:!?]*?(?=[,.;:!?]|\s+(?:w|z|ponieważ|bo|jako|mając\w*)\s|$))",
+    r"|(?:na|w\s+sprawie)\s+(?:stanowisk\w*|rol\w*|ofert\w*)(?:\s+[^\s,.;:!?]+){0,6})",
     re.IGNORECASE,
 )
+_LEVEL_WORDS = re.compile(
+    r"(?<!\w)(?:intern|trainee|junior|mid(?:-level)?|regular|senior|lead|principal|staff|head\s+of|team\s+lead|młodsz\w*|starsz\w*|stażyst\w*)(?!\w)",
+    re.IGNORECASE,
+)
+# non-claim units with an open end (a salutation and up to four words, the title tailor writes): neutral only when the
+# open part has no signal once level words and skill names are set aside ("Hello I hold a doctorate" is a claim)
+_OPEN_UNIT = re.compile(r"(?:dear|hello|hi|good morning|szanown\w*|dzień dobry|witam|highlights for)\b", re.IGNORECASE)
 
 
 # ---------------------------------------------------------------- vocabulary
@@ -320,14 +327,21 @@ def _nonclaim(u: _Unit, ctx: "_Ctx") -> bool:
     """A unit on the non-claim list, or a letter opener or closer whose rest (after the job it names) has no claim signal."""
     voc = vocab()
     if any(p.fullmatch(u.norm) for p in voc.nonclaims):
-        return True
+        return not _OPEN_UNIT.match(u.norm) or not _signal(_unit(u.line, _without_job_words(u.norm), ctx))
     m = next((m for p in voc.phrases if (m := p.match(u.norm))), None)
     if m is None or u.cites is not None:
         return False
     rest = u.norm[m.end():]
     if role := _ROLE_REF.match(rest):
-        rest = rest[role.end():]
+        rest = _without_job_words(rest[:role.end()]) + rest[role.end():]
     return not _signal(_unit(u.line, rest, ctx))
+
+
+def _without_job_words(text: str) -> str:
+    """text without level words and skill names, the words a job title is made of."""
+    for _, s, e in reversed(skill_terms(text, skills_line=True)):
+        text = text[:s] + " " + text[e:]
+    return _LEVEL_WORDS.sub(" ", text)
 
 
 def _signal(u: _Unit) -> bool:

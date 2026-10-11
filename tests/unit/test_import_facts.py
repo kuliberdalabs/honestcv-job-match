@@ -328,11 +328,25 @@ def test_money_that_is_not_the_pay_gives_no_pay(text):
     "text",
     [
         "Oferujemy 12 000 - 15 000 zł miesięcznie oraz prywatną opiekę medyczną, a cały zespół pracuje razem od lat w jednym miejscu.",
-        "We offer 4,000-5,000 EUR per month, a laptop of your choice and a yearly learning allowance for the whole team to use freely.",
+        "We offer 4,000-5,000 EUR per month, plus a laptop of your choice and a yearly learning allowance for the whole team to use freely.",
     ],
 )
 def test_an_offer_sentence_with_pay_is_read_as_pay(text):
     assert pay(text) is not None
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Data Analyst\nWe offer a laptop worth 2000 EUR.",
+        "Oferujemy 2000 PLN na sprzęt.",
+        "We offer a relocation allowance of 5000 EUR for the first month of your stay in the new city with us.",
+        "We offer a referral reward of 2000 PLN for every person you bring to the team after their first month.",
+        "Oferujemy 3000 zł dofinansowania do kursów raz w roku dla każdej osoby w zespole, niezależnie od stażu.",
+    ],
+)
+def test_a_perk_or_the_value_of_a_thing_is_not_pay(text):
+    assert pay(text) is None
 
 
 @pytest.mark.parametrize(
@@ -366,6 +380,9 @@ def test_place_in_a_clear_context(text, expected):
         "Our product is sold in Sweden, Norway and Finland.",
         "You will travel to Warsaw twice a year for a meeting.",
         "Experience with the Polish market is a plus. Our partners in Kraków help us.",
+        "Our customers are based in Sweden.",
+        "Our clients are headquartered in Poland.",
+        "Customer location: Sweden",
     ],
 )
 def test_a_place_in_running_text_is_not_the_work_place(text):
@@ -401,6 +418,8 @@ def test_work_mode_in_a_clear_context(text, expected):
         "Remote teams across Europe",
         "Hybrydowy układ napędowy w samochodach",
         "Studia stacjonarne",
+        "We support remote and local users.",
+        "Our product enables remote or local monitoring.",
     ],
 )
 def test_a_word_in_another_sense_is_not_the_work_mode(text):
