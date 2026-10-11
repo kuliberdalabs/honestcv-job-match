@@ -364,7 +364,7 @@ _COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
 _SENT_BREAK_RE = re.compile(r"[.!?]+[\"')\]]*\s+")
 _OPENS_SENTENCE = re.compile(r"[\"'(\[]?[0-9A-ZĄĆĘŁŃÓŚŹŻÄÖÜÉ]")
 _ABBREVIATIONS = frozenset("e.g i.e etc vs mr mrs ms dr prof inc ltd co corp jr sr st no nr np tj itp itd ds min max ok "
-                           "ul m.in approx dept ca tel godz pt pn wg zob".split())  # fmt: skip
+                           "ul m.in approx dept ca tel godz pt pn wg zob art ust lit pkt poz dz tzw r".split())  # fmt: skip
 _LINK_RE = re.compile(r"\[([^\]]+)\]\([^)]*\)")
 
 

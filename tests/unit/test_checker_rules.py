@@ -160,6 +160,9 @@ def test_an_opener_or_closer_neutralises_only_itself(tmp_path, maya, text):
     "Dear Hiring Manager,",
     "Highlights for Junior Reporting Analyst at Example Bank",
     "Highlights for Python Developer at Example Cloud",
+    "Wyrażam zgodę na przetwarzanie moich danych osobowych zawartych w mojej aplikacji przez Example Bank na potrzeby procesu rekrutacji zgodnie z art. 6 ust. 1 lit. a Rozporządzenia (UE) 2016/679 z dnia 27 kwietnia 2016 r.",
+    "I consent to the processing of my personal data for the purposes of this recruitment process under Regulation (EU) 2016/679.",
+    "I consent to the processing of my personal data by a recruitment system under Regulation (EU) 2016/679.",
 ])  # fmt: skip
 def test_the_job_an_opener_names_is_not_a_claim(tmp_path, maya, text):
     assert _check(tmp_path, maya, text).units_claim_bearing == 0
@@ -174,6 +177,14 @@ def test_the_job_an_opener_names_is_not_a_claim(tmp_path, maya, text):
     "I am writing to apply for the I hold a doctorate position.",
     "Hello I hold a doctorate",
     "Highlights for I won the Nobel Prize in Physics",
+    "Hello I know Kubernetes",
+    "Highlights for I know Kubernetes",
+    "Chciałbym aplikować na stanowisko analityka i znam Kubernetes.",
+    "I am writing to apply for the I know Kubernetes position.",
+    "I consent to the processing of my personal data and I hold a doctorate.",
+    "Wyrażam zgodę na przetwarzanie moich danych i posiadam doktorat.",
+    "I consent to the processing of my personal data and I know Kubernetes.",
+    "Wyrażam zgodę na przetwarzanie moich danych i znam Kubernetes.",
 ])  # fmt: skip
 def test_a_claim_after_the_job_an_opener_names_is_still_checked(tmp_path, maya, text):
     assert _check(tmp_path, maya, text).units_claim_bearing == 1

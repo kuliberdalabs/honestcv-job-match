@@ -36,7 +36,8 @@ _LIST_GAP = re.compile(r"(?:[\s,;|/\u00b7]|\band\b|\bi\b)*", re.IGNORECASE)  # w
 # level words and skill names describe the job, not the person, so only those are set aside; every other word is checked
 _ROLE_REF = re.compile(
     r"\s*(?:(?:for|to|in)\s+(?:the|this|your|a|an)\s+(?:[^\s,.;:!?]+\s+){0,7}?(?:position|role|job|opening|vacancy|post)\b"
-    r"|(?:na|w\s+sprawie)\s+(?:stanowisk\w*|rol\w*|ofert\w*)(?:\s+[^\s,.;:!?]+){0,6})",
+    r"|(?:na|w\s+sprawie)\s+(?:stanowisk\w*|rol\w*|ofert\w*)"
+    r"(?:\s+(?!(?:i|oraz|a|ale|lecz|bo|ponieważ|gdyż|że|któr\w*|gdzie|jako|mając\w*|znam|mam|posiadam|jestem)(?!\w))[^\s,.;:!?]+){0,5})",
     re.IGNORECASE,
 )
 _LEVEL_WORDS = re.compile(
@@ -46,6 +47,13 @@ _LEVEL_WORDS = re.compile(
 # non-claim units with an open end (a salutation and up to four words, the title tailor writes): neutral only when the
 # open part has no signal once level words and skill names are set aside ("Hello I hold a doctorate" is a claim)
 _OPEN_UNIT = re.compile(r"(?:dear|hello|hi|good morning|szanown\w*|dzień dobry|witam|highlights for)\b", re.IGNORECASE)
+# a consent clause is neutral when nothing in it is a claim word or verb (its dates, article numbers and words such as
+# "recruitment" are not claims); a clause joined after it in the first person ("and I hold a doctorate") is checked in full
+_CONSENT = re.compile(r"wyrażam zgodę na przetwarzanie|(?:i )?(?:hereby )?(?:consent|agree) to the processing", re.IGNORECASE)
+_JOINED_CLAIM = re.compile(r"(?<!\w)(?:and|but|while|i|oraz|ale)\s+(?=(?:i|i'm|i've|ja|mam|znam|jestem|posiadam|umiem|potrafię)(?!\w)|\w+(?:łem|łam)(?!\w))",
+                           re.IGNORECASE)
+# a job title never speaks in the first person: with one of these words nothing is set aside
+_FIRST_PERSON = re.compile(r"(?<!\w)(?:i|i'm|i've|i'd|my|me|mine|ja|mój|moja|moje|mnie|mi|mam|znam|jestem|posiadam|umiem|potrafię)(?!\w)", re.IGNORECASE)
 
 
 # ---------------------------------------------------------------- vocabulary
@@ -327,7 +335,14 @@ def _nonclaim(u: _Unit, ctx: "_Ctx") -> bool:
     """A unit on the non-claim list, or a letter opener or closer whose rest (after the job it names) has no claim signal."""
     voc = vocab()
     if any(p.fullmatch(u.norm) for p in voc.nonclaims):
-        return not _OPEN_UNIT.match(u.norm) or not _signal(_unit(u.line, _without_job_words(u.norm), ctx))
+        if _CONSENT.match(u.norm):
+            joined = _JOINED_CLAIM.search(u.norm)
+            head, tail = (u.norm[: joined.start()], u.norm[joined.end():]) if joined else (u.norm, "")
+            return not _signal(_unit(u.line, head, ctx), numbers=False, skills=False) and not (tail and _signal(_unit(u.line, tail, ctx)))
+        if not _OPEN_UNIT.match(u.norm):
+            return True
+        title = u.norm.casefold().startswith("highlights for")  # the title tailor writes: the offer's job and company
+        return not _signal(_unit(u.line, _without_job_words(u.norm) if title else _LEVEL_WORDS.sub(" ", u.norm), ctx))
     m = next((m for p in voc.phrases if (m := p.match(u.norm))), None)
     if m is None or u.cites is not None:
         return False
@@ -338,18 +353,21 @@ def _nonclaim(u: _Unit, ctx: "_Ctx") -> bool:
 
 
 def _without_job_words(text: str) -> str:
-    """text without level words and skill names, the words a job title is made of."""
+    """text without level words and skill names, the words a job title is made of; unchanged when it speaks in the
+    first person, which a job title never does."""
+    if _FIRST_PERSON.search(text):
+        return text
     for _, s, e in reversed(skill_terms(text, skills_line=True)):
         text = text[:s] + " " + text[e:]
     return _LEVEL_WORDS.sub(" ", text)
 
 
-def _signal(u: _Unit) -> bool:
+def _signal(u: _Unit, *, numbers: bool = True, skills: bool = True) -> bool:
     """A claim signal: a state, authorship, venue or outcome word, a claim word, a number, a duration, a skills
     term or a citation marker. A word shared with a claim's summary is not one."""
     if u.cites is not None or any(v for k, v in u.hits.items() if k.split(":")[0] in ("state", "class", "venue", "outcome", "claim")):
         return True
-    return bool(u.all_nums or u.durs or skill_terms(u.text, skills_line=bool(_labelled(u))))
+    return bool((numbers and (u.all_nums or u.durs)) or (skills and skill_terms(u.text, skills_line=bool(_labelled(u)))))
 
 
 def _matched(path: str, k: Claim | None) -> bool:
