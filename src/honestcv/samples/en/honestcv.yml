@@ -1,0 +1,51 @@
+# Fictional sample. Any resemblance to real people or companies is accidental.
+# Settings for the English demo workspace (Maya Lindqvist, fictional). Every key is optional.
+profile:
+  level: mid             # intern | junior | mid | senior | lead. null = level is not scored (never guessed)
+  years: 6               # years in analytics work; CV dates alone give 10
+  target_titles: ["data analyst", "reporting analyst", "support operations analyst"]
+  skills_add: []         # skills the CV reader missed
+  skills_remove: []      # skills it found that you do not want matched
+
+preferences:             # anything left empty is simply not scored
+  remote: [remote, hybrid]
+  countries: [SE]
+  cities: []
+  contract: []           # empty: contract form is not scored
+  min_salary: [{amount: 42000, currency: SEK, unit: month}]
+  deny_titles: ["platform engineer"]
+  deny_terms: []
+  freshness_days: 30     # older offers are filtered out
+
+search:
+  keywords: []           # empty = your top 5 skills + target titles
+  sources: [himalayas, remoteok, weworkremotely, arbeitnow]
+  companies:             # public job boards of companies you name; nothing is discovered for you
+    greenhouse: []
+    lever: []
+    lever_eu: []
+    ashby: []
+
+output:
+  csv_delimiter: ","      # ";" if Excel shows everything in one column
+
+scoring:
+  criteria:              # weights must sum to 100
+    - {id: skills,   type: skills_coverage, weight: 45, nice_to_have_credit: 0.5}
+    - {id: title,    type: title_match,     weight: 15, threshold: 2}
+    - {id: level,    type: level,           weight: 10, points: {CORE: 1.0, STRETCH: 0.5, DOWNSHIFT: 0.5}}
+    - {id: location, type: location,        weight: 10}
+    - {id: salary,   type: salary,          weight: 10, near_ratio: 0.8}
+    - {id: contract, type: contract,        weight: 5}
+    - {id: language, type: language,        weight: 5}
+  penalties:
+    - {code: years_gap, steps: [{min_gap: 1, points: -5}, {min_gap: 3, points: -10}]}
+    - {code: hard_requirement_missing, points: -10}
+  surface:               # when an offer is shown, per layer
+    CORE:      {min_match: 50}
+    STRETCH:   {min_match: 50}
+    DOWNSHIFT: {min_match: 45}
+  bands: {strong: 75, good: 60}     # colour only; never overrides surface
+  min_applicable_weight: 50          # below this the result is low confidence: listed, never ranked
+
+demo_today: 2026-10-10   # the demo always runs on this date, so its output does not change

@@ -1,0 +1,359 @@
+# Word lists for the claims checker, English and Polish. Hand-written for honestcv.
+#
+# Entry syntax (the same as hit() in textutil): a bare entry matches a whole word or phrase, "word*" matches
+# any word that starts with "word". Matching ignores case. A hyphen in an entry also matches a space or
+# nothing, so "go-live" matches "go live" and "golive".
+#
+# Polish verbs are listed by stem prefix, so one entry covers the gendered and plural forms:
+# "wdrożył*" matches wdrożyłem, wdrożyłam, wdrożyliśmy.
+
+# Verbs and nouns that imply a state of the ladder built < tested < shipped < used < acknowledged < paid,
+# or one of the two side tracks (generated, non_cash_value).
+states:
+  built:
+    - build
+    - builds
+    - built
+    - building
+    - create
+    - creates
+    - created
+    - develop
+    - develops
+    - developed
+    - developing
+    - implement
+    - implements
+    - implemented
+    - implementing
+    - coded
+    - wrote
+    - written
+    - prototyped
+    - assembled
+    - zbudował*
+    - budował*
+    - stworzył*
+    - tworzył*
+    - przygotował*
+    - przygotowywał*
+    - opracował*
+    - opracowywał*
+    - zaprojektował*
+    - zaimplementował*
+    - napisał*
+    - zakodował*
+  tested:
+    - tested
+    - validated
+    - verified
+    - piloted
+    - przetestował*
+    - testował*
+    - zweryfikował*
+  shipped:
+    - deploy
+    - deploys
+    - deployed
+    - deploying
+    - deployment
+    - deployments
+    - shipped
+    - launch
+    - launches
+    - launched
+    - launching
+    - deliver
+    - delivers
+    - delivered
+    - delivering
+    - delivery
+    - deliveries
+    - roll out
+    - rolls out
+    - rolled out
+    - rollout
+    - rollouts
+    - go-live
+    - went live
+    - handed over
+    - wdroż*
+    - wdrażał*
+    - wdrażani*
+    - uruchomił*
+    - uruchomieni*
+    - dostarczył*
+    - dostarczeni*
+    - przekazał*
+  used:
+    - use
+    - uses
+    - used
+    - in use
+    - adopted
+    - relied on
+    - rely on
+    - używa
+    - używają
+    - używał*
+    - używan*
+    - korzysta
+    - korzystają
+    - korzystał*
+  acknowledged:
+    - acknowledged
+    - recognized
+    - recognised
+    - praised
+    - endorsed
+    - awarded
+    - award
+    - recognition
+    - endorsement
+    - doceni*
+    - nagrodzon*
+    - wyróżnion*
+    - wyróżnieni*
+  paid:
+    - sold
+    - sell
+    - sells
+    - invoiced
+    - billed
+    - paid
+    - sale
+    - revenue
+    - invoice
+    - invoices
+    - sprzedał*
+    - sprzedaż
+    - przychód
+    - przychody
+    - zafakturował*
+  generated:
+    - generate
+    - generates
+    - generated
+    - auto-generated
+    - wygenerował*
+    - generował*
+  non_cash_value:
+    - in exchange for
+    - barter*
+    - voucher
+    - vouchers
+    - w zamian za
+
+# Words that, with a claim whose only value was non-cash, describe it as pay (guard 6j).
+pay_words:
+  - paid
+  - pay
+  - salary
+  - fee
+  - fees
+  - invoice
+  - invoiced
+  - wynagrodzeni*
+  - zapłat*
+  - płatn*
+  - honorari*
+  - faktur*
+
+# Authorship classes (guard 6g). Verbs and nouns; "author of" and "autor" are the authored class.
+authorship:
+  authored:
+    - wrote
+    - write
+    - writes
+    - written
+    - coded
+    - implemented
+    - implement
+    - implements
+    - developed
+    - develop
+    - develops
+    - built
+    - build
+    - builds
+    - building
+    - authored
+    - author of
+    - creator of
+    - napisał*
+    - zaimplementował*
+    - zbudował*
+    - opracował*
+    - zakodował*
+    - autor
+    - autorka
+    - autorem
+    - autorką
+    - twórca
+    - twórczyni
+    - twórcą
+  led:
+    - led
+    - lead
+    - leads
+    - leading
+    - managed
+    - manage
+    - manages
+    - managing
+    - headed
+    - owned
+    - prowadził*
+    - kierował*
+    - zarządzał*
+  contributed:
+    - contributed
+    - contribute
+    - contributes
+    - helped
+    - supported
+    - assisted
+    - co-developed
+    - co-authored
+    - współtworzył*
+    - pomagał*
+    - pomogł*
+    - wspierał*
+  directed:
+    - commissioned
+    - directed
+    - specified
+    - oversaw
+    - oversee
+    - oversees
+    - overseeing
+    - outsourced
+    - zlecił*
+    - zlecał*
+    - nadzorował*
+    - wyspecyfikował*
+
+# Venue verbs name where something appeared. They imply no ladder state and are checked only against
+# quantities[].venue.
+venue:
+  - published
+  - publish
+  - publishes
+  - shared
+  - released
+  - opublikował*
+  - udostępnił*
+
+# Outcome words (guard 6m). Outcomes are deny-by-default: each needs an outcomes_allowed entry.
+outcomes:
+  - improved
+  - improve
+  - improves
+  - reduced
+  - reduce
+  - reduces
+  - increased
+  - increase
+  - increases
+  - saved
+  - saves
+  - cut
+  - cuts
+  - boosted
+  - boosts
+  - grew
+  - doubled
+  - tripled
+  - halved
+  - accelerated
+  - streamlined
+  - optimized
+  - optimised
+  - lowered
+  - zwiększ*
+  - zmniejsz*
+  - popraw*
+  - skróci*
+  - przyspiesz*
+  - usprawni*
+  - zoptymalizow*
+  - obniż*
+  - zaoszczędz*
+
+# Scope words (guard 6d). A claim may allow some of them in scope_words_allowed.
+scope:
+  - production
+  - enterprise
+  - company-wide
+  - across the company
+  - across the organization
+  - across the organisation
+  - organization-wide
+  - organisation-wide
+  - team of
+  - global
+  - produkcyjnie
+  - w całej firmie
+  - zespół
+  - zespoł*
+
+# Plural beneficiary nouns (guard 6d): they need beneficiaries.count of 2 or more.
+# Polish forms are plural only; "firm" is the genitive plural.
+beneficiaries:
+  - clients
+  - customers
+  - companies
+  - firms
+  - organizations
+  - organisations
+  - stores
+  - departments
+  - teams
+  - users
+  - klienci
+  - klientów
+  - klientom
+  - klientami
+  - klientach
+  - firm
+  - firmom
+  - firmami
+  - firmach
+  - działy
+  - działów
+  - działom
+  - działami
+  - działach
+  - sklepy
+  - sklepów
+  - sklepom
+  - sklepami
+  - sklepach
+
+# Negations. The checker reads them from the raw word sequence. Words ending in "n't" count too.
+negations:
+  - no
+  - not
+  - never
+  - nie
+  - brak
+  - żadn*
+
+# Other words that make a unit claim-bearing.
+claim_words:
+  certification: [certified, certificate, certificates, certification, certifications, degree, bsc, msc, mba, phd,
+                  licencjat, magister, inżynier, certyfikat*]
+  expertise: [expert, experts, proficient, fluent, advanced, native, biegł*, zaawansowan*, ekspert*]
+  seniority: [intern, trainee, staż, stażysta, junior, młodszy, mid, regular, senior, starszy, lead, staff,
+              principal, head]
+  languages: [english, swedish, german, polish, french, spanish, italian, norwegian, danish, finnish, dutch,
+              portuguese, russian, ukrainian, czech, chinese, japanese, angielsk*, niemieck*, szwedzk*, polsk*,
+              hiszpańsk*, francusk*, włosk*, rosyjsk*, ukraińsk*, czesk*]
+  cefr: [a1, a2, b1, b2, c1, c2]
+
+# Capitalized words that never name an employer or product (guard 6l): days and months.
+not_entities: [monday, tuesday, wednesday, thursday, friday, saturday, sunday, january, february, march, april,
+               may, june, july, august, september, october, november, december]
+
+# A unit that starts with one of these labels is a skills line.
+skills_labels: [skills, key skills, technical skills, tech stack, umiejętności, technologie]

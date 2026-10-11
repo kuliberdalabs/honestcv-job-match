@@ -1,0 +1,46 @@
+{
+  "data": [
+    {
+      "slug": "data-analyst-berlin-1001",
+      "company_name": "Vossgrind Labs",
+      "title": "Data Analyst (m/f/d)",
+      "description": "<p>We analyse grocery demand with <em>SQL</em>.</p>",
+      "remote": false,
+      "url": "https://arbeitnow.invalid/jobs/companies/vossgrind-labs/data-analyst-berlin-1001",
+      "tags": [
+        "Data"
+      ],
+      "job_types": [
+        "Full Time"
+      ],
+      "location": "Berlin",
+      "created_at": 1791665716
+    },
+    {
+      "slug": "support-agent-remote-1002",
+      "company_name": "Brennvik Parcel",
+      "title": "Support Agent",
+      "description": "<p>Answer parcel questions.</p>",
+      "remote": true,
+      "url": "https://arbeitnow.invalid/jobs/companies/brennvik-parcel/support-agent-remote-1002",
+      "tags": [
+        "Support"
+      ],
+      "job_types": [],
+      "location": "Hamburg",
+      "created_at": 1791660000
+    }
+  ],
+  "links": {
+    "first": "https://arbeitnow.invalid/api/job-board-api?page=1",
+    "last": null,
+    "prev": null,
+    "next": "https://arbeitnow.invalid/api/job-board-api?page=2"
+  },
+  "meta": {
+    "current_page": 1,
+    "per_page": 2,
+    "terms": "Fictional terms line for tests.",
+    "info": "Fictional info line for tests."
+  }
+}

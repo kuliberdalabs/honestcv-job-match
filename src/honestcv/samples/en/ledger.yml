@@ -1,0 +1,86 @@
+# Fictional sample. Any resemblance to real people or companies is accidental.
+schema_version: 1
+person:
+  name: Maya Lindqvist            # fictional
+  as_of: 2026-09-01
+  stale_after_days: 365
+
+rules:                            # optional; forbidden_phrases is empty by default, these two are sample entries
+  forbidden_phrases:
+    - {pattern: '(?i)\bsenior\b', reason: "seniority not evidenced"}
+    - {pattern: '(?i)\bhead of\b', reason: "title not held"}
+  thresholds: {exact: 0.90, match: 0.60, ambiguous: 0.35}
+  verbs_extra: {}                 # e.g. {shipped: ["went live with"]}
+
+claims:
+  - id: backlog-dashboard
+    kind: delivery
+    summary: Weekly ticket-backlog dashboard for the customer support department
+    skills: [sql, looker studio, google sheets]
+    confirmed:
+      built:   [{type: file,            ref: evidence/backlog/dashboard-export.txt,     date: 2024-02-12}]
+      shipped: [{type: handover_record, ref: evidence/backlog/handover-note.txt,        date: 2024-03-04}]
+      used:    [{type: usage_evidence,  ref: evidence/backlog/monday-review-agenda.txt, date: 2024-05-06}]
+    quantities:
+      - {name: teams_using, value: 3, unit: team, state: used}
+    beneficiaries: {count: 3, kind: support teams}
+    authorship: {role: sole, agent_assisted: false, can_defend_end_to_end: true}
+    not_confirmed: [acknowledged, faster response times, company-wide rollout]
+    allowed:
+      - "Built the weekly ticket-backlog dashboard that three support teams use in their Monday reviews."
+    review_by: 2027-03-01
+
+  - id: tag-cleanup
+    kind: delivery
+    summary: Help-desk ticket tag cleanup
+    skills: [zendesk]               # excel stays CV-only, so the worked example's backing is (4, 5)
+    confirmed:
+      built:   [{type: file,            ref: evidence/tags/tag-map.txt,            date: 2025-04-07}]
+      shipped: [{type: handover_record, ref: evidence/tags/change-note.txt,        date: 2025-04-28}]
+      used:    [{type: usage_evidence,  ref: evidence/tags/tag-usage-2025-06.txt,  date: 2025-06-30}]
+    quantities:
+      - {name: tags_before, value: 41, unit: tag, state: shipped}
+      - {name: tags_after,  value: 18, unit: tag, state: shipped}
+    outcomes_allowed: ["cut the tag list from 41 to 18"]
+    authorship: {role: led, agent_assisted: false, can_defend_end_to_end: true}
+    not_confirmed: [shorter handling time, customer satisfaction gain]
+    allowed:
+      - "Led the help-desk tag cleanup that cut the tag list from 41 to 18."
+    review_by: 2027-03-01
+
+  - id: churn-capstone
+    kind: artifact
+    summary: Churn prediction model built as an evening-course capstone
+    skills: [python, pandas, scikit-learn]
+    confirmed:
+      built:  [{type: repo,        ref: evidence/churn/repo-link.txt,         date: 2025-11-16}]
+      tested: [{type: test_record, ref: evidence/churn/graded-assignment.txt, date: 2025-12-01}]
+    authorship: {role: sole, agent_assisted: true, can_defend_end_to_end: true}
+    not_confirmed: [production use, used, deployed]
+    required_qualifiers: [course capstone]
+    allowed:
+      - "Built a churn prediction model in Python with pandas and scikit-learn as a course capstone."
+    review_by: 2027-03-01
+
+  - id: ml-production-ceiling
+    kind: ceiling
+    statement: "No machine-learning model in production as of 2026-09-01."
+    forbidden_here:
+      - '(?i)\b(deployed|shipped|launched|put)\s+((a|the|my|our)\s+)?((churn|ml|machine[- ]learning)\s+)?models?\s+(to|in|into)\s+production\b'
+      - '(?i)\bproduction (ml|machine[- ]learning)\b'
+      - '(?i)\bmlops\b'
+    blocks_requirements:
+      - '(?i)(experience|track record) (deploying|in deploying|with deploying) (ml|machine[- ]learning) models'
+      - '(?i)models? (to|in|into) production'
+    allowed:
+      - "My machine-learning work so far is course work; none of it runs in production."
+    review_by: 2027-03-01
+
+  - id: support-career
+    kind: biography
+    statement: "Customer support agent 2016-2020, support operations analyst 2020-2026"
+    skills: [customer support, english, swedish]
+    facts: {start_year: 2016, end_year: 2026, precision: year}
+    allowed:
+      - "Customer support and support operations at a parcel company, 2016-2026."
+    review_by: 2027-03-01

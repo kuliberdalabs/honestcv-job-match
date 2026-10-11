@@ -1,0 +1,241 @@
+{
+  "_note": "Fictional sample. Any resemblance to real people or companies is accidental.",
+  "offers": [
+    {
+      "requisition_id": "tallgrove-data-analyst",
+      "title": "Data Analyst",
+      "company": "Tallgrove Analytics",
+      "url": "https://jobs.tallgrove.invalid/openings/data-analyst",
+      "location": "Remote, Sweden",
+      "countries": [
+        "SE"
+      ],
+      "remote": "remote",
+      "skills": [
+        "sql",
+        "python",
+        "looker studio",
+        "excel",
+        "airflow",
+        "dbt"
+      ],
+      "skills_nice": [
+        "pandas",
+        "tableau"
+      ],
+      "languages": [
+        "en"
+      ],
+      "salary_min": 40000,
+      "salary_max": 48000,
+      "currency": "SEK",
+      "salary_unit": "month",
+      "posted_at": "2026-10-06",
+      "valid_through": "2026-11-06",
+      "description": "Tallgrove Analytics helps parcel and retail companies understand their delivery data. We are hiring a data analyst for our Nordic team.\n\nOur stack: SQL, Python, Looker Studio, Excel, Airflow and dbt. You will build reports for operations managers and keep the weekly dashboards accurate.\n\nRequirements\n- 3+ years of experience\n- Comfort with SQL and spreadsheets\n- Clear written communication\n\nNice to have: pandas, Tableau.\n\nWe work remotely across Sweden and meet in person twice a year.\n\nFluent English required."
+    },
+    {
+      "requisition_id": "quarrylane-analytics-engineer",
+      "title": "Analytics Engineer",
+      "company": "Quarry Lane Software",
+      "url": "https://careers.quarrylane.invalid/jobs/analytics-engineer",
+      "location": "Stockholm, Sweden",
+      "countries": [
+        "SE"
+      ],
+      "remote": "hybrid",
+      "contract": [
+        "employment"
+      ],
+      "skills": [
+        "sql",
+        "python",
+        "dbt",
+        "looker studio"
+      ],
+      "skills_nice": [
+        "pandas"
+      ],
+      "languages": [
+        "en"
+      ],
+      "salary_min": 52000,
+      "salary_max": 60000,
+      "currency": "SEK",
+      "salary_unit": "month",
+      "posted_at": "2026-10-03",
+      "description": "Quarry Lane Software builds planning tools for warehouses. Our data team is small and works closely with product.\n\nRequirements\n- 5+ years of experience with data work\n- Strong SQL and Python\n- Experience with dbt and Looker Studio\n\nNice to have: pandas.\n\nHybrid role in Stockholm, two office days a week. Fluent English."
+    },
+    {
+      "requisition_id": "mossby-support-operations-analyst",
+      "title": "Support Operations Analyst",
+      "company": "Mossby Support Services",
+      "url": "https://mossby.invalid/careers/support-operations-analyst",
+      "location": "Malmö, Sweden",
+      "countries": [
+        "SE"
+      ],
+      "remote": "onsite",
+      "contract": [
+        "employment"
+      ],
+      "skills": [
+        "zendesk",
+        "customer support",
+        "sql",
+        "excel",
+        "power bi",
+        "tableau"
+      ],
+      "skills_nice": [
+        "google sheets",
+        "looker studio"
+      ],
+      "languages": [
+        "en",
+        "sv"
+      ],
+      "posted_at": "2026-10-01",
+      "description": "Mossby Support Services runs outsourced customer support for retail brands. We need an analyst who keeps our help-desk data clean and our reports on time.\n\nRequirements\n- 2+ years in a support operations or reporting role\n- Zendesk administration and SQL\n- Tableau is required for our client dashboards.\n\nNice to have: Google Sheets, Looker Studio.\n\nOn-site in Malmö, five days a week. Fluent English and Swedish."
+    },
+    {
+      "requisition_id": "examplebank-junior-reporting-analyst",
+      "title": "Junior Reporting Analyst",
+      "company": "Example Bank",
+      "url": "https://jobs.examplebank.invalid/vacancies/junior-reporting-analyst",
+      "location": "Stockholm, Sweden",
+      "countries": [
+        "SE"
+      ],
+      "remote": "onsite",
+      "contract": [
+        "employment"
+      ],
+      "skills": [
+        "excel",
+        "sql",
+        "looker studio",
+        "tableau",
+        "power bi"
+      ],
+      "skills_nice": [
+        "python"
+      ],
+      "languages": [
+        "sv",
+        "en"
+      ],
+      "salary_min": 28000,
+      "salary_max": 32000,
+      "currency": "SEK",
+      "salary_unit": "month",
+      "posted_at": "2026-09-28",
+      "description": "Example Bank is looking for a junior reporting analyst to join the finance reporting team in Stockholm.\n\nRequirements\n- At least 1 year of experience with reporting\n- Excel, SQL and Looker Studio\n- Swedish and English, written and spoken\n\nNice to have: Python.\n\nOffice based, five days a week."
+    },
+    {
+      "requisition_id": "tinwhistle-sales-representative",
+      "title": "Sales Representative",
+      "company": "Tinwhistle Leads",
+      "url": "https://tinwhistle.invalid/jobs/sales-representative",
+      "location": "Remote",
+      "countries": [
+        "SE"
+      ],
+      "remote": "remote",
+      "contract": [
+        "freelance"
+      ],
+      "languages": [
+        "en"
+      ],
+      "posted_at": "2026-10-08",
+      "description": "Tinwhistle Leads books meetings for software vendors. Call prospects, qualify them and book demos.\n\nPay: this role is commission-based only. There is no base salary.\n\nFluent English."
+    },
+    {
+      "requisition_id": "examplecloud-platform-engineer",
+      "title": "Platform Engineer",
+      "company": "Example Cloud",
+      "url": "https://careers.examplecloud.invalid/platform-engineer",
+      "location": "Remote, Sweden",
+      "countries": [
+        "SE"
+      ],
+      "remote": "remote",
+      "contract": [
+        "employment"
+      ],
+      "skills": [
+        "kubernetes",
+        "python",
+        "sql"
+      ],
+      "languages": [
+        "en"
+      ],
+      "salary_min": 60000,
+      "salary_max": 70000,
+      "currency": "SEK",
+      "salary_unit": "month",
+      "posted_at": "2026-10-02",
+      "description": "Example Cloud runs managed databases for small companies. You will keep our container platform healthy and our deploys boring.\n\nRequirements\n- 4+ years of experience running Kubernetes\n- Python for tooling\n\nFluent English."
+    },
+    {
+      "requisition_id": "vossgrind-machine-learning-engineer",
+      "title": "Machine Learning Engineer",
+      "company": "Vossgrind Labs",
+      "url": "https://vossgrind.invalid/jobs/machine-learning-engineer",
+      "location": "Remote, Sweden",
+      "countries": [
+        "SE"
+      ],
+      "remote": "remote",
+      "contract": [
+        "employment"
+      ],
+      "skills": [
+        "python",
+        "sql",
+        "scikit-learn",
+        "pandas"
+      ],
+      "languages": [
+        "en"
+      ],
+      "salary_min": 55000,
+      "salary_max": 65000,
+      "currency": "SEK",
+      "salary_unit": "month",
+      "posted_at": "2026-09-25",
+      "description": "Vossgrind Labs builds demand forecasts for grocery chains.\n\nRequirements\n- Experience deploying machine learning models to production\n- Strong Python and SQL\n- 3+ years of experience\n\nFluent English."
+    },
+    {
+      "requisition_id": "harrowmere-revenue-reporting-analyst",
+      "title": "Revenue Reporting Analyst",
+      "company": "Harrowmere Hotels",
+      "url": "https://harrowmere.invalid/careers/revenue-reporting-analyst",
+      "location": "Gothenburg, Sweden",
+      "countries": [
+        "SE"
+      ],
+      "remote": "hybrid",
+      "contract": [
+        "employment"
+      ],
+      "skills": [
+        "sql",
+        "excel",
+        "looker studio"
+      ],
+      "languages": [
+        "en"
+      ],
+      "salary_min": 41000,
+      "salary_max": 46000,
+      "currency": "SEK",
+      "salary_unit": "month",
+      "posted_at": "2026-09-20",
+      "valid_through": "2026-10-01",
+      "description": "Harrowmere Hotels runs twelve hotels in Scandinavia. You will report on bookings and room revenue.\n\nRequirements\n- 2+ years of experience with SQL and Excel\n- Looker Studio or a similar tool\n\nFluent English."
+    }
+  ]
+}

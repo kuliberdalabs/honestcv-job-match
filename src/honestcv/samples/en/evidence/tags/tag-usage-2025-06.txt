@@ -1,0 +1,3 @@
+# Fictional sample. Any resemblance to real people or companies is accidental.
+Stub evidence file for the sample ledger (claim tag-cleanup, state used).
+Tag usage, June 2025: tickets tagged with the 18 tags of the new list.

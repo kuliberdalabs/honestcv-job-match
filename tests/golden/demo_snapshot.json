@@ -1,0 +1,1837 @@
+{
+ "schema": "honestcv.scan.v1",
+ "run_id": "2026-10-10T00-00-00",
+ "today": "2026-10-10",
+ "status": "PASS",
+ "sources": [
+  {
+   "id": "himalayas",
+   "state": "skipped",
+   "http_status": null,
+   "offers": 0,
+   "message": "offline, and nothing is cached"
+  },
+  {
+   "id": "remoteok",
+   "state": "skipped",
+   "http_status": null,
+   "offers": 0,
+   "message": "offline, and nothing is cached"
+  },
+  {
+   "id": "weworkremotely",
+   "state": "skipped",
+   "http_status": null,
+   "offers": 0,
+   "message": "offline, and nothing is cached"
+  },
+  {
+   "id": "arbeitnow",
+   "state": "skipped",
+   "http_status": null,
+   "offers": 0,
+   "message": "offline, and nothing is cached"
+  },
+  {
+   "id": "inbox",
+   "state": "ok",
+   "http_status": null,
+   "offers": 8,
+   "message": "1 file, 8 offers"
+  }
+ ],
+ "cvs": [
+  "maya-analytics.md",
+  "maya-support-ops.md"
+ ],
+ "offers": [
+  {
+   "id": "085450678e",
+   "source": "import:json",
+   "title": "Data Analyst",
+   "company": "Tallgrove Analytics",
+   "url": "https://jobs.tallgrove.invalid/openings/data-analyst",
+   "apply_url": null,
+   "other_urls": [],
+   "location": "Remote, Sweden",
+   "countries": [
+    "SE"
+   ],
+   "remote": "remote",
+   "contract": [],
+   "level": null,
+   "skills": [
+    "sql",
+    "python",
+    "looker studio",
+    "excel",
+    "airflow",
+    "dbt"
+   ],
+   "skills_nice": [
+    "pandas",
+    "tableau"
+   ],
+   "languages": [
+    "en"
+   ],
+   "salary": {
+    "min": 40000.0,
+    "max": 48000.0,
+    "currency": "SEK",
+    "unit": "month",
+    "unit_assumed": false
+   },
+   "description": "Tallgrove Analytics helps parcel and retail companies understand their delivery data. We are hiring a data analyst for our Nordic team.\n\nOur stack: SQL, Python, Looker Studio, Excel, Airflow and dbt. You will build reports for operations managers and keep the weekly dashboards accurate.\n\nRequirements\n- 3+ years of experience\n- Comfort with SQL and spreadsheets\n- Clear written communication\n\nNice to have: pandas, Tableau.\n\nWe work remotely across Sweden and meet in person twice a year.\n\nFluent English required.",
+   "posted_at": "2026-10-06",
+   "valid_through": "2026-11-06",
+   "requisition_id": "tallgrove-data-analyst",
+   "attribution": "your file sample-offers.json",
+   "thin": false,
+   "possible_duplicate_of": null
+  },
+  {
+   "id": "1489152306",
+   "source": "import:json",
+   "title": "Sales Representative",
+   "company": "Tinwhistle Leads",
+   "url": "https://tinwhistle.invalid/jobs/sales-representative",
+   "apply_url": null,
+   "other_urls": [],
+   "location": "Remote",
+   "countries": [
+    "SE"
+   ],
+   "remote": "remote",
+   "contract": [
+    "freelance"
+   ],
+   "level": null,
+   "skills": [],
+   "skills_nice": [],
+   "languages": [
+    "en"
+   ],
+   "salary": null,
+   "description": "Tinwhistle Leads books meetings for software vendors. Call prospects, qualify them and book demos.\n\nPay: this role is commission-based only. There is no base salary.\n\nFluent English.",
+   "posted_at": "2026-10-08",
+   "valid_through": null,
+   "requisition_id": "tinwhistle-sales-representative",
+   "attribution": "your file sample-offers.json",
+   "thin": false,
+   "possible_duplicate_of": null
+  },
+  {
+   "id": "53650315c7",
+   "source": "import:json",
+   "title": "Analytics Engineer",
+   "company": "Quarry Lane Software",
+   "url": "https://careers.quarrylane.invalid/jobs/analytics-engineer",
+   "apply_url": null,
+   "other_urls": [],
+   "location": "Stockholm, Sweden",
+   "countries": [
+    "SE"
+   ],
+   "remote": "hybrid",
+   "contract": [
+    "employment"
+   ],
+   "level": null,
+   "skills": [
+    "sql",
+    "python",
+    "dbt",
+    "looker studio"
+   ],
+   "skills_nice": [
+    "pandas"
+   ],
+   "languages": [
+    "en"
+   ],
+   "salary": {
+    "min": 52000.0,
+    "max": 60000.0,
+    "currency": "SEK",
+    "unit": "month",
+    "unit_assumed": false
+   },
+   "description": "Quarry Lane Software builds planning tools for warehouses. Our data team is small and works closely with product.\n\nRequirements\n- 5+ years of experience with data work\n- Strong SQL and Python\n- Experience with dbt and Looker Studio\n\nNice to have: pandas.\n\nHybrid role in Stockholm, two office days a week. Fluent English.",
+   "posted_at": "2026-10-03",
+   "valid_through": null,
+   "requisition_id": "quarrylane-analytics-engineer",
+   "attribution": "your file sample-offers.json",
+   "thin": false,
+   "possible_duplicate_of": null
+  },
+  {
+   "id": "70ae33d97d",
+   "source": "import:json",
+   "title": "Revenue Reporting Analyst",
+   "company": "Harrowmere Hotels",
+   "url": "https://harrowmere.invalid/careers/revenue-reporting-analyst",
+   "apply_url": null,
+   "other_urls": [],
+   "location": "Gothenburg, Sweden",
+   "countries": [
+    "SE"
+   ],
+   "remote": "hybrid",
+   "contract": [
+    "employment"
+   ],
+   "level": null,
+   "skills": [
+    "sql",
+    "excel",
+    "looker studio"
+   ],
+   "skills_nice": [],
+   "languages": [
+    "en"
+   ],
+   "salary": {
+    "min": 41000.0,
+    "max": 46000.0,
+    "currency": "SEK",
+    "unit": "month",
+    "unit_assumed": false
+   },
+   "description": "Harrowmere Hotels runs twelve hotels in Scandinavia. You will report on bookings and room revenue.\n\nRequirements\n- 2+ years of experience with SQL and Excel\n- Looker Studio or a similar tool\n\nFluent English.",
+   "posted_at": "2026-09-20",
+   "valid_through": "2026-10-01",
+   "requisition_id": "harrowmere-revenue-reporting-analyst",
+   "attribution": "your file sample-offers.json",
+   "thin": false,
+   "possible_duplicate_of": null
+  },
+  {
+   "id": "8d40254616",
+   "source": "import:json",
+   "title": "Machine Learning Engineer",
+   "company": "Vossgrind Labs",
+   "url": "https://vossgrind.invalid/jobs/machine-learning-engineer",
+   "apply_url": null,
+   "other_urls": [],
+   "location": "Remote, Sweden",
+   "countries": [
+    "SE"
+   ],
+   "remote": "remote",
+   "contract": [
+    "employment"
+   ],
+   "level": null,
+   "skills": [
+    "python",
+    "sql",
+    "scikit-learn",
+    "pandas"
+   ],
+   "skills_nice": [],
+   "languages": [
+    "en"
+   ],
+   "salary": {
+    "min": 55000.0,
+    "max": 65000.0,
+    "currency": "SEK",
+    "unit": "month",
+    "unit_assumed": false
+   },
+   "description": "Vossgrind Labs builds demand forecasts for grocery chains.\n\nRequirements\n- Experience deploying machine learning models to production\n- Strong Python and SQL\n- 3+ years of experience\n\nFluent English.",
+   "posted_at": "2026-09-25",
+   "valid_through": null,
+   "requisition_id": "vossgrind-machine-learning-engineer",
+   "attribution": "your file sample-offers.json",
+   "thin": false,
+   "possible_duplicate_of": null
+  },
+  {
+   "id": "9735a2608f",
+   "source": "import:json",
+   "title": "Support Operations Analyst",
+   "company": "Mossby Support Services",
+   "url": "https://mossby.invalid/careers/support-operations-analyst",
+   "apply_url": null,
+   "other_urls": [],
+   "location": "Malmö, Sweden",
+   "countries": [
+    "SE"
+   ],
+   "remote": "onsite",
+   "contract": [
+    "employment"
+   ],
+   "level": null,
+   "skills": [
+    "zendesk",
+    "customer support",
+    "sql",
+    "excel",
+    "power bi",
+    "tableau"
+   ],
+   "skills_nice": [
+    "google sheets",
+    "looker studio"
+   ],
+   "languages": [
+    "en",
+    "sv"
+   ],
+   "salary": null,
+   "description": "Mossby Support Services runs outsourced customer support for retail brands. We need an analyst who keeps our help-desk data clean and our reports on time.\n\nRequirements\n- 2+ years in a support operations or reporting role\n- Zendesk administration and SQL\n- Tableau is required for our client dashboards.\n\nNice to have: Google Sheets, Looker Studio.\n\nOn-site in Malmö, five days a week. Fluent English and Swedish.",
+   "posted_at": "2026-10-01",
+   "valid_through": null,
+   "requisition_id": "mossby-support-operations-analyst",
+   "attribution": "your file sample-offers.json",
+   "thin": false,
+   "possible_duplicate_of": null
+  },
+  {
+   "id": "ab19b2740d",
+   "source": "import:json",
+   "title": "Junior Reporting Analyst",
+   "company": "Example Bank",
+   "url": "https://jobs.examplebank.invalid/vacancies/junior-reporting-analyst",
+   "apply_url": null,
+   "other_urls": [],
+   "location": "Stockholm, Sweden",
+   "countries": [
+    "SE"
+   ],
+   "remote": "onsite",
+   "contract": [
+    "employment"
+   ],
+   "level": null,
+   "skills": [
+    "excel",
+    "sql",
+    "looker studio",
+    "tableau",
+    "power bi"
+   ],
+   "skills_nice": [
+    "python"
+   ],
+   "languages": [
+    "sv",
+    "en"
+   ],
+   "salary": {
+    "min": 28000.0,
+    "max": 32000.0,
+    "currency": "SEK",
+    "unit": "month",
+    "unit_assumed": false
+   },
+   "description": "Example Bank is looking for a junior reporting analyst to join the finance reporting team in Stockholm.\n\nRequirements\n- At least 1 year of experience with reporting\n- Excel, SQL and Looker Studio\n- Swedish and English, written and spoken\n\nNice to have: Python.\n\nOffice based, five days a week.",
+   "posted_at": "2026-09-28",
+   "valid_through": null,
+   "requisition_id": "examplebank-junior-reporting-analyst",
+   "attribution": "your file sample-offers.json",
+   "thin": false,
+   "possible_duplicate_of": null
+  },
+  {
+   "id": "f516f19456",
+   "source": "import:json",
+   "title": "Platform Engineer",
+   "company": "Example Cloud",
+   "url": "https://careers.examplecloud.invalid/platform-engineer",
+   "apply_url": null,
+   "other_urls": [],
+   "location": "Remote, Sweden",
+   "countries": [
+    "SE"
+   ],
+   "remote": "remote",
+   "contract": [
+    "employment"
+   ],
+   "level": null,
+   "skills": [
+    "kubernetes",
+    "python",
+    "sql"
+   ],
+   "skills_nice": [],
+   "languages": [
+    "en"
+   ],
+   "salary": {
+    "min": 60000.0,
+    "max": 70000.0,
+    "currency": "SEK",
+    "unit": "month",
+    "unit_assumed": false
+   },
+   "description": "Example Cloud runs managed databases for small companies. You will keep our container platform healthy and our deploys boring.\n\nRequirements\n- 4+ years of experience running Kubernetes\n- Python for tooling\n\nFluent English.",
+   "posted_at": "2026-10-02",
+   "valid_through": null,
+   "requisition_id": "examplecloud-platform-engineer",
+   "attribution": "your file sample-offers.json",
+   "thin": false,
+   "possible_duplicate_of": null
+  }
+ ],
+ "results": [
+  {
+   "offer_id": "085450678e",
+   "cv_id": "maya-analytics.md",
+   "gate": null,
+   "layer": "CORE",
+   "layer_assumed": false,
+   "criteria": [
+    {
+     "id": "skills",
+     "weight": 45,
+     "applicable": true,
+     "fraction": 0.6429,
+     "points": 30.4511,
+     "note": "4 of 6 required skills, 1 of 2 nice-to-have. Missing: airflow, dbt, tableau.",
+     "quotes": [
+      "...stack: SQL, Python, Looker Studio, Excel, Airflow and dbt. You will build reports for operations...",
+      "...stack: SQL, Python, Looker Studio, Excel, Airflow and dbt. You will build reports for operations managers and...",
+      "...Clear written communication Nice to have: pandas, Tableau. We work remotely across Sweden and meet in person..."
+     ]
+    },
+    {
+     "id": "title",
+     "weight": 15,
+     "applicable": true,
+     "fraction": 1.0,
+     "points": 15.7895,
+     "note": "2 shared word(s) with your title \"data analyst\"",
+     "quotes": [
+      "Data Analyst"
+     ]
+    },
+    {
+     "id": "level",
+     "weight": 10,
+     "applicable": true,
+     "fraction": 1.0,
+     "points": 10.5263,
+     "note": "mid role for a mid profile: CORE",
+     "quotes": [
+      "Requirements - 3+ years of experience - Comfort with SQL and spreadsheets - Clear written communication Nice to..."
+     ]
+    },
+    {
+     "id": "location",
+     "weight": 10,
+     "applicable": true,
+     "fraction": 1.0,
+     "points": 10.5263,
+     "note": "work mode remote; place matches",
+     "quotes": [
+      "Remote, Sweden"
+     ]
+    },
+    {
+     "id": "salary",
+     "weight": 10,
+     "applicable": true,
+     "fraction": 1.0,
+     "points": 10.5263,
+     "note": "48,000 SEK per month against your minimum of 42,000",
+     "quotes": [
+      "48,000 SEK per month"
+     ]
+    },
+    {
+     "id": "contract",
+     "weight": 5,
+     "applicable": false,
+     "fraction": 0.0,
+     "points": 0.0,
+     "note": "n/a: no preference set, weight redistributed",
+     "quotes": []
+    },
+    {
+     "id": "language",
+     "weight": 5,
+     "applicable": true,
+     "fraction": 1.0,
+     "points": 5.2632,
+     "note": "requires English",
+     "quotes": [
+      "...have: pandas, Tableau. We work remotely across Sweden and meet in person twice a year. Fluent English required."
+     ]
+    }
+   ],
+   "penalties": [],
+   "base": 83.0827,
+   "match_pct": 83,
+   "unknowns": [],
+   "requirements": [
+    {
+     "term": "pandas",
+     "must": false,
+     "in_profile": true,
+     "backed_by": [
+      "churn-capstone"
+     ],
+     "quote": "...Clear written communication Nice to have: pandas, Tableau. We work remotely across Sweden and meet..."
+    },
+    {
+     "term": "tableau",
+     "must": false,
+     "in_profile": false,
+     "backed_by": [],
+     "quote": "...Clear written communication Nice to have: pandas, Tableau. We work remotely across Sweden and meet in person..."
+    },
+    {
+     "term": "sql",
+     "must": true,
+     "in_profile": true,
+     "backed_by": [
+      "backlog-dashboard"
+     ],
+     "quote": "...a data analyst for our Nordic team. Our stack: SQL, Python, Looker Studio, Excel, Airflow and dbt. You..."
+    },
+    {
+     "term": "python",
+     "must": true,
+     "in_profile": true,
+     "backed_by": [
+      "churn-capstone"
+     ],
+     "quote": "...a data analyst for our Nordic team. Our stack: SQL, Python, Looker Studio, Excel, Airflow and dbt. You will..."
+    },
+    {
+     "term": "looker studio",
+     "must": true,
+     "in_profile": true,
+     "backed_by": [
+      "backlog-dashboard"
+     ],
+     "quote": "...for our Nordic team. Our stack: SQL, Python, Looker Studio, Excel, Airflow and dbt. You will build reports..."
+    },
+    {
+     "term": "excel",
+     "must": true,
+     "in_profile": true,
+     "backed_by": [],
+     "quote": "...Nordic team. Our stack: SQL, Python, Looker Studio, Excel, Airflow and dbt. You will build reports for..."
+    },
+    {
+     "term": "airflow",
+     "must": true,
+     "in_profile": false,
+     "backed_by": [],
+     "quote": "...stack: SQL, Python, Looker Studio, Excel, Airflow and dbt. You will build reports for operations..."
+    },
+    {
+     "term": "dbt",
+     "must": true,
+     "in_profile": false,
+     "backed_by": [],
+     "quote": "...stack: SQL, Python, Looker Studio, Excel, Airflow and dbt. You will build reports for operations managers and..."
+    }
+   ],
+   "requirements_recognized": 8,
+   "backed": [
+    4,
+    5
+   ],
+   "surfaced": true,
+   "low_confidence": false,
+   "band": "strong"
+  },
+  {
+   "offer_id": "085450678e",
+   "cv_id": "maya-support-ops.md",
+   "gate": null,
+   "layer": "CORE",
+   "layer_assumed": false,
+   "criteria": [
+    {
+     "id": "skills",
+     "weight": 45,
+     "applicable": true,
+     "fraction": 0.2857,
+     "points": 13.5338,
+     "note": "2 of 6 required skills, 0 of 2 nice-to-have. Missing: python, looker studio, airflow, dbt, pandas, tableau.",
+     "quotes": [
+      "...a data analyst for our Nordic team. Our stack: SQL, Python, Looker Studio, Excel, Airflow and dbt. You will...",
+      "...for our Nordic team. Our stack: SQL, Python, Looker Studio, Excel, Airflow and dbt. You will build reports...",
+      "...stack: SQL, Python, Looker Studio, Excel, Airflow and dbt. You will build reports for operations..."
+     ]
+    },
+    {
+     "id": "title",
+     "weight": 15,
+     "applicable": true,
+     "fraction": 1.0,
+     "points": 15.7895,
+     "note": "2 shared word(s) with your title \"data analyst\"",
+     "quotes": [
+      "Data Analyst"
+     ]
+    },
+    {
+     "id": "level",
+     "weight": 10,
+     "applicable": true,
+     "fraction": 1.0,
+     "points": 10.5263,
+     "note": "mid role for a mid profile: CORE",
+     "quotes": [
+      "Requirements - 3+ years of experience - Comfort with SQL and spreadsheets - Clear written communication Nice to..."
+     ]
+    },
+    {
+     "id": "location",
+     "weight": 10,
+     "applicable": true,
+     "fraction": 1.0,
+     "points": 10.5263,
+     "note": "work mode remote; place matches",
+     "quotes": [
+      "Remote, Sweden"
+     ]
+    },
+    {
+     "id": "salary",
+     "weight": 10,
+     "applicable": true,
+     "fraction": 1.0,
+     "points": 10.5263,
+     "note": "48,000 SEK per month against your minimum of 42,000",
+     "quotes": [
+      "48,000 SEK per month"
+     ]
+    },
+    {
+     "id": "contract",
+     "weight": 5,
+     "applicable": false,
+     "fraction": 0.0,
+     "points": 0.0,
+     "note": "n/a: no preference set, weight redistributed",
+     "quotes": []
+    },
+    {
+     "id": "language",
+     "weight": 5,
+     "applicable": true,
+     "fraction": 1.0,
+     "points": 5.2632,
+     "note": "requires English",
+     "quotes": [
+      "...have: pandas, Tableau. We work remotely across Sweden and meet in person twice a year. Fluent English required."
+     ]
+    }
+   ],
+   "penalties": [],
+   "base": 66.1654,
+   "match_pct": 66,
+   "unknowns": [],
+   "requirements": [
+    {
+     "term": "pandas",
+     "must": false,
+     "in_profile": false,
+     "backed_by": [],
+     "quote": "...Clear written communication Nice to have: pandas, Tableau. We work remotely across Sweden and meet..."
+    },
+    {
+     "term": "tableau",
+     "must": false,
+     "in_profile": false,
+     "backed_by": [],
+     "quote": "...Clear written communication Nice to have: pandas, Tableau. We work remotely across Sweden and meet in person..."
+    },
+    {
+     "term": "sql",
+     "must": true,
+     "in_profile": true,
+     "backed_by": [
+      "backlog-dashboard"
+     ],
+     "quote": "...a data analyst for our Nordic team. Our stack: SQL, Python, Looker Studio, Excel, Airflow and dbt. You..."
+    },
+    {
+     "term": "python",
+     "must": true,
+     "in_profile": false,
+     "backed_by": [],
+     "quote": "...a data analyst for our Nordic team. Our stack: SQL, Python, Looker Studio, Excel, Airflow and dbt. You will..."
+    },
+    {
+     "term": "looker studio",
+     "must": true,
+     "in_profile": false,
+     "backed_by": [],
+     "quote": "...for our Nordic team. Our stack: SQL, Python, Looker Studio, Excel, Airflow and dbt. You will build reports..."
+    },
+    {
+     "term": "excel",
+     "must": true,
+     "in_profile": true,
+     "backed_by": [],
+     "quote": "...Nordic team. Our stack: SQL, Python, Looker Studio, Excel, Airflow and dbt. You will build reports for..."
+    },
+    {
+     "term": "airflow",
+     "must": true,
+     "in_profile": false,
+     "backed_by": [],
+     "quote": "...stack: SQL, Python, Looker Studio, Excel, Airflow and dbt. You will build reports for operations..."
+    },
+    {
+     "term": "dbt",
+     "must": true,
+     "in_profile": false,
+     "backed_by": [],
+     "quote": "...stack: SQL, Python, Looker Studio, Excel, Airflow and dbt. You will build reports for operations managers and..."
+    }
+   ],
+   "requirements_recognized": 8,
+   "backed": [
+    1,
+    2
+   ],
+   "surfaced": true,
+   "low_confidence": false,
+   "band": "good"
+  },
+  {
+   "offer_id": "1489152306",
+   "cv_id": "maya-analytics.md",
+   "gate": {
+    "code": "commission_only",
+    "detail": "the text says \"commission-based only\"",
+    "quote": "...qualify them and book demos. Pay: this role is commission-based only. There is no base salary. Fluent English."
+   },
+   "layer": "CORE",
+   "layer_assumed": true,
+   "criteria": [],
+   "penalties": [],
+   "base": 0.0,
+   "match_pct": 0,
+   "unknowns": [],
+   "requirements": [],
+   "requirements_recognized": 0,
+   "backed": [
+    0,
+    0
+   ],
+   "surfaced": false,
+   "low_confidence": false,
+   "band": null
+  },
+  {
+   "offer_id": "1489152306",
+   "cv_id": "maya-support-ops.md",
+   "gate": {
+    "code": "commission_only",
+    "detail": "the text says \"commission-based only\"",
+    "quote": "...qualify them and book demos. Pay: this role is commission-based only. There is no base salary. Fluent English."
+   },
+   "layer": "CORE",
+   "layer_assumed": true,
+   "criteria": [],
+   "penalties": [],
+   "base": 0.0,
+   "match_pct": 0,
+   "unknowns": [],
+   "requirements": [],
+   "requirements_recognized": 0,
+   "backed": [
+    0,
+    0
+   ],
+   "surfaced": false,
+   "low_confidence": false,
+   "band": null
+  },
+  {
+   "offer_id": "53650315c7",
+   "cv_id": "maya-analytics.md",
+   "gate": null,
+   "layer": "STRETCH",
+   "layer_assumed": false,
+   "criteria": [
+    {
+     "id": "skills",
+     "weight": 45,
+     "applicable": true,
+     "fraction": 0.7778,
+     "points": 36.8421,
+     "note": "3 of 4 required skills, 1 of 1 nice-to-have. Missing: dbt.",
+     "quotes": [
+      "...data work - Strong SQL and Python - Experience with dbt and Looker Studio Nice to have: pandas. Hybrid role...",
+      "...Experience with dbt and Looker Studio Nice to have: pandas. Hybrid role in Stockholm, two office days a week....",
+      "...5+ years of experience with data work - Strong SQL and Python - Experience with dbt and Looker..."
+     ]
+    },
+    {
+     "id": "title",
+     "weight": 15,
+     "applicable": true,
+     "fraction": 0.0,
+     "points": 0.0,
+     "note": "no word in common with your target titles",
+     "quotes": [
+      "Analytics Engineer"
+     ]
+    },
+    {
+     "id": "level",
+     "weight": 10,
+     "applicable": true,
+     "fraction": 0.5,
+     "points": 5.2632,
+     "note": "senior role for a mid profile: STRETCH",
+     "quotes": [
+      "Requirements - 5+ years of experience with data work - Strong SQL and Python - Experience with dbt and Looker..."
+     ]
+    },
+    {
+     "id": "location",
+     "weight": 10,
+     "applicable": true,
+     "fraction": 1.0,
+     "points": 10.5263,
+     "note": "work mode hybrid; place matches",
+     "quotes": [
+      "Stockholm, Sweden"
+     ]
+    },
+    {
+     "id": "salary",
+     "weight": 10,
+     "applicable": true,
+     "fraction": 1.0,
+     "points": 10.5263,
+     "note": "60,000 SEK per month against your minimum of 42,000",
+     "quotes": [
+      "60,000 SEK per month"
+     ]
+    },
+    {
+     "id": "contract",
+     "weight": 5,
+     "applicable": false,
+     "fraction": 0.0,
+     "points": 0.0,
+     "note": "n/a: no preference set, weight redistributed",
+     "quotes": []
+    },
+    {
+     "id": "language",
+     "weight": 5,
+     "applicable": true,
+     "fraction": 1.0,
+     "points": 5.2632,
+     "note": "requires English",
+     "quotes": [
+      "...dbt and Looker Studio Nice to have: pandas. Hybrid role in Stockholm, two office days a week. Fluent English."
+     ]
+    }
+   ],
+   "penalties": [],
+   "base": 68.4211,
+   "match_pct": 68,
+   "unknowns": [],
+   "requirements": [
+    {
+     "term": "pandas",
+     "must": false,
+     "in_profile": true,
+     "backed_by": [
+      "churn-capstone"
+     ],
+     "quote": "...Experience with dbt and Looker Studio Nice to have: pandas. Hybrid role in Stockholm, two office days a week...."
+    },
+    {
+     "term": "sql",
+     "must": true,
+     "in_profile": true,
+     "backed_by": [
+      "backlog-dashboard"
+     ],
+     "quote": "...5+ years of experience with data work - Strong SQL and Python - Experience with dbt and Looker..."
+    },
+    {
+     "term": "python",
+     "must": true,
+     "in_profile": true,
+     "backed_by": [
+      "churn-capstone"
+     ],
+     "quote": "...years of experience with data work - Strong SQL and Python - Experience with dbt and Looker Studio Nice to..."
+    },
+    {
+     "term": "dbt",
+     "must": true,
+     "in_profile": false,
+     "backed_by": [],
+     "quote": "...data work - Strong SQL and Python - Experience with dbt and Looker Studio Nice to have: pandas. Hybrid role..."
+    },
+    {
+     "term": "looker studio",
+     "must": true,
+     "in_profile": true,
+     "backed_by": [
+      "backlog-dashboard"
+     ],
+     "quote": "...Strong SQL and Python - Experience with dbt and Looker Studio Nice to have: pandas. Hybrid role in Stockholm,..."
+    }
+   ],
+   "requirements_recognized": 5,
+   "backed": [
+    4,
+    4
+   ],
+   "surfaced": true,
+   "low_confidence": false,
+   "band": "good"
+  },
+  {
+   "offer_id": "53650315c7",
+   "cv_id": "maya-support-ops.md",
+   "gate": null,
+   "layer": "STRETCH",
+   "layer_assumed": false,
+   "criteria": [
+    {
+     "id": "skills",
+     "weight": 45,
+     "applicable": true,
+     "fraction": 0.2222,
+     "points": 10.5263,
+     "note": "1 of 4 required skills, 0 of 1 nice-to-have. Missing: python, dbt, looker studio, pandas.",
+     "quotes": [
+      "...years of experience with data work - Strong SQL and Python - Experience with dbt and Looker Studio Nice to...",
+      "...data work - Strong SQL and Python - Experience with dbt and Looker Studio Nice to have: pandas. Hybrid role...",
+      "...Strong SQL and Python - Experience with dbt and Looker Studio Nice to have: pandas. Hybrid role in Stockholm,..."
+     ]
+    },
+    {
+     "id": "title",
+     "weight": 15,
+     "applicable": true,
+     "fraction": 0.0,
+     "points": 0.0,
+     "note": "no word in common with your target titles",
+     "quotes": [
+      "Analytics Engineer"
+     ]
+    },
+    {
+     "id": "level",
+     "weight": 10,
+     "applicable": true,
+     "fraction": 0.5,
+     "points": 5.2632,
+     "note": "senior role for a mid profile: STRETCH",
+     "quotes": [
+      "Requirements - 5+ years of experience with data work - Strong SQL and Python - Experience with dbt and Looker..."
+     ]
+    },
+    {
+     "id": "location",
+     "weight": 10,
+     "applicable": true,
+     "fraction": 1.0,
+     "points": 10.5263,
+     "note": "work mode hybrid; place matches",
+     "quotes": [
+      "Stockholm, Sweden"
+     ]
+    },
+    {
+     "id": "salary",
+     "weight": 10,
+     "applicable": true,
+     "fraction": 1.0,
+     "points": 10.5263,
+     "note": "60,000 SEK per month against your minimum of 42,000",
+     "quotes": [
+      "60,000 SEK per month"
+     ]
+    },
+    {
+     "id": "contract",
+     "weight": 5,
+     "applicable": false,
+     "fraction": 0.0,
+     "points": 0.0,
+     "note": "n/a: no preference set, weight redistributed",
+     "quotes": []
+    },
+    {
+     "id": "language",
+     "weight": 5,
+     "applicable": true,
+     "fraction": 1.0,
+     "points": 5.2632,
+     "note": "requires English",
+     "quotes": [
+      "...dbt and Looker Studio Nice to have: pandas. Hybrid role in Stockholm, two office days a week. Fluent English."
+     ]
+    }
+   ],
+   "penalties": [],
+   "base": 42.1053,
+   "match_pct": 42,
+   "unknowns": [],
+   "requirements": [
+    {
+     "term": "pandas",
+     "must": false,
+     "in_profile": false,
+     "backed_by": [],
+     "quote": "...Experience with dbt and Looker Studio Nice to have: pandas. Hybrid role in Stockholm, two office days a week...."
+    },
+    {
+     "term": "sql",
+     "must": true,
+     "in_profile": true,
+     "backed_by": [
+      "backlog-dashboard"
+     ],
+     "quote": "...5+ years of experience with data work - Strong SQL and Python - Experience with dbt and Looker..."
+    },
+    {
+     "term": "python",
+     "must": true,
+     "in_profile": false,
+     "backed_by": [],
+     "quote": "...years of experience with data work - Strong SQL and Python - Experience with dbt and Looker Studio Nice to..."
+    },
+    {
+     "term": "dbt",
+     "must": true,
+     "in_profile": false,
+     "backed_by": [],
+     "quote": "...data work - Strong SQL and Python - Experience with dbt and Looker Studio Nice to have: pandas. Hybrid role..."
+    },
+    {
+     "term": "looker studio",
+     "must": true,
+     "in_profile": false,
+     "backed_by": [],
+     "quote": "...Strong SQL and Python - Experience with dbt and Looker Studio Nice to have: pandas. Hybrid role in Stockholm,..."
+    }
+   ],
+   "requirements_recognized": 5,
+   "backed": [
+    1,
+    1
+   ],
+   "surfaced": false,
+   "low_confidence": false,
+   "band": "fair"
+  },
+  {
+   "offer_id": "70ae33d97d",
+   "cv_id": "maya-analytics.md",
+   "gate": {
+    "code": "expired",
+    "detail": "the offer closed on 2026-10-01",
+    "quote": null
+   },
+   "layer": "CORE",
+   "layer_assumed": false,
+   "criteria": [],
+   "penalties": [],
+   "base": 0.0,
+   "match_pct": 0,
+   "unknowns": [],
+   "requirements": [],
+   "requirements_recognized": 0,
+   "backed": [
+    0,
+    0
+   ],
+   "surfaced": false,
+   "low_confidence": false,
+   "band": null
+  },
+  {
+   "offer_id": "70ae33d97d",
+   "cv_id": "maya-support-ops.md",
+   "gate": {
+    "code": "expired",
+    "detail": "the offer closed on 2026-10-01",
+    "quote": null
+   },
+   "layer": "CORE",
+   "layer_assumed": false,
+   "criteria": [],
+   "penalties": [],
+   "base": 0.0,
+   "match_pct": 0,
+   "unknowns": [],
+   "requirements": [],
+   "requirements_recognized": 0,
+   "backed": [
+    0,
+    0
+   ],
+   "surfaced": false,
+   "low_confidence": false,
+   "band": null
+  },
+  {
+   "offer_id": "8d40254616",
+   "cv_id": "maya-analytics.md",
+   "gate": {
+    "code": "ledger_ceiling",
+    "detail": "the offer requires what your ledger rules out (claim ml-production-ceiling)",
+    "quote": "...grocery chains. Requirements - Experience deploying machine learning models to production - Strong Python and..."
+   },
+   "layer": "CORE",
+   "layer_assumed": false,
+   "criteria": [],
+   "penalties": [],
+   "base": 0.0,
+   "match_pct": 0,
+   "unknowns": [],
+   "requirements": [],
+   "requirements_recognized": 0,
+   "backed": [
+    0,
+    0
+   ],
+   "surfaced": false,
+   "low_confidence": false,
+   "band": null
+  },
+  {
+   "offer_id": "8d40254616",
+   "cv_id": "maya-support-ops.md",
+   "gate": {
+    "code": "ledger_ceiling",
+    "detail": "the offer requires what your ledger rules out (claim ml-production-ceiling)",
+    "quote": "...grocery chains. Requirements - Experience deploying machine learning models to production - Strong Python and..."
+   },
+   "layer": "CORE",
+   "layer_assumed": false,
+   "criteria": [],
+   "penalties": [],
+   "base": 0.0,
+   "match_pct": 0,
+   "unknowns": [],
+   "requirements": [],
+   "requirements_recognized": 0,
+   "backed": [
+    0,
+    0
+   ],
+   "surfaced": false,
+   "low_confidence": false,
+   "band": null
+  },
+  {
+   "offer_id": "9735a2608f",
+   "cv_id": "maya-analytics.md",
+   "gate": null,
+   "layer": "CORE",
+   "layer_assumed": false,
+   "criteria": [
+    {
+     "id": "skills",
+     "weight": 45,
+     "applicable": true,
+     "fraction": 0.7143,
+     "points": 33.8346,
+     "note": "4 of 6 required skills, 2 of 2 nice-to-have. Missing: power bi, tableau.",
+     "quotes": [
+      "...reporting role - Zendesk administration and SQL - Tableau is required for our client dashboards. Nice to...",
+      "...for our client dashboards. Nice to have: Google Sheets, Looker Studio. On-site in Malmö, five days a...",
+      "...client dashboards. Nice to have: Google Sheets, Looker Studio. On-site in Malmö, five days a week. Fluent..."
+     ]
+    },
+    {
+     "id": "title",
+     "weight": 15,
+     "applicable": true,
+     "fraction": 1.0,
+     "points": 15.7895,
+     "note": "3 shared word(s) with your title \"support operations analyst\"",
+     "quotes": [
+      "Support Operations Analyst"
+     ]
+    },
+    {
+     "id": "level",
+     "weight": 10,
+     "applicable": true,
+     "fraction": 1.0,
+     "points": 10.5263,
+     "note": "mid role for a mid profile: CORE",
+     "quotes": [
+      "Requirements - 2+ years in a support operations or reporting role - Zendesk administration and SQL - Tableau is..."
+     ]
+    },
+    {
+     "id": "location",
+     "weight": 10,
+     "applicable": true,
+     "fraction": 0.5,
+     "points": 5.2632,
+     "note": "work mode onsite; place matches",
+     "quotes": [
+      "Malmö, Sweden"
+     ]
+    },
+    {
+     "id": "salary",
+     "weight": 10,
+     "applicable": true,
+     "fraction": 0.0,
+     "points": 0.0,
+     "note": "the offer states no salary",
+     "quotes": []
+    },
+    {
+     "id": "contract",
+     "weight": 5,
+     "applicable": false,
+     "fraction": 0.0,
+     "points": 0.0,
+     "note": "n/a: no preference set, weight redistributed",
+     "quotes": []
+    },
+    {
+     "id": "language",
+     "weight": 5,
+     "applicable": true,
+     "fraction": 1.0,
+     "points": 5.2632,
+     "note": "requires English, Swedish",
+     "quotes": [
+      "...to have: Google Sheets, Looker Studio. On-site in Malmö, five days a week. Fluent English and Swedish.",
+      "...to have: Google Sheets, Looker Studio. On-site in Malmö, five days a week. Fluent English and Swedish."
+     ]
+    }
+   ],
+   "penalties": [
+    {
+     "code": "hard_requirement_missing",
+     "points": -10,
+     "quote": "...reporting role - Zendesk administration and SQL - Tableau is required for our client dashboards. Nice to..."
+    }
+   ],
+   "base": 70.6767,
+   "match_pct": 61,
+   "unknowns": [
+    "salary not stated"
+   ],
+   "requirements": [
+    {
+     "term": "google sheets",
+     "must": false,
+     "in_profile": true,
+     "backed_by": [
+      "backlog-dashboard"
+     ],
+     "quote": "...for our client dashboards. Nice to have: Google Sheets, Looker Studio. On-site in Malmö, five days a..."
+    },
+    {
+     "term": "looker studio",
+     "must": false,
+     "in_profile": true,
+     "backed_by": [
+      "backlog-dashboard"
+     ],
+     "quote": "...client dashboards. Nice to have: Google Sheets, Looker Studio. On-site in Malmö, five days a week. Fluent..."
+    },
+    {
+     "term": "zendesk",
+     "must": true,
+     "in_profile": true,
+     "backed_by": [
+      "tag-cleanup"
+     ],
+     "quote": "...years in a support operations or reporting role - Zendesk administration and SQL - Tableau is required for our..."
+    },
+    {
+     "term": "customer support",
+     "must": true,
+     "in_profile": true,
+     "backed_by": [],
+     "quote": "Mossby Support Services runs outsourced customer support for retail brands. We need an analyst who keeps our..."
+    },
+    {
+     "term": "sql",
+     "must": true,
+     "in_profile": true,
+     "backed_by": [
+      "backlog-dashboard"
+     ],
+     "quote": "...or reporting role - Zendesk administration and SQL - Tableau is required for our client dashboards. Nice..."
+    },
+    {
+     "term": "excel",
+     "must": true,
+     "in_profile": true,
+     "backed_by": [],
+     "quote": null
+    },
+    {
+     "term": "power bi",
+     "must": true,
+     "in_profile": false,
+     "backed_by": [],
+     "quote": null
+    },
+    {
+     "term": "tableau",
+     "must": true,
+     "in_profile": false,
+     "backed_by": [],
+     "quote": "...reporting role - Zendesk administration and SQL - Tableau is required for our client dashboards. Nice to..."
+    }
+   ],
+   "requirements_recognized": 8,
+   "backed": [
+    4,
+    6
+   ],
+   "surfaced": true,
+   "low_confidence": false,
+   "band": "good"
+  },
+  {
+   "offer_id": "9735a2608f",
+   "cv_id": "maya-support-ops.md",
+   "gate": null,
+   "layer": "CORE",
+   "layer_assumed": false,
+   "criteria": [
+    {
+     "id": "skills",
+     "weight": 45,
+     "applicable": true,
+     "fraction": 0.7857,
+     "points": 37.218,
+     "note": "5 of 6 required skills, 1 of 2 nice-to-have. Missing: tableau, looker studio.",
+     "quotes": [
+      "...reporting role - Zendesk administration and SQL - Tableau is required for our client dashboards. Nice to...",
+      "...client dashboards. Nice to have: Google Sheets, Looker Studio. On-site in Malmö, five days a week. Fluent...",
+      "...for our client dashboards. Nice to have: Google Sheets, Looker Studio. On-site in Malmö, five days a..."
+     ]
+    },
+    {
+     "id": "title",
+     "weight": 15,
+     "applicable": true,
+     "fraction": 1.0,
+     "points": 15.7895,
+     "note": "3 shared word(s) with your title \"support operations analyst\"",
+     "quotes": [
+      "Support Operations Analyst"
+     ]
+    },
+    {
+     "id": "level",
+     "weight": 10,
+     "applicable": true,
+     "fraction": 1.0,
+     "points": 10.5263,
+     "note": "mid role for a mid profile: CORE",
+     "quotes": [
+      "Requirements - 2+ years in a support operations or reporting role - Zendesk administration and SQL - Tableau is..."
+     ]
+    },
+    {
+     "id": "location",
+     "weight": 10,
+     "applicable": true,
+     "fraction": 0.5,
+     "points": 5.2632,
+     "note": "work mode onsite; place matches",
+     "quotes": [
+      "Malmö, Sweden"
+     ]
+    },
+    {
+     "id": "salary",
+     "weight": 10,
+     "applicable": true,
+     "fraction": 0.0,
+     "points": 0.0,
+     "note": "the offer states no salary",
+     "quotes": []
+    },
+    {
+     "id": "contract",
+     "weight": 5,
+     "applicable": false,
+     "fraction": 0.0,
+     "points": 0.0,
+     "note": "n/a: no preference set, weight redistributed",
+     "quotes": []
+    },
+    {
+     "id": "language",
+     "weight": 5,
+     "applicable": true,
+     "fraction": 1.0,
+     "points": 5.2632,
+     "note": "requires English, Swedish",
+     "quotes": [
+      "...to have: Google Sheets, Looker Studio. On-site in Malmö, five days a week. Fluent English and Swedish.",
+      "...to have: Google Sheets, Looker Studio. On-site in Malmö, five days a week. Fluent English and Swedish."
+     ]
+    }
+   ],
+   "penalties": [
+    {
+     "code": "hard_requirement_missing",
+     "points": -10,
+     "quote": "...reporting role - Zendesk administration and SQL - Tableau is required for our client dashboards. Nice to..."
+    }
+   ],
+   "base": 74.0602,
+   "match_pct": 64,
+   "unknowns": [
+    "salary not stated"
+   ],
+   "requirements": [
+    {
+     "term": "google sheets",
+     "must": false,
+     "in_profile": true,
+     "backed_by": [
+      "backlog-dashboard"
+     ],
+     "quote": "...for our client dashboards. Nice to have: Google Sheets, Looker Studio. On-site in Malmö, five days a..."
+    },
+    {
+     "term": "looker studio",
+     "must": false,
+     "in_profile": false,
+     "backed_by": [],
+     "quote": "...client dashboards. Nice to have: Google Sheets, Looker Studio. On-site in Malmö, five days a week. Fluent..."
+    },
+    {
+     "term": "zendesk",
+     "must": true,
+     "in_profile": true,
+     "backed_by": [
+      "tag-cleanup"
+     ],
+     "quote": "...years in a support operations or reporting role - Zendesk administration and SQL - Tableau is required for our..."
+    },
+    {
+     "term": "customer support",
+     "must": true,
+     "in_profile": true,
+     "backed_by": [],
+     "quote": "Mossby Support Services runs outsourced customer support for retail brands. We need an analyst who keeps our..."
+    },
+    {
+     "term": "sql",
+     "must": true,
+     "in_profile": true,
+     "backed_by": [
+      "backlog-dashboard"
+     ],
+     "quote": "...or reporting role - Zendesk administration and SQL - Tableau is required for our client dashboards. Nice..."
+    },
+    {
+     "term": "excel",
+     "must": true,
+     "in_profile": true,
+     "backed_by": [],
+     "quote": null
+    },
+    {
+     "term": "power bi",
+     "must": true,
+     "in_profile": true,
+     "backed_by": [],
+     "quote": null
+    },
+    {
+     "term": "tableau",
+     "must": true,
+     "in_profile": false,
+     "backed_by": [],
+     "quote": "...reporting role - Zendesk administration and SQL - Tableau is required for our client dashboards. Nice to..."
+    }
+   ],
+   "requirements_recognized": 8,
+   "backed": [
+    3,
+    6
+   ],
+   "surfaced": true,
+   "low_confidence": false,
+   "band": "good"
+  },
+  {
+   "offer_id": "ab19b2740d",
+   "cv_id": "maya-analytics.md",
+   "gate": null,
+   "layer": "DOWNSHIFT",
+   "layer_assumed": false,
+   "criteria": [
+    {
+     "id": "skills",
+     "weight": 45,
+     "applicable": true,
+     "fraction": 0.6364,
+     "points": 30.1435,
+     "note": "3 of 5 required skills, 1 of 1 nice-to-have. Missing: tableau, power bi.",
+     "quotes": [
+      "...Looker Studio - Swedish and English, written and spoken Nice to have: Python. Office based, five days a week.",
+      "...At least 1 year of experience with reporting - Excel, SQL and Looker Studio - Swedish and English, written...",
+      "...At least 1 year of experience with reporting - Excel, SQL and Looker Studio - Swedish and English, written and..."
+     ]
+    },
+    {
+     "id": "title",
+     "weight": 15,
+     "applicable": true,
+     "fraction": 1.0,
+     "points": 15.7895,
+     "note": "2 shared word(s) with your title \"reporting analyst\"",
+     "quotes": [
+      "Junior Reporting Analyst"
+     ]
+    },
+    {
+     "id": "level",
+     "weight": 10,
+     "applicable": true,
+     "fraction": 0.5,
+     "points": 5.2632,
+     "note": "junior role for a mid profile: DOWNSHIFT",
+     "quotes": [
+      "Requirements - At least 1 year of experience with reporting - Excel, SQL and Looker Studio - Swedish and English,..."
+     ]
+    },
+    {
+     "id": "location",
+     "weight": 10,
+     "applicable": true,
+     "fraction": 0.5,
+     "points": 5.2632,
+     "note": "work mode onsite; place matches",
+     "quotes": [
+      "Stockholm, Sweden"
+     ]
+    },
+    {
+     "id": "salary",
+     "weight": 10,
+     "applicable": true,
+     "fraction": 0.0,
+     "points": 0.0,
+     "note": "32,000 SEK per month against your minimum of 42,000",
+     "quotes": [
+      "32,000 SEK per month"
+     ]
+    },
+    {
+     "id": "contract",
+     "weight": 5,
+     "applicable": false,
+     "fraction": 0.0,
+     "points": 0.0,
+     "note": "n/a: no preference set, weight redistributed",
+     "quotes": []
+    },
+    {
+     "id": "language",
+     "weight": 5,
+     "applicable": true,
+     "fraction": 1.0,
+     "points": 5.2632,
+     "note": "requires English, Swedish",
+     "quotes": [
+      "...Excel, SQL and Looker Studio - Swedish and English, written and spoken Nice to have: Python. Office...",
+      "...with reporting - Excel, SQL and Looker Studio - Swedish and English, written and spoken Nice to have:..."
+     ]
+    }
+   ],
+   "penalties": [],
+   "base": 61.7225,
+   "match_pct": 62,
+   "unknowns": [],
+   "requirements": [
+    {
+     "term": "python",
+     "must": false,
+     "in_profile": true,
+     "backed_by": [
+      "churn-capstone"
+     ],
+     "quote": "...Looker Studio - Swedish and English, written and spoken Nice to have: Python. Office based, five days a week."
+    },
+    {
+     "term": "excel",
+     "must": true,
+     "in_profile": true,
+     "backed_by": [],
+     "quote": "...At least 1 year of experience with reporting - Excel, SQL and Looker Studio - Swedish and English, written..."
+    },
+    {
+     "term": "sql",
+     "must": true,
+     "in_profile": true,
+     "backed_by": [
+      "backlog-dashboard"
+     ],
+     "quote": "...At least 1 year of experience with reporting - Excel, SQL and Looker Studio - Swedish and English, written and..."
+    },
+    {
+     "term": "looker studio",
+     "must": true,
+     "in_profile": true,
+     "backed_by": [
+      "backlog-dashboard"
+     ],
+     "quote": "...of experience with reporting - Excel, SQL and Looker Studio - Swedish and English, written and spoken Nice..."
+    },
+    {
+     "term": "tableau",
+     "must": true,
+     "in_profile": false,
+     "backed_by": [],
+     "quote": null
+    },
+    {
+     "term": "power bi",
+     "must": true,
+     "in_profile": false,
+     "backed_by": [],
+     "quote": null
+    }
+   ],
+   "requirements_recognized": 6,
+   "backed": [
+    3,
+    4
+   ],
+   "surfaced": true,
+   "low_confidence": false,
+   "band": "good"
+  },
+  {
+   "offer_id": "ab19b2740d",
+   "cv_id": "maya-support-ops.md",
+   "gate": null,
+   "layer": "DOWNSHIFT",
+   "layer_assumed": false,
+   "criteria": [
+    {
+     "id": "skills",
+     "weight": 45,
+     "applicable": true,
+     "fraction": 0.5455,
+     "points": 25.8373,
+     "note": "3 of 5 required skills, 0 of 1 nice-to-have. Missing: looker studio, tableau, python.",
+     "quotes": [
+      "...of experience with reporting - Excel, SQL and Looker Studio - Swedish and English, written and spoken Nice...",
+      "...Looker Studio - Swedish and English, written and spoken Nice to have: Python. Office based, five days a week.",
+      "...At least 1 year of experience with reporting - Excel, SQL and Looker Studio - Swedish and English, written..."
+     ]
+    },
+    {
+     "id": "title",
+     "weight": 15,
+     "applicable": true,
+     "fraction": 1.0,
+     "points": 15.7895,
+     "note": "2 shared word(s) with your title \"reporting analyst\"",
+     "quotes": [
+      "Junior Reporting Analyst"
+     ]
+    },
+    {
+     "id": "level",
+     "weight": 10,
+     "applicable": true,
+     "fraction": 0.5,
+     "points": 5.2632,
+     "note": "junior role for a mid profile: DOWNSHIFT",
+     "quotes": [
+      "Requirements - At least 1 year of experience with reporting - Excel, SQL and Looker Studio - Swedish and English,..."
+     ]
+    },
+    {
+     "id": "location",
+     "weight": 10,
+     "applicable": true,
+     "fraction": 0.5,
+     "points": 5.2632,
+     "note": "work mode onsite; place matches",
+     "quotes": [
+      "Stockholm, Sweden"
+     ]
+    },
+    {
+     "id": "salary",
+     "weight": 10,
+     "applicable": true,
+     "fraction": 0.0,
+     "points": 0.0,
+     "note": "32,000 SEK per month against your minimum of 42,000",
+     "quotes": [
+      "32,000 SEK per month"
+     ]
+    },
+    {
+     "id": "contract",
+     "weight": 5,
+     "applicable": false,
+     "fraction": 0.0,
+     "points": 0.0,
+     "note": "n/a: no preference set, weight redistributed",
+     "quotes": []
+    },
+    {
+     "id": "language",
+     "weight": 5,
+     "applicable": true,
+     "fraction": 1.0,
+     "points": 5.2632,
+     "note": "requires English, Swedish",
+     "quotes": [
+      "...Excel, SQL and Looker Studio - Swedish and English, written and spoken Nice to have: Python. Office...",
+      "...with reporting - Excel, SQL and Looker Studio - Swedish and English, written and spoken Nice to have:..."
+     ]
+    }
+   ],
+   "penalties": [],
+   "base": 57.4163,
+   "match_pct": 57,
+   "unknowns": [],
+   "requirements": [
+    {
+     "term": "python",
+     "must": false,
+     "in_profile": false,
+     "backed_by": [],
+     "quote": "...Looker Studio - Swedish and English, written and spoken Nice to have: Python. Office based, five days a week."
+    },
+    {
+     "term": "excel",
+     "must": true,
+     "in_profile": true,
+     "backed_by": [],
+     "quote": "...At least 1 year of experience with reporting - Excel, SQL and Looker Studio - Swedish and English, written..."
+    },
+    {
+     "term": "sql",
+     "must": true,
+     "in_profile": true,
+     "backed_by": [
+      "backlog-dashboard"
+     ],
+     "quote": "...At least 1 year of experience with reporting - Excel, SQL and Looker Studio - Swedish and English, written and..."
+    },
+    {
+     "term": "looker studio",
+     "must": true,
+     "in_profile": false,
+     "backed_by": [],
+     "quote": "...of experience with reporting - Excel, SQL and Looker Studio - Swedish and English, written and spoken Nice..."
+    },
+    {
+     "term": "tableau",
+     "must": true,
+     "in_profile": false,
+     "backed_by": [],
+     "quote": null
+    },
+    {
+     "term": "power bi",
+     "must": true,
+     "in_profile": true,
+     "backed_by": [],
+     "quote": null
+    }
+   ],
+   "requirements_recognized": 6,
+   "backed": [
+    1,
+    3
+   ],
+   "surfaced": true,
+   "low_confidence": false,
+   "band": "fair"
+  },
+  {
+   "offer_id": "f516f19456",
+   "cv_id": "maya-analytics.md",
+   "gate": {
+    "code": "deny_title",
+    "detail": "the title matches your deny_titles entry \"platform engineer\"",
+    "quote": "Platform Engineer"
+   },
+   "layer": "CORE",
+   "layer_assumed": false,
+   "criteria": [],
+   "penalties": [],
+   "base": 0.0,
+   "match_pct": 0,
+   "unknowns": [],
+   "requirements": [],
+   "requirements_recognized": 0,
+   "backed": [
+    0,
+    0
+   ],
+   "surfaced": false,
+   "low_confidence": false,
+   "band": null
+  },
+  {
+   "offer_id": "f516f19456",
+   "cv_id": "maya-support-ops.md",
+   "gate": {
+    "code": "deny_title",
+    "detail": "the title matches your deny_titles entry \"platform engineer\"",
+    "quote": "Platform Engineer"
+   },
+   "layer": "CORE",
+   "layer_assumed": false,
+   "criteria": [],
+   "penalties": [],
+   "base": 0.0,
+   "match_pct": 0,
+   "unknowns": [],
+   "requirements": [],
+   "requirements_recognized": 0,
+   "backed": [
+    0,
+    0
+   ],
+   "surfaced": false,
+   "low_confidence": false,
+   "band": null
+  }
+ ],
+ "gate_counts": {
+  "commission_only": 1,
+  "deny_title": 1,
+  "expired": 1,
+  "ledger_ceiling": 1
+ },
+ "new_offer_ids": [
+  "085450678e",
+  "1489152306",
+  "53650315c7",
+  "70ae33d97d",
+  "8d40254616",
+  "9735a2608f",
+  "ab19b2740d",
+  "f516f19456"
+ ],
+ "config_digest": "acbe461170bdffdea9cccec2b542c65eb566d9bf03722832c96a94bcce76d66f",
+ "ledger_present": true
+}

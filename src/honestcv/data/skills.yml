@@ -1,0 +1,185 @@
+# honestcv skills list and reading cues, English and Polish.
+# Origin: written by hand for honestcv. Nothing here comes from a job board's taxonomy or from a third-party list.
+#
+# skills:   canonical name, aliases, and an optional ambiguous flag. Aliases use the token syntax of textutil.hit():
+#           a bare token is a whole word or phrase, "python*" is a prefix at a word start.
+#           ambiguous: true marks a name that is also an everyday word (go, make, rest, excel ...). In free text such a
+#           skill counts only through its aliases ("golang", "make.com"). In a CV skills line the name counts too.
+#           There is no bare "analytics" entry: it is a field, not a skill.
+# Quote words that YAML reads as booleans ("no", "on", "yes").
+
+skills:
+  # data and analytics
+  - {name: sql, aliases: [t-sql, pl/sql, "sql server"]}
+  - {name: python, aliases: ["python*"]}
+  - {name: r, ambiguous: true, aliases: [r language, r programming, rstudio, "r studio"]}
+  - {name: pandas}
+  - {name: numpy}
+  - {name: scipy}
+  - {name: scikit-learn, aliases: [sklearn, scikit learn]}
+  - {name: tensorflow}
+  - {name: pytorch}
+  - {name: keras}
+  - {name: machine learning, aliases: [ml, uczenie maszynowe]}
+  - {name: deep learning, aliases: [głębokie uczenie]}
+  - {name: generative ai, aliases: [genai, llm, llms, large language models]}
+  - {name: statistics, aliases: [statistical analysis, statystyka, analiza statystyczna]}
+  - {name: data analysis, aliases: [data analytics, analiza danych]}
+  - {name: data modeling, aliases: [data modelling, modelowanie danych]}
+  - {name: data visualization, aliases: [data visualisation, wizualizacja danych]}
+  - {name: business intelligence, aliases: [analityka biznesowa]}
+  - {name: etl, aliases: [elt, etl pipelines, data pipelines]}
+  - {name: a/b testing, aliases: [ab testing, split testing, testy a/b]}
+  - {name: tableau}
+  - {name: power bi, aliases: [powerbi, power-bi, microsoft power bi]}
+  - {name: looker studio, aliases: [google looker studio, data studio, google data studio]}
+  - {name: looker}
+  - {name: qlik, aliases: [qlikview, qlik sense]}
+  - {name: metabase}
+  - {name: grafana}
+  - {name: splunk}
+  - {name: jupyter, aliases: [jupyter notebook, jupyter notebooks]}
+  - {name: matlab}
+  - {name: sas}
+  - {name: spss}
+  - {name: stata}
+  - {name: excel, ambiguous: true, aliases: [microsoft excel, ms excel, excel spreadsheets, excel spreadsheet, excel formulas, advanced excel, excela, excelu, excelem]}
+  - {name: google sheets, aliases: [gsheets, google spreadsheets, arkusze google]}
+  - {name: vba, aliases: [excel vba, makra vba]}
+  - {name: power query}
+  - {name: power automate}
+  - {name: dax}
+  - {name: airflow, aliases: [apache airflow]}
+  - {name: dbt, aliases: [data build tool]}
+  - {name: spark, ambiguous: true, aliases: [apache spark, pyspark]}
+  - {name: hadoop}
+  - {name: kafka, aliases: [apache kafka]}
+  - {name: snowflake}
+  - {name: bigquery, aliases: [google bigquery]}
+  - {name: redshift, aliases: [amazon redshift]}
+  - {name: databricks}
+  # databases
+  - {name: postgresql, aliases: [postgres, postgre sql]}
+  - {name: mysql}
+  - {name: mongodb, aliases: [mongo]}
+  - {name: redis}
+  - {name: elasticsearch}
+  - {name: sqlite}
+  - {name: oracle database, aliases: [oracle db]}
+  - {name: nosql}
+  # programming
+  - {name: java}
+  - {name: javascript, aliases: [js, ecmascript]}
+  - {name: typescript}
+  - {name: c++, aliases: [cpp]}
+  - {name: c#, aliases: [csharp, c sharp]}
+  - {name: c, ambiguous: true, aliases: [c programming, c language, ansi c]}
+  - {name: go, ambiguous: true, aliases: [golang, go language, go programming]}
+  - {name: rust, aliases: [rust language, rust programming]}
+  - {name: php}
+  - {name: ruby, aliases: [ruby on rails]}
+  - {name: swift, ambiguous: true, aliases: [swiftui, swift language, swift programming]}
+  - {name: kotlin}
+  - {name: scala}
+  - {name: bash, aliases: [shell scripting]}
+  - {name: powershell}
+  - {name: html, aliases: [html5]}
+  - {name: css, aliases: [css3]}
+  - {name: react, ambiguous: true, aliases: [reactjs, react.js, react developer, react native]}
+  - {name: angular, aliases: [angularjs]}
+  - {name: vue, ambiguous: true, aliases: [vue.js, vuejs]}
+  - {name: node.js, aliases: [nodejs, node js]}
+  - {name: django}
+  - {name: flask}
+  - {name: fastapi}
+  - {name: spring, ambiguous: true, aliases: [spring boot, spring framework]}
+  - {name: .net, aliases: [dotnet, asp.net]}
+  - {name: rest api, aliases: [restful, restful api, rest apis, restful apis]}
+  - {name: graphql}
+  - {name: microservices, aliases: [mikroserwisy]}
+  - {name: make, ambiguous: true, aliases: [make.com, integromat]}
+  - {name: zapier}
+  - {name: n8n}
+  # infrastructure and tools
+  - {name: docker}
+  - {name: kubernetes, aliases: [k8s]}
+  - {name: terraform}
+  - {name: ansible}
+  - {name: git, aliases: [github, gitlab, bitbucket]}
+  - {name: ci/cd, aliases: [cicd, ci cd, jenkins, github actions]}
+  - {name: aws, aliases: [amazon web services]}
+  - {name: azure, aliases: [microsoft azure]}
+  - {name: gcp, aliases: [google cloud, google cloud platform]}
+  - {name: linux, aliases: [unix]}
+  - {name: jira, aliases: [atlassian jira]}
+  - {name: confluence}
+  - {name: figma}
+  - {name: photoshop, aliases: [adobe photoshop]}
+  - {name: canva}
+  - {name: access, ambiguous: true, aliases: [ms access, microsoft access]}
+  # delivery methods
+  - {name: agile, aliases: [zwinne metodyki]}
+  - {name: scrum}
+  - {name: kanban}
+  - {name: project management, aliases: [zarządzanie projektami]}
+  - {name: stakeholder management, aliases: [zarządzanie interesariuszami]}
+  # business tools and functions
+  - {name: customer support, aliases: [customer service, customer care, obsługa klienta, wsparcie klienta, wsparcie użytkowników]}
+  - {name: zendesk}
+  - {name: freshdesk}
+  - {name: intercom}
+  - {name: salesforce}
+  - {name: hubspot}
+  - {name: crm, aliases: [crm systems, systemy crm]}
+  - {name: sap}
+  - {name: erp, aliases: [systemy erp]}
+  - {name: ms office, aliases: [microsoft office, pakiet office, ms-office, office 365, microsoft 365]}
+  - {name: powerpoint, aliases: [power point]}
+  - {name: sharepoint}
+  - {name: bookkeeping, aliases: [księgowość]}
+  - {name: accounting, aliases: [rachunkowość]}
+  - {name: payroll, aliases: [kadry i płace]}
+  - {name: recruitment, aliases: [rekrutacja, talent acquisition]}
+  - {name: budgeting, aliases: [budżetowanie]}
+  - {name: seo}
+  - {name: google analytics, aliases: [ga4]}
+  - {name: google ads, aliases: [adwords]}
+  - {name: social media, aliases: [media społecznościowe]}
+  - {name: copywriting}
+  - {name: content marketing, aliases: [marketing treści]}
+  - {name: email marketing, aliases: [e-mail marketing]}
+  - {name: wordpress}
+  - {name: shopify}
+  - {name: woocommerce}
+
+# Words that make a requirement optional. The soft window starts at one of these and ends at the end of the
+# sentence, the line, or the next requirements heading, whichever comes first.
+soft_words: [nice to have, nice-to-have, good to have, a plus, big plus, bonus, preferred, optional, desirable,
+  an advantage, advantageous, mile widziane, mile widziana, mile widziany, dodatkowym atutem, dodatkowy atut,
+  atut, atutem, będzie plusem, plusem]
+
+# A missing must-have near one of these words costs the hard_requirement_missing penalty.
+hard_words: [must have, must-have, required, expert, advanced, mandatory, wymagane, wymagana, wymagany,
+  niezbędne, niezbędna, niezbędny, obowiązkowo]
+
+# A skill mention is ignored when one of these stands right before it in the same sentence (within 40 characters),
+# or one of the "after" phrases follows it ("Python is not required").
+negations_before: ["no", without, bez, not required, nie wymagamy, no need for, no prior]
+negations_after: [not required, not needed, not necessary, is optional, nie jest wymagany, nie jest wymagana,
+  nie jest wymagane, nie wymagamy, nie wymagane]
+
+# A CV line that starts with one of these labels and a colon is a skills line.
+skill_labels: [skills, technical skills, key skills, core skills, tech stack, technologies, tools, tooling,
+  umiejętności, umiejętności techniczne, kompetencje, technologie, narzędzia]
+
+# CV section headings. A heading line (a markdown # line, or a short line that is only this text) opens a section.
+cv_headings:
+  experience: [experience, work experience, professional experience, employment, employment history, work history,
+    career history, doświadczenie, doświadczenie zawodowe, historia zatrudnienia, przebieg kariery, praca zawodowa]
+  education: [education, courses, certifications, certificates, training, wykształcenie, edukacja, kursy,
+    certyfikaty, szkolenia]
+  skills: [skills, technical skills, key skills, core skills, tools, tech stack, technologies, umiejętności,
+    kompetencje, narzędzia, technologie]
+  languages: [languages, language skills, języki, języki obce, znajomość języków]
+  other: [profile, summary, about me, objective, projects, interests, hobbies, references, contact, publications,
+    volunteering, awards, o mnie, podsumowanie, projekty, zainteresowania, kontakt, dane kontaktowe, publikacje]

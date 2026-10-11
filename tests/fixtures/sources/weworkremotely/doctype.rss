@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Fictional sample. Any resemblance to real people or companies is accidental. -->
+<!DOCTYPE rss [<!ENTITY synthetic "expanded text">]>
+<rss version="2.0">
+  <channel>
+    <title>Synthetic feed with an entity declaration</title>
+    <item>
+      <title>Example Cloud: Platform Engineer &synthetic;</title>
+      <link>https://weworkremotely.invalid/remote-jobs/examplecloud-platform-engineer</link>
+    </item>
+  </channel>
+</rss>

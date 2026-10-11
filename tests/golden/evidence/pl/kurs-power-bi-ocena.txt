@@ -1,0 +1,3 @@
+# Fictional sample. Any resemblance to real people or companies is accidental.
+Stub evidence file for tests/golden/ledger_pl.yml (kurs-power-bi, tested).
+Ocena projektu kursowego, 2025-05-30: zaliczony.

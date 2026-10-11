@@ -1,0 +1,3 @@
+# Fictional sample. Any resemblance to real people or companies is accidental.
+Stub evidence file for tests/golden/ledger_pl.yml (raport-rekrutacji, used).
+Raport używany na comiesięcznym spotkaniu dwóch działów, 2024-06-03.

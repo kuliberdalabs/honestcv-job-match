@@ -1,0 +1,25 @@
+# Units that are never claim-bearing: salutations, sign-offs, "References available on request" and the
+# Polish data-processing consent clause. Hand-written for honestcv.
+#
+# Each entry is a regular expression matched against the whole unit (case ignored), after trailing
+# punctuation and spaces are removed. A matching unit gets no flag from the claim guards; the document-wide
+# guards (forbidden phrases, ceilings, private names) still run on it.
+units:
+  # salutations: at most four more words and no comma inside, so "Dear team, I built ..." stays a claim
+  - '(dear|hello|hi|good morning)(\s+[\w.''-]+){0,4}'
+  - '(szanown\w*|dzień dobry|witam)(\s+[\w.''-]+){0,4}'
+  # sign-offs
+  - '(kind|best|warm|warmest)\s+regards'
+  - 'regards'
+  - '(yours\s+)?(sincerely|faithfully|truly)'
+  - 'yours sincerely|yours faithfully'
+  - '(many\s+)?thanks|thank you(\s+for your (time|consideration))?'
+  - 'with (best|kind) wishes|best wishes|all the best|cheers'
+  - 'z poważaniem|z wyrazami szacunku|pozdrawiam(\s+serdecznie)?|serdecznie pozdrawiam|łączę pozdrowienia'
+  - 'dziękuję( za uwagę| za poświęcony czas)?'
+  # references
+  - 'references (are )?available (up)?on request'
+  - 'referencje (dostępne )?na (życzenie|prośbę)'
+  # consent clauses (Polish first, as job offers in Poland ask for it)
+  - 'wyrażam zgodę na przetwarzanie\b.*'
+  - '(i )?(hereby )?(consent|agree) to the processing of my personal data\b.*'

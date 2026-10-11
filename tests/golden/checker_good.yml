@@ -1,0 +1,71 @@
+# Fictional sample. Any resemblance to real people or companies is accidental.
+# Golden lines that must PASS (false-alarm control). Acceptance fixture: change it only with maintainer review.
+#
+# Each line is written to a file on its own and checked against the ledger named, with today 2026-10-10 and
+# no offer. Every line must give verdict PASS with no flag at all. The ws_root for each ledger is listed in
+# checker_bad.yml.
+#
+# Included: every allowed sentence of the non-draft claims in src/honestcv/samples/en/ledger.yml and
+# tests/golden/ledger_pl.yml (each is an exact match, or a ceiling's own sentence), the two non-draft
+# allowed sentences of tests/golden/ledger_rules.yml (exact path, which skips the review date check), and
+# lines with no claim-bearing trigger or from the non-claim list.
+
+today: 2026-10-10
+
+lines:
+  # ---------------- src/honestcv/samples/en/ledger.yml (Maya Lindqvist)
+  - ledger: src/honestcv/samples/en/ledger.yml
+    text: "Built the weekly ticket-backlog dashboard that three support teams use in their Monday reviews."
+    why: backlog-dashboard.allowed[0], exact.
+  - ledger: src/honestcv/samples/en/ledger.yml
+    text: "Led the help-desk tag cleanup that cut the tag list from 41 to 18."
+    why: tag-cleanup.allowed[0], exact; 41 and 18 are its quantities (state shipped).
+  - ledger: src/honestcv/samples/en/ledger.yml
+    text: "Built a churn prediction model in Python with pandas and scikit-learn as a course capstone."
+    why: churn-capstone.allowed[0], exact; carries its required qualifier.
+  - ledger: src/honestcv/samples/en/ledger.yml
+    text: "My machine-learning work so far is course work; none of it runs in production."
+    why: ml-production-ceiling.allowed[0]; the ceiling's own sentence is backed by the ceiling.
+  - ledger: src/honestcv/samples/en/ledger.yml
+    text: "Customer support and support operations at a parcel company, 2016-2026."
+    why: support-career.allowed[0], exact; 2016-2026 equals its facts.
+  - ledger: src/honestcv/samples/en/ledger.yml
+    text: "I am excited to apply for this role at Tallgrove Analytics."
+    why: No claim-bearing trigger.
+  - ledger: src/honestcv/samples/en/ledger.yml
+    text: "References available on request."
+    why: Non-claim line.
+  - ledger: src/honestcv/samples/en/ledger.yml
+    text: "Skills: SQL, Python, pandas, Zendesk."
+    why: A skills line whose terms come from three claims (backlog-dashboard, churn-capstone, tag-cleanup).
+  - ledger: src/honestcv/samples/en/ledger.yml
+    text: "Kind regards,"
+    why: Non-claim line (sign-off).
+  - ledger: src/honestcv/samples/en/ledger.yml
+    text: "Maya Lindqvist"
+    why: No claim-bearing trigger.
+
+  # ---------------- tests/golden/ledger_pl.yml (Anna Kowalska)
+  - ledger: tests/golden/ledger_pl.yml
+    text: "Przygotowywałam miesięczny raport rekrutacji w Excelu dla dwóch działów."
+    why: raport-rekrutacji.allowed[0], exact; "dwóch" = 2 is its quantity (state used).
+  - ledger: tests/golden/ledger_pl.yml
+    text: "Zbudowałam projekt kursowy w Power BI."
+    why: kurs-power-bi.allowed[0], exact; carries "projekt kursowy".
+  - ledger: tests/golden/ledger_pl.yml
+    text: "Nie mam jeszcze doświadczenia w zarządzaniu zespołem."
+    why: brak-zarzadzania.allowed[0]; the ceiling's own sentence is backed by the ceiling.
+  - ledger: tests/golden/ledger_pl.yml
+    text: "Asystentka HR, 2019-2026."
+    why: asystentka-hr.allowed[0], exact; 2019-2026 equals its facts.
+  - ledger: tests/golden/ledger_pl.yml
+    text: "Z poważaniem,"
+    why: Non-claim line (Polish sign-off).
+
+  # ---------------- tests/golden/ledger_rules.yml (Sam Example)
+  - ledger: tests/golden/ledger_rules.yml
+    text: "Specified the supplier feed integration that an outside contractor delivered."
+    why: feed-integration.allowed[0], exact; "specified" is the directed class.
+  - ledger: tests/golden/ledger_rules.yml
+    text: "Catalogue assistant at an online shop, 2021-2026."
+    why: catalogue-years.allowed[0], exact; the exact path does not run the review date check.

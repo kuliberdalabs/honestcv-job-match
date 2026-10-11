@@ -1,0 +1,32 @@
+{
+  "data": [
+    {
+      "slug": "analyst-munich-1003",
+      "company_name": "Vossgrind Labs",
+      "title": "Reporting Analyst",
+      "description": "<p>We analyse grocery demand with <em>SQL</em>.</p>",
+      "remote": false,
+      "url": "https://arbeitnow.invalid/jobs/companies/vossgrind-labs/reporting-analyst-1003",
+      "tags": [
+        "Data"
+      ],
+      "job_types": [
+        "Full Time"
+      ],
+      "location": "Munich",
+      "created_at": 1791665716
+    }
+  ],
+  "links": {
+    "first": "https://arbeitnow.invalid/api/job-board-api?page=1",
+    "last": null,
+    "prev": "https://arbeitnow.invalid/api/job-board-api?page=1",
+    "next": null
+  },
+  "meta": {
+    "current_page": 2,
+    "per_page": 2,
+    "terms": "Fictional terms line for tests.",
+    "info": "Fictional info line for tests."
+  }
+}

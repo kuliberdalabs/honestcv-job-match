@@ -1,0 +1,3 @@
+# Fictional sample. Any resemblance to real people or companies is accidental.
+Stub evidence file for the sample ledger (claim backlog-dashboard, state used).
+Monday review agenda, 2024-05-06: item 1 is the ticket-backlog dashboard, used by three support teams.

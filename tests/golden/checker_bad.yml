@@ -1,0 +1,445 @@
+# Fictional sample. Any resemblance to real people or companies is accidental.
+# Golden lines for the claims checker. Acceptance fixture: change it only with maintainer review.
+#
+# Each line is written to a file on its own and checked against the ledger named, with today 2026-10-10 and
+# no offer. A line must produce at least the expected rule codes with the expected severities; with
+# exact: true the set of rule codes must be exactly the expected set. A rule code may appear on more than one
+# flag (one per number, for example). verdict, when given, is the expected verdict for that line alone.
+# matched_claim is the claim the derivation attributes the line to (informative).
+#
+# Derivation conventions used in every "why": stopwords from src/honestcv/data/stopwords.txt; tokens are
+# stemmed with textutil.stem (plural -s, -ing, -ed, final -e); support counts each distinct stem once, without
+# verbs and state nouns, scope words and phrases, outcome words, durations and numbers; "ratio" is the best
+# difflib ratio against any allowed sentence after normalization (lower case, collapsed spaces, no trailing
+# punctuation).
+
+today: 2026-10-10
+
+ws_root:   # the ws_root to pass to check_document for each ledger (evidence refs resolve against it)
+  src/honestcv/samples/en/ledger.yml: src/honestcv/samples/en
+  tests/golden/ledger_pl.yml: tests/golden
+  tests/golden/ledger_rules.yml: tests/golden
+  tests/golden/ledger_broken.yml: tests/golden
+
+planted_letter:
+  document: src/honestcv/samples/en/letters/cover-letter-planted.md
+  ledger: src/honestcv/samples/en/ledger.yml
+  verdict: BLOCK
+  summary: "BLOCK · 4 lines blocked · 0 lines to review · 1 line passed"
+  units_total: 7               # lines 3, 5, 7, 9, 11, 13, 14 (line 1 is a comment-only line, skipped)
+  units_claim_bearing: 5       # lines 3, 5, 7, 9, 11
+  not_claim_bearing: [13, 14]  # "Kind regards," is a non-claim line; "Maya Lindqvist" has no trigger
+  lines:                       # exact set of rule codes per line
+    3:
+      text: "I deployed our churn model to production and it cut churn by 12%."
+      matched_claim: churn-capstone
+      expect:
+        - {rule: CEILING_BREACH, severity: BLOCK, claim_id: ml-production-ceiling}
+        - {rule: STATE_OVERSTATED, severity: BLOCK, claim_id: churn-capstone}
+        - {rule: NOT_CONFIRMED, severity: BLOCK, claim_id: churn-capstone}
+        - {rule: QUANTITY_MISMATCH, severity: BLOCK, claim_id: churn-capstone}
+        - {rule: SCOPE_INFLATION, severity: BLOCK, claim_id: churn-capstone}
+        - {rule: UNBACKED_OUTCOME, severity: BLOCK, claim_id: churn-capstone}
+        - {rule: MISSING_QUALIFIER, severity: REVIEW, claim_id: churn-capstone}
+      why: >-
+        Not exact, ratio 0.40. Support tokens {churn, model} (deployed = verb, production = scope word,
+        cut = outcome word, 12% = number); churn-capstone shares both, 2/2 = 1.00; no other claim shares a token.
+        ml-production-ceiling.forbidden_here[0] matches "deployed our churn model to production" with no
+        negation before it. deployed implies shipped, above the highest confirmed state tested.
+        not_confirmed[2] "deployed" overlaps 1/1 ("production use" is 1/2). 12 is in no quantity, allowed
+        sentence or fact. "production" is not in scope_words_allowed. "cut" is an outcome word and
+        outcomes_allowed is empty. "course capstone" is missing.
+    5:
+      text: "Led a team of 4 analysts building the backlog dashboard for all 9 support teams."
+      matched_claim: backlog-dashboard
+      expect:
+        - {rule: QUANTITY_MISMATCH, severity: BLOCK, claim_id: backlog-dashboard}
+        - {rule: SCOPE_INFLATION, severity: BLOCK, claim_id: backlog-dashboard}
+      why: >-
+        Not exact, ratio 0.49. Support tokens {analyst, backlog, dashboard, support, team} (led, building =
+        verbs; "team of" = scope phrase; 4, 9 = numbers; "team" stays through "support teams").
+        backlog-dashboard shares backlog, dashboard, support, team: 4/5 = 0.80; support-career 2/5 = 0.40.
+        building implies built, below used. 4 and 9 match no quantity (teams_using is 3), allowed sentence or
+        fact. "team of" is not in scope_words_allowed; plural "teams" is fine because beneficiaries.count is 3.
+        led and built verbs against role sole: allowed.
+    7:
+      text: "Over 12 years of customer support experience at a parcel company."
+      matched_claim: support-career
+      expect:
+        - {rule: DURATION_MISMATCH, severity: BLOCK, claim_id: support-career}
+      why: >-
+        Not exact, ratio 0.63. Support tokens {customer, support, experience, parcel, company} ("over 12 years"
+        = duration). support-career shares customer, support, parcel, company: 4/5 = 0.80; backlog-dashboard
+        2/5 = 0.40. The duration is skipped by the number check. "over 12 years" against facts 2026 - 2016 = 10.
+        "customer support" is in the claim's skills; "company" is singular.
+    9:
+      text: "My tag cleanup reduced handling time by 25% across the company."
+      matched_claim: tag-cleanup
+      expect:
+        - {rule: NOT_CONFIRMED, severity: BLOCK, claim_id: tag-cleanup}
+        - {rule: QUANTITY_MISMATCH, severity: BLOCK, claim_id: tag-cleanup}
+        - {rule: SCOPE_INFLATION, severity: BLOCK, claim_id: tag-cleanup}
+        - {rule: UNBACKED_OUTCOME, severity: BLOCK, claim_id: tag-cleanup}
+      why: >-
+        Not exact, ratio 0.38. Support tokens {tag, cleanup, handling, time} (reduced = outcome word; 25% =
+        number; "across the company" = scope phrase). tag-cleanup shares all four: 4/4 = 1.00;
+        backlog-dashboard shares only time: 0.25. not_confirmed[0] "shorter handling time" overlaps 2/3.
+        25 is neither 41 nor 18. "across the company" is not in scope_words_allowed. "reduced" is an outcome
+        word; outcomes_allowed[0] {cut, tag, list} overlaps 1/3; the message names not_confirmed[0].
+    11:
+      text: "Built the weekly ticket-backlog dashboard that three support teams use in their Monday reviews."
+      matched_claim: backlog-dashboard
+      path: exact
+      expect: []
+      why: >-
+        Equals backlog-dashboard.allowed[0] after normalization: exact path. "three" = 3 matches teams_using
+        (state used); the clause states are built and used, so the implied state is used.
+
+lines:
+  # ---------------- against the sample ledger (Maya Lindqvist)
+  - id: maya-mlops-negated
+    ledger: src/honestcv/samples/en/ledger.yml
+    text: "I have no MLOps experience yet."
+    expect:
+      - {rule: CEILING_BREACH, severity: REVIEW}
+    exact: true
+    verdict: REVIEW
+    why: >-
+      forbidden_here[2] (mlops) matches with "no" before it: REVIEW, not BLOCK. No claim shares a token, so the
+      unit is attributed to the ceiling instead of UNBACKED.
+
+  - id: maya-not-deployed
+    ledger: src/honestcv/samples/en/ledger.yml
+    text: "I have not deployed a model to production."
+    matched_claim: churn-capstone
+    expect:
+      - {rule: CEILING_BREACH, severity: REVIEW}
+      - {rule: MISSING_QUALIFIER, severity: REVIEW}
+    exact: true
+    verdict: REVIEW
+    why: >-
+      forbidden_here[0] matches "deployed a model to production" with "not" before it: REVIEW. Support tokens
+      {model}: churn-capstone 1/1. The state, not_confirmed and scope checks ignore "deployed" and "production"
+      because "not" comes first in the clause. "course capstone" is missing.
+
+  - id: maya-company-wide
+    ledger: src/honestcv/samples/en/ledger.yml
+    text: "Built the weekly ticket-backlog dashboard that three support teams use in their company-wide Monday reviews."
+    matched_claim: backlog-dashboard
+    expect:
+      - {rule: SCOPE_INFLATION, severity: BLOCK}
+      - {rule: NOT_CONFIRMED, severity: BLOCK}
+    why: >-
+      Near-exact (ratio 0.935), so every claim guard runs. "company-wide" is not in scope_words_allowed;
+      not_confirmed[2] "company-wide rollout" overlaps 2/3.
+
+  - id: maya-expert-kubernetes
+    ledger: src/honestcv/samples/en/ledger.yml
+    text: "Expert in Kubernetes."
+    expect:
+      - {rule: UNBACKED, severity: BLOCK}
+    why: No claim shares a token. An UNBACKED unit gets no extra UNBACKED_SKILL.
+
+  - id: maya-skills-kubernetes
+    ledger: src/honestcv/samples/en/ledger.yml
+    text: "Skills: SQL, Python, Kubernetes"
+    expect:
+      - {rule: UNBACKED_SKILL, severity: BLOCK}
+    why: A skills line; kubernetes is in no claim's skills.
+
+  - id: maya-tableau
+    ledger: src/honestcv/samples/en/ledger.yml
+    text: "Built the weekly ticket-backlog dashboard with Tableau that three support teams use."
+    matched_claim: backlog-dashboard
+    expect:
+      - {rule: UNBACKED_SKILL, severity: BLOCK}
+    why: Ratio 0.79; matched to backlog-dashboard at 6/7; tableau is not in its skills.
+
+  - id: maya-improved-response
+    ledger: src/honestcv/samples/en/ledger.yml
+    text: "Improved response times with the weekly ticket-backlog dashboard."
+    matched_claim: backlog-dashboard
+    expect:
+      - {rule: NOT_CONFIRMED, severity: BLOCK}
+      - {rule: UNBACKED_OUTCOME, severity: BLOCK}
+    why: not_confirmed[1] "faster response times" overlaps 2/3; "improved" is an outcome word, outcomes_allowed is empty.
+
+  - id: maya-streamlined
+    ledger: src/honestcv/samples/en/ledger.yml
+    text: "Streamlined the weekly ticket-backlog dashboard for three support teams."
+    matched_claim: backlog-dashboard
+    expect:
+      - {rule: UNBACKED_OUTCOME, severity: BLOCK}
+    why: '"streamlined" is an outcome word; backlog-dashboard has no outcomes_allowed.'
+
+  - id: maya-dozens
+    ledger: src/honestcv/samples/en/ledger.yml
+    text: "Built dashboards for dozens of support teams."
+    matched_claim: backlog-dashboard
+    expect:
+      - {rule: QUANTITY_MISMATCH, severity: BLOCK}
+    why: '"dozens" is a vague quantity: a number that matches no ledger value.'
+
+  - id: maya-example-freight
+    ledger: src/honestcv/samples/en/ledger.yml
+    text: "Built the weekly ticket-backlog dashboard for Example Freight."
+    matched_claim: backlog-dashboard
+    expect:
+      - {rule: UNKNOWN_ENTITY, severity: REVIEW}
+    why: '"Example" and "Freight" are capitalized, not at the sentence start, and absent from the claim text.'
+
+  - id: maya-churn-no-qualifier
+    ledger: src/honestcv/samples/en/ledger.yml
+    text: "Built a churn prediction model in Python with pandas and scikit-learn."
+    matched_claim: churn-capstone
+    expect:
+      - {rule: MISSING_QUALIFIER, severity: REVIEW}
+    why: Ratio 0.87, below near-exact; "course capstone" is missing.
+
+  - id: maya-senior
+    ledger: src/honestcv/samples/en/ledger.yml
+    text: "Senior data analyst."
+    expect:
+      - {rule: FORBIDDEN_PHRASE, severity: BLOCK}
+      - {rule: UNBACKED, severity: BLOCK}
+    why: >-
+      rules.forbidden_phrases[0] matches "Senior". Support tokens {senior, data, analyst}; support-career
+      shares analyst: 0.33, below ambiguous.
+
+  - id: maya-duration-2014
+    ledger: src/honestcv/samples/en/ledger.yml
+    text: "Customer support and support operations at a parcel company, 2014-2026."
+    matched_claim: support-career
+    expect:
+      - {rule: DURATION_MISMATCH, severity: BLOCK}
+    why: >-
+      Near-exact (ratio 0.986) to support-career.allowed[0], so every claim guard runs. The years 2014 and
+      2026 go to the duration check only: 2014-2026 is 12 years, facts give 2026 - 2016 = 10. "customer
+      support" is in the claim's skills; "company" is singular; no capitalized token after the start.
+
+  - id: maya-ambiguous-weekly
+    ledger: src/honestcv/samples/en/ledger.yml
+    text: "Weekly backlog summaries for the finance and procurement department."
+    matched_claim: backlog-dashboard
+    expect:
+      - {rule: AMBIGUOUS, severity: REVIEW}
+    why: >-
+      Not exact, ratio 0.39. Support tokens {weekly, backlog, summary, financ, procurement, department}.
+      backlog-dashboard shares weekly, backlog, department (all in its summary): 3/6 = 0.50, inside
+      [0.35, 0.60). No other claim shares a token. The claim guards against backlog-dashboard find nothing:
+      no verb, no number, "department" is singular, no not_confirmed overlap, no skills term.
+
+  - id: maya-ambiguous-churn
+    ledger: src/honestcv/samples/en/ledger.yml
+    text: "Churn prediction notebook for the marketing team."
+    matched_claim: churn-capstone
+    expect:
+      - {rule: AMBIGUOUS, severity: REVIEW}
+      - {rule: MISSING_QUALIFIER, severity: REVIEW}
+    why: >-
+      Not exact, ratio 0.36. Support tokens {churn, prediction, notebook, market, team}. churn-capstone
+      shares churn, prediction: 2/5 = 0.40, inside [0.35, 0.60); backlog-dashboard shares team: 0.20.
+      The claim guards still run against churn-capstone: "course capstone" is missing. "team" is singular and
+      "team of" does not occur.
+
+  - id: maya-citation-unknown-1
+    ledger: src/honestcv/samples/en/ledger.yml
+    text: "Built the weekly ticket-backlog dashboard that three support teams use in their Monday reviews. <!-- c:no-such-id -->"
+    expect:
+      - {rule: CITATION_MISMATCH, severity: BLOCK}
+    why: The marker cites a claim id that is not in the ledger.
+
+  - id: maya-citation-unknown-2
+    ledger: src/honestcv/samples/en/ledger.yml
+    text: "Led the help-desk tag cleanup that cut the tag list from 41 to 18. <!-- c:no-such-id -->"
+    expect:
+      - {rule: CITATION_MISMATCH, severity: BLOCK}
+    why: The marker cites a claim id that is not in the ledger.
+
+  - id: maya-example-retail
+    ledger: src/honestcv/samples/en/ledger.yml
+    text: "Led the help-desk tag cleanup for Example Retail."
+    matched_claim: tag-cleanup
+    expect:
+      - {rule: UNKNOWN_ENTITY, severity: REVIEW}
+    why: >-
+      Not exact, ratio 0.64. Support tokens {help, desk, tag, cleanup, exampl, retail} (led = verb).
+      tag-cleanup shares help, desk, tag, cleanup: 4/6 = 0.67. "Example" and "Retail" are capitalized,
+      not at the sentence start, and absent from the claim text. led against role led: allowed.
+
+  # ---------------- against tests/golden/ledger_pl.yml (Anna Kowalska)
+  - id: pl-biegla-niemiecki
+    ledger: tests/golden/ledger_pl.yml
+    text: "Biegła znajomość niemieckiego."
+    expect:
+      - {rule: UNBACKED, severity: BLOCK}
+    why: Claim-bearing (expertise word biegł*, language niemieck*); no claim shares a token.
+
+  - id: pl-wdrozenie-power-bi
+    ledger: tests/golden/ledger_pl.yml
+    text: "Wdrożenie projektu Power BI w całej firmie."
+    matched_claim: kurs-power-bi
+    expect:
+      - {rule: STATE_OVERSTATED, severity: BLOCK}
+      - {rule: SCOPE_INFLATION, severity: BLOCK}
+      - {rule: MISSING_QUALIFIER, severity: REVIEW}
+    why: >-
+      Support tokens {projektu, power, bi} ("wdrożenie" = state noun, "w całej firmie" = scope phrase);
+      kurs-power-bi shares power, bi: 2/3 = 0.67. The noun "wdrożenie" implies shipped, above the highest
+      confirmed state tested. "w całej firmie" is not in scope_words_allowed. "projekt kursowy" is missing.
+
+  - id: pl-trzech-dzialow
+    ledger: tests/golden/ledger_pl.yml
+    text: "Przygotowywałam raport rekrutacji dla trzech działów."
+    matched_claim: raport-rekrutacji
+    expect:
+      - {rule: QUANTITY_MISMATCH, severity: BLOCK}
+    why: '"trzech" = 3 (number word); the quantity dzialy is 2.'
+
+  - id: pl-kierowalam-zespolem
+    ledger: tests/golden/ledger_pl.yml
+    text: "Kierowałam zespołem rekrutacji."
+    matched_claim: raport-rekrutacji
+    expect:
+      - {rule: CEILING_BREACH, severity: BLOCK}
+      - {rule: SCOPE_INFLATION, severity: BLOCK}
+    why: >-
+      brak-zarzadzania.forbidden_here[0] matches with no negation. Support tokens {rekrutacji}:
+      raport-rekrutacji 1/1. "zespołem" is a scope word (zespoł*) not in scope_words_allowed.
+
+  - id: pl-nie-kierowalam
+    ledger: tests/golden/ledger_pl.yml
+    text: "Nie kierowałam jeszcze zespołem."
+    expect:
+      - {rule: CEILING_BREACH, severity: REVIEW}
+    exact: true
+    verdict: REVIEW
+    why: >-
+      forbidden_here[0] matches with "nie" before it: REVIEW. No tokens are left to compare, so the unit is
+      attributed to the ceiling instead of UNBACKED.
+
+  - id: pl-prowadzilam-zespol
+    ledger: tests/golden/ledger_pl.yml
+    text: "Prowadziłam zespół HR."
+    matched_claim: asystentka-hr
+    expect:
+      - {rule: CEILING_BREACH, severity: BLOCK}
+      - {rule: SCOPE_INFLATION, severity: BLOCK}
+    why: >-
+      brak-zarzadzania.forbidden_here[1] matches "Prowadziłam zespół" with no negation. Support tokens {hr}
+      (prowadziłam = verb, zespół = scope word): asystentka-hr 1/1 through its statement. "zespół" is not in
+      scope_words_allowed.
+
+  # ---------------- against tests/golden/ledger_rules.yml (Sam Example)
+  - id: rules-author-of
+    ledger: tests/golden/ledger_rules.yml
+    text: "Author of the supplier feed integration."
+    matched_claim: feed-integration
+    expect:
+      - {rule: AUTHORSHIP, severity: BLOCK}
+    why: The noun "author of" is the authored class; the role is directed.
+
+  - id: rules-wrote-private-name
+    ledger: tests/golden/ledger_rules.yml
+    text: "Wrote the supplier feed integration for Supplier Example Ltd."
+    matched_claim: feed-integration
+    expect:
+      - {rule: AUTHORSHIP, severity: BLOCK}
+      - {rule: VISIBILITY, severity: BLOCK}
+    why: '"wrote" is authored against role directed; "Supplier Example Ltd" is private_names[0].'
+
+  - id: rules-delivered-300
+    ledger: tests/golden/ledger_rules.yml
+    text: "Delivered 300 product descriptions for the catalogue."
+    matched_claim: product-descriptions
+    expect:
+      - {rule: VISIBILITY, severity: BLOCK}
+      - {rule: STATE_OVERSTATED, severity: BLOCK}
+      - {rule: QUANTITY_MISMATCH, severity: BLOCK}
+    why: >-
+      Support tokens {product, description, catalogu}; product-descriptions shares product, description:
+      2/3 = 0.67, and it has visibility never. A generated claim described with a ladder verb (delivered).
+      300 is true for generated; the clause implies shipped.
+
+  - id: rules-draft-verbatim
+    ledger: tests/golden/ledger_rules.yml
+    text: "Planned the photo-shoot schedule for new catalogue items."
+    matched_claim: photo-schedule
+    expect:
+      - {rule: DRAFT_CLAIM, severity: REVIEW}
+    why: Exact match of the draft claim's sentence.
+
+  - id: rules-draft-verbatim-lowercase
+    ledger: tests/golden/ledger_rules.yml
+    text: "planned the photo-shoot schedule for new catalogue items"
+    matched_claim: photo-schedule
+    expect:
+      - {rule: DRAFT_CLAIM, severity: REVIEW}
+    why: Normalized equality (lower case, no trailing full stop) is still the exact path.
+
+  - id: rules-draft-reworded
+    ledger: tests/golden/ledger_rules.yml
+    text: "Planned the full photo-shoot calendar for all catalogue items."
+    matched_claim: photo-schedule
+    expect:
+      - {rule: DRAFT_REWORDED, severity: BLOCK}
+    why: Matched to the draft claim photo-schedule, but not equal to its sentence.
+
+  - id: rules-draft-near-exact
+    ledger: tests/golden/ledger_rules.yml
+    text: "Planned the photo-shoot schedule for all new catalogue items."
+    matched_claim: photo-schedule
+    expect:
+      - {rule: DRAFT_REWORDED, severity: BLOCK}
+    why: >-
+      Near-exact (ratio 0.966) to photo-schedule.allowed[0]; a draft accepts only normalized equality,
+      never the ratio.
+
+  - id: rules-stale-worked
+    ledger: tests/golden/ledger_rules.yml
+    text: "Worked as a catalogue assistant from 2021 to 2026."
+    matched_claim: catalogue-years
+    expect:
+      - {rule: STALE, severity: REVIEW}
+    why: catalogue-years has review_by 2026-06-01, passed on 2026-10-10; 2021 to 2026 equals its facts.
+
+  - id: rules-stale-range
+    ledger: tests/golden/ledger_rules.yml
+    text: "Catalogue assistant, 2022-2025."
+    matched_claim: catalogue-years
+    expect:
+      - {rule: STALE, severity: REVIEW}
+    why: >-
+      Not exact (ratio 0.72). Support tokens {catalogu, assistant} (2022-2025 = duration): catalogue-years
+      2/2 = 1.00. review_by 2026-06-01 has passed. 2022-2025 is 3 years, inside facts 2021 to 2026.
+      Against the visibility-never claim product-descriptions the support is 0.
+
+  - id: rules-forbidden-here
+    ledger: tests/golden/ledger_rules.yml
+    text: "Specified the supplier feed integration on my own."
+    matched_claim: feed-integration
+    expect:
+      - {rule: FORBIDDEN_PHRASE, severity: BLOCK}
+    why: >-
+      Not exact (ratio 0.69). Support tokens {supplier, feed, integration} ("specified" = directed verb;
+      "on", "my", "own" = stopwords): feed-integration 3/3. feed-integration.forbidden_here[0] matches
+      "on my own". "specified" is the directed class, allowed for role directed.
+
+  # ---------------- against tests/golden/ledger_broken.yml
+  - id: broken-ledger-1
+    ledger: tests/golden/ledger_broken.yml
+    text: "Built the weekly sales report for the catalogue team."
+    expect:
+      - {rule: LEDGER_LINT, severity: BLOCK}
+    lint_errors: 2
+    verdict: BLOCK
+    why: The ledger has two lint ERRORs, so the check stops at the lint step with one LEDGER_LINT flag per error.
+
+  - id: broken-ledger-2
+    ledger: tests/golden/ledger_broken.yml
+    text: "I have not led a team yet."
+    expect:
+      - {rule: LEDGER_LINT, severity: BLOCK}
+    lint_errors: 2
+    verdict: BLOCK
+    why: Same ledger, same two LEDGER_LINT flags; no other step runs.

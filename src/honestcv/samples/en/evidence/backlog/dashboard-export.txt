@@ -1,0 +1,3 @@
+# Fictional sample. Any resemblance to real people or companies is accidental.
+Stub evidence file for the sample ledger (claim backlog-dashboard, state built).
+Export of the weekly ticket-backlog dashboard, 2024-02-12: open tickets per queue and age band.

@@ -1,0 +1,49 @@
+{
+  "jobs": [
+    {
+      "absolute_url": "https://boards.tallgrove.invalid/tallgrove/jobs/7001",
+      "data_compliance": [],
+      "internal_job_id": 55001,
+      "location": {
+        "name": "Remote, Sweden"
+      },
+      "metadata": [],
+      "id": 7001,
+      "updated_at": "2026-10-06T10:00:00-04:00",
+      "requisition_id": "R-17",
+      "title": "Data Analyst",
+      "company_name": "Tallgrove Analytics",
+      "first_published": "2026-10-02T09:30:00-04:00",
+      "language": "en",
+      "content": "&lt;p&gt;Reporting for &lt;strong&gt;operations&lt;/strong&gt; teams.&lt;/p&gt;&lt;ul&gt;&lt;li&gt;SQL and Python&lt;/li&gt;&lt;li&gt;Airflow&lt;/li&gt;&lt;/ul&gt;",
+      "departments": [
+        {
+          "id": 1,
+          "name": "Data"
+        }
+      ],
+      "offices": []
+    },
+    {
+      "absolute_url": "https://boards.tallgrove.invalid/tallgrove/jobs/7002",
+      "data_compliance": [],
+      "internal_job_id": 55002,
+      "location": {
+        "name": "Stockholm"
+      },
+      "metadata": [],
+      "id": 7002,
+      "updated_at": "2026-10-05T10:00:00-04:00",
+      "requisition_id": null,
+      "title": "Office Coordinator",
+      "first_published": "2026-10-01T09:30:00-04:00",
+      "language": "en",
+      "content": "&lt;p&gt;Keep the office running.&lt;/p&gt;",
+      "departments": [],
+      "offices": []
+    }
+  ],
+  "meta": {
+    "total": 2
+  }
+}

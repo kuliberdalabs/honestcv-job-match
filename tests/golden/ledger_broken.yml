@@ -1,0 +1,31 @@
+# Fictional sample. Any resemblance to real people or companies is accidental.
+# Golden broken ledger for Sam Example (fictional). It lints with exactly two ERRORs, so every check against
+# it stops at the lint step with two LEDGER_LINT flags:
+#   claims[0].confirmed.shipped   evidence of type file; shipped needs handover_record
+#   claims[1].forbidden_here[0]   invalid regex (a parenthesis is never closed)
+# Everything else is valid: refs are URLs, review dates are in the future, every claim has an allowed sentence.
+schema_version: 1
+person:
+  name: Sam Example               # fictional
+  as_of: 2026-09-01
+  stale_after_days: 365
+
+claims:
+  - id: sales-report
+    kind: delivery
+    summary: Weekly sales report for the catalogue team
+    confirmed:
+      built:   [{type: url,  ref: "https://files.example.invalid/sales-report-template", date: 2025-01-13}]
+      shipped: [{type: file, ref: "https://files.example.invalid/sales-report-sent",     date: 2025-01-20}]
+    allowed:
+      - "Built the weekly sales report for the catalogue team."
+    review_by: 2027-03-01
+
+  - id: team-lead-ceiling
+    kind: ceiling
+    statement: "Has not led a team as of 2026-09-01."
+    forbidden_here:
+      - '(?i)\bled (a|the) (team'
+    allowed:
+      - "I have not led a team yet."
+    review_by: 2027-03-01

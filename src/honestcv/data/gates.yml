@@ -1,0 +1,48 @@
+# honestcv gate phrases, English and Polish. Written by hand for honestcv.
+# An offer whose title or text holds one of these phrases is filtered out and listed with the phrase as the reason.
+# A phrase is ignored when "not", "no", "without", "nie" or "bez" stands within 20 characters before it.
+# Tokens use the syntax of textutil.hit().
+
+commission_only:
+  - commission only
+  - commission-only
+  - commission based only
+  - commission-based only
+  - only commission
+  - 100% commission
+  - pure commission
+  - purely commission
+  - paid on commission only
+  - no base salary
+  - no fixed salary
+  - wynagrodzenie wyłącznie prowizyjne
+  - wyłącznie prowizja
+  - wyłącznie prowizyjne
+  - tylko prowizja
+  - tylko prowizyjne
+  - brak podstawy wynagrodzenia
+
+unpaid_task:
+  - unpaid trial
+  - unpaid test task
+  - unpaid task
+  - unpaid assignment
+  - unpaid work trial
+  - unpaid trial day
+  - bezpłatne zadanie rekrutacyjne
+  - bezpłatne zadanie testowe
+  - nieodpłatne zadanie rekrutacyjne
+  - nieodpłatne zadanie testowe
+  - darmowe zadanie rekrutacyjne
+  - bezpłatny okres próbny
+
+equity_only:
+  - equity only
+  - equity-only
+  - equity based only
+  - equity-based only
+  - paid in equity only
+  - no cash salary
+  - wyłącznie udziały
+  - wynagrodzenie wyłącznie w udziałach
+  - tylko udziały w spółce

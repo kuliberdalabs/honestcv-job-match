@@ -1,0 +1,120 @@
+# Fictional sample. Any resemblance to real people or companies is accidental.
+# Frozen scoring expectations for the English sample. Acceptance fixture: change it only with maintainer review.
+#
+# Offers are named by their requisition_id in sample-offers.json (the Offer id is a hash computed on import).
+# The worked example is exact. The other offers freeze layer, gate, best CV and surfacing, not exact numbers.
+
+today: 2026-10-10
+config: src/honestcv/samples/en/honestcv.yml
+offers: src/honestcv/samples/en/offers/inbox/sample-offers.json
+cvs:
+  - src/honestcv/samples/en/cvs/maya-analytics.md
+  - src/honestcv/samples/en/cvs/maya-support-ops.md
+ledger: src/honestcv/samples/en/ledger.yml
+
+# What build_index returns for the sample ledger: skill -> non-draft claims with any confirmed state.
+# support-career (biography, no confirmed state) and the ceiling claim back no skill.
+ledger_index:
+  skill_backing:
+    google sheets: [backlog-dashboard]
+    looker studio: [backlog-dashboard]
+    pandas: [churn-capstone]
+    python: [churn-capstone]
+    scikit-learn: [churn-capstone]
+    sql: [backlog-dashboard]
+    zendesk: [tag-cleanup]
+  draft_skills: {}
+  ceiling_patterns:
+    - [ml-production-ceiling, '(?i)(experience|track record) (deploying|in deploying|with deploying) (ml|machine[- ]learning) models']
+    - [ml-production-ceiling, '(?i)models? (to|in|into) production']
+
+worked_example:
+  offer: tallgrove-data-analyst
+  cv: maya-analytics.md
+  gate: null
+  layer: CORE
+  layer_assumed: false
+  applicable_weight: 95          # contract (5) is not applicable: no contract preference
+  base: 83.08
+  base_tolerance: 0.01
+  match_pct: 83
+  band: strong
+  surfaced: true
+  low_confidence: false
+  requirements_recognized: 8
+  backed: [4, 5]
+  penalties: []
+  unknowns: []
+  fraction_tolerance: 0.001
+  points_tolerance: 0.05
+  criteria:                      # compare by id; points = 100 x weight x fraction / 95
+    - {id: skills,   weight: 45, applicable: true,  fraction: 0.643, points: 30.45}
+    - {id: title,    weight: 15, applicable: true,  fraction: 1.0,   points: 15.79}
+    - {id: level,    weight: 10, applicable: true,  fraction: 1.0,   points: 10.53}
+    - {id: location, weight: 10, applicable: true,  fraction: 1.0,   points: 10.53}
+    - {id: salary,   weight: 10, applicable: true,  fraction: 1.0,   points: 10.53}
+    - {id: contract, weight: 5,  applicable: false,                  points: 0.0}
+    - {id: language, weight: 5,  applicable: true,  fraction: 1.0,   points: 5.26}
+  requirements:                  # compare as a set keyed by term; order is not frozen
+    - {term: sql,           must: true,  in_profile: true,  backed_by: [backlog-dashboard]}
+    - {term: python,        must: true,  in_profile: true,  backed_by: [churn-capstone]}
+    - {term: looker studio, must: true,  in_profile: true,  backed_by: [backlog-dashboard]}
+    - {term: excel,         must: true,  in_profile: true,  backed_by: []}
+    - {term: airflow,       must: true,  in_profile: false, backed_by: []}
+    - {term: dbt,           must: true,  in_profile: false, backed_by: []}
+    - {term: pandas,        must: false, in_profile: true,  backed_by: [churn-capstone]}
+    - {term: tableau,       must: false, in_profile: false, backed_by: []}
+  missing_required: [airflow, dbt]
+  missing_nice: [tableau]
+  derivation: >-
+    skills: must-haves matched sql, python, looker studio, excel (4 of 6); nice-to-have matched pandas (1 of 2);
+    (4 + 0.5 x 1) / (6 + 0.5 x 2) = 0.643. title: "data analyst" against the target "data analyst" shares
+    data and analyst; analyst is generic but counts beside data; m = 2 >= min(2, 2). level: "3+ years" -> 3 ->
+    mid; profile mid; 3 - 6 < 3 -> CORE. location: remote and SE both match. salary: 48,000 SEK/month >=
+    42,000. language: en required (structured, and "Fluent English required."); profile has en.
+    base = 100 x (45 x 0.643 + 50) / 95 = 83.08. No years gap (3 - 6 < 1); no hard word within 120
+    characters of airflow or dbt.
+
+offers_expect:
+  - offer: quarrylane-analytics-engineer
+    gate: null
+    offer_level: senior          # "5+ years"
+    layer: STRETCH               # for both CVs
+    surfaced: true
+  - offer: mossby-support-operations-analyst
+    gate: null
+    best_cv: maya-support-ops.md
+    layer: CORE
+    surfaced: true
+    criteria_fraction: {title: 1.0, level: 1.0}
+    skills_fraction_strictly_higher: {cv: maya-support-ops.md, than: maya-analytics.md}
+  - offer: examplebank-junior-reporting-analyst
+    gate: null
+    offer_level: junior          # "Junior" in the title
+    layer: DOWNSHIFT
+    surfaced: true
+  - offer: tinwhistle-sales-representative
+    gate: commission_only
+  - offer: examplecloud-platform-engineer
+    gate: deny_title             # the sample config denies "platform engineer"
+  - offer: vossgrind-machine-learning-engineer
+    gate: ledger_ceiling
+    gate_detail_contains: ml-production-ceiling
+  - offer: harrowmere-revenue-reporting-analyst
+    gate: expired                # valid_through 2026-10-01
+
+ranking:
+  first: tallgrove-data-analyst  # rank 1 after best_per_offer
+  surfaced:                      # exactly these offers are surfaced (as a set; rows 2 to 4 have no frozen order)
+    - tallgrove-data-analyst
+    - quarrylane-analytics-engineer
+    - mossby-support-operations-analyst
+    - examplebank-junior-reporting-analyst
+  low_confidence: []             # none of the four ungated offers is low confidence, for either CV
+  gate_counts: {commission_only: 1, deny_title: 1, ledger_ceiling: 1, expired: 1}
+
+# Not asserted. A hand calculation by the scoring rules, kept to compare with the demo snapshot.
+illustrative:
+  quarrylane-analytics-engineer: {best_cv: maya-analytics.md, match_pct: 68}
+  mossby-support-operations-analyst: {best_cv: maya-support-ops.md, match_pct: 64, penalties: [hard_requirement_missing]}
+  examplebank-junior-reporting-analyst: {best_cv: maya-analytics.md, match_pct: 62}

@@ -1,0 +1,54 @@
+[
+  {
+    "additionalPlain": "",
+    "additional": "<div>We reply to every application.</div>",
+    "categories": {
+      "commitment": "Full-time",
+      "location": "Malmo, Sweden",
+      "team": "Data",
+      "allLocations": [
+        "Malmo, Sweden"
+      ]
+    },
+    "createdAt": 1791300000000,
+    "descriptionPlain": "Analyse delivery data.",
+    "description": "<div>Analyse delivery data with SQL.</div>",
+    "id": "00000000-0000-4000-8000-000000000001",
+    "lists": [
+      {
+        "text": "Requirements",
+        "content": "<li>SQL</li><li>Python</li>"
+      }
+    ],
+    "text": "Reporting Analyst",
+    "country": "SE",
+    "workplaceType": "hybrid",
+    "hostedUrl": "https://jobs.quarrylane.invalid/quarrylane/00000000-0000-4000-8000-000000000001",
+    "applyUrl": "https://jobs.quarrylane.invalid/quarrylane/00000000-0000-4000-8000-000000000001/apply",
+    "salaryRange": {
+      "currency": "SEK",
+      "interval": "per-month-salary",
+      "min": 45000,
+      "max": 52000
+    }
+  },
+  {
+    "additionalPlain": "",
+    "additional": "",
+    "categories": {
+      "commitment": "Internship",
+      "location": "Stockholm, Sweden",
+      "allLocations": []
+    },
+    "createdAt": 1791200000000,
+    "descriptionPlain": "Learn reporting.",
+    "description": "<div>Learn reporting.</div>",
+    "id": "00000000-0000-4000-8000-000000000002",
+    "lists": [],
+    "text": "Reporting Intern",
+    "country": "SE",
+    "workplaceType": "unspecified",
+    "hostedUrl": "https://jobs.quarrylane.invalid/quarrylane/00000000-0000-4000-8000-000000000002",
+    "applyUrl": "https://jobs.quarrylane.invalid/quarrylane/00000000-0000-4000-8000-000000000002/apply"
+  }
+]

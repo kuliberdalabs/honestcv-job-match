@@ -1,0 +1,2557 @@
+{
+  "schema": "honestcv.scan.v1",
+  "run_id": "2026-10-10T00-00-00",
+  "today": "2026-10-10",
+  "status": "PARTIAL",
+  "sources": [
+    {
+      "id": "himalayas",
+      "state": "ok",
+      "http_status": 200,
+      "offers": 2,
+      "message": "2 offers"
+    },
+    {
+      "id": "remoteok",
+      "state": "empty",
+      "http_status": 200,
+      "offers": 0,
+      "message": "no offers matched your keywords"
+    },
+    {
+      "id": "weworkremotely",
+      "state": "drift",
+      "http_status": 200,
+      "offers": 0,
+      "message": "weworkremotely returned data honestcv could not read. Results from it are missing; update honestcv."
+    },
+    {
+      "id": "arbeitnow",
+      "state": "cached",
+      "http_status": 200,
+      "offers": 0,
+      "message": "from cache, 0 offers"
+    },
+    {
+      "id": "inbox",
+      "state": "ok",
+      "http_status": null,
+      "offers": 8,
+      "message": "3 files, 8 offers"
+    }
+  ],
+  "cvs": [
+    "maya-analytics.md",
+    "maya-support-ops.md"
+  ],
+  "offers": [
+    {
+      "id": "085450678e",
+      "source": "import:json",
+      "title": "Data Analyst",
+      "company": "Tallgrove Analytics",
+      "url": "https://jobs.tallgrove.invalid/openings/data-analyst",
+      "apply_url": null,
+      "other_urls": [],
+      "location": "Remote, Sweden",
+      "countries": [
+        "SE"
+      ],
+      "remote": "remote",
+      "contract": [],
+      "level": null,
+      "skills": [
+        "sql",
+        "python",
+        "looker studio",
+        "excel",
+        "airflow",
+        "dbt"
+      ],
+      "skills_nice": [
+        "pandas",
+        "tableau"
+      ],
+      "languages": [
+        "en"
+      ],
+      "salary": {
+        "min": 40000.0,
+        "max": 48000.0,
+        "currency": "SEK",
+        "unit": "month",
+        "unit_assumed": false
+      },
+      "description": "Tallgrove Analytics helps parcel and retail companies understand their delivery data. We are hiring a data analyst for our Nordic team.\n\nOur stack: SQL, Python, Looker Studio, Excel, Airflow and dbt. You will build reports for operations managers and keep the weekly dashboards accurate.\n\nRequirements\n- 3+ years of experience\n- Comfort with SQL and spreadsheets\n- Clear written communication\n\nNice to have: pandas, Tableau.\n\nWe work remotely across Sweden and meet in person twice a year.\n\nFluent English required.",
+      "posted_at": "2026-10-06",
+      "valid_through": "2026-11-06",
+      "requisition_id": "tallgrove-data-analyst",
+      "attribution": "your file sample-offers.json",
+      "thin": false,
+      "possible_duplicate_of": null
+    },
+    {
+      "id": "53650315c7",
+      "source": "himalayas",
+      "title": "Analytics Engineer",
+      "company": "Quarry Lane Software",
+      "url": "https://careers.quarrylane.invalid/jobs/analytics-engineer",
+      "apply_url": null,
+      "other_urls": [],
+      "location": "Stockholm, Sweden",
+      "countries": [
+        "SE"
+      ],
+      "remote": "hybrid",
+      "contract": [
+        "employment"
+      ],
+      "level": null,
+      "skills": [
+        "sql",
+        "python",
+        "dbt",
+        "looker studio"
+      ],
+      "skills_nice": [
+        "pandas"
+      ],
+      "languages": [
+        "en"
+      ],
+      "salary": {
+        "min": 52000.0,
+        "max": 60000.0,
+        "currency": "SEK",
+        "unit": "month",
+        "unit_assumed": false
+      },
+      "description": "Quarry Lane Software builds planning tools for warehouses. Our data team is small and works closely with product.\n\nRequirements\n- 5+ years of experience with data work\n- Strong SQL and Python\n- Experience with dbt and Looker Studio\n\nNice to have: pandas.\n\nHybrid role in Stockholm, two office days a week. Fluent English.",
+      "posted_at": "2026-10-03",
+      "valid_through": null,
+      "requisition_id": "quarrylane-analytics-engineer",
+      "attribution": "Himalayas",
+      "thin": false,
+      "possible_duplicate_of": null
+    },
+    {
+      "id": "9735a2608f",
+      "source": "import:json",
+      "title": "Support Operations Analyst",
+      "company": "Mossby Support Services",
+      "url": "https://mossby.invalid/careers/support-operations-analyst",
+      "apply_url": null,
+      "other_urls": [],
+      "location": "Malmö, Sweden",
+      "countries": [
+        "SE"
+      ],
+      "remote": "onsite",
+      "contract": [
+        "employment"
+      ],
+      "level": null,
+      "skills": [
+        "zendesk",
+        "customer support",
+        "sql",
+        "excel",
+        "power bi",
+        "tableau"
+      ],
+      "skills_nice": [
+        "google sheets",
+        "looker studio"
+      ],
+      "languages": [
+        "en",
+        "sv"
+      ],
+      "salary": null,
+      "description": "Mossby Support Services runs outsourced customer support for retail brands. We need an analyst who keeps our help-desk data clean and our reports on time.\n\nRequirements\n- 2+ years in a support operations or reporting role\n- Zendesk administration and SQL\n- Tableau is required for our client dashboards.\n\nNice to have: Google Sheets, Looker Studio.\n\nOn-site in Malmö, five days a week. Fluent English and Swedish.",
+      "posted_at": "2026-10-01",
+      "valid_through": null,
+      "requisition_id": "mossby-support-operations-analyst",
+      "attribution": "your file sample-offers.json",
+      "thin": false,
+      "possible_duplicate_of": null
+    },
+    {
+      "id": "ab19b2740d",
+      "source": "import:json",
+      "title": "Junior Reporting Analyst",
+      "company": "Example Bank",
+      "url": "https://jobs.examplebank.invalid/vacancies/junior-reporting-analyst",
+      "apply_url": null,
+      "other_urls": [],
+      "location": "Stockholm, Sweden",
+      "countries": [
+        "SE"
+      ],
+      "remote": "onsite",
+      "contract": [
+        "employment"
+      ],
+      "level": null,
+      "skills": [
+        "excel",
+        "sql",
+        "looker studio",
+        "tableau",
+        "power bi"
+      ],
+      "skills_nice": [
+        "python"
+      ],
+      "languages": [
+        "sv",
+        "en"
+      ],
+      "salary": {
+        "min": 28000.0,
+        "max": 32000.0,
+        "currency": "SEK",
+        "unit": "month",
+        "unit_assumed": false
+      },
+      "description": "Example Bank is looking for a junior reporting analyst to join the finance reporting team in Stockholm.\n\nRequirements\n- At least 1 year of experience with reporting\n- Excel, SQL and Looker Studio\n- Swedish and English, written and spoken\n\nNice to have: Python.\n\nOffice based, five days a week.",
+      "posted_at": "2026-09-28",
+      "valid_through": null,
+      "requisition_id": "examplebank-junior-reporting-analyst",
+      "attribution": "your file sample-offers.json",
+      "thin": false,
+      "possible_duplicate_of": null
+    },
+    {
+      "id": "9cdf65a1a9",
+      "source": "import:eml",
+      "title": "Analityk danych, zespół raportów (k/m)",
+      "company": "Example Bank",
+      "url": "https://praca.example.invalid/oferta/analityk-danych-raporty",
+      "apply_url": null,
+      "other_urls": [],
+      "location": "Kraków, Polska",
+      "countries": [
+        "PL"
+      ],
+      "remote": "hybrid",
+      "contract": [
+        "employment"
+      ],
+      "level": null,
+      "skills": [
+        "sql",
+        "excel",
+        "power bi"
+      ],
+      "skills_nice": [],
+      "languages": [
+        "pl",
+        "en"
+      ],
+      "salary": {
+        "min": 12000.0,
+        "max": 15000.0,
+        "currency": "PLN",
+        "unit": "month",
+        "unit_assumed": false
+      },
+      "description": "Szukamy analityka danych do zespołu raportów.\n\nWymagania\n- SQL, Excel, Power BI\n- Biegły polski i angielski",
+      "posted_at": "2026-10-07",
+      "valid_through": null,
+      "requisition_id": null,
+      "attribution": "your file alerts.eml",
+      "thin": false,
+      "possible_duplicate_of": null
+    },
+    {
+      "id": "0b31598cd4",
+      "source": "import:html",
+      "title": "<img src=https://tracker.invalid/p>",
+      "company": "Example & Co",
+      "url": "javascript:alert(1)",
+      "apply_url": "https://apply.example.invalid/job?id=7&ref=list",
+      "other_urls": [],
+      "location": "Remote, Sweden",
+      "countries": [
+        "SE"
+      ],
+      "remote": "remote",
+      "contract": [],
+      "level": null,
+      "skills": [
+        "sql",
+        "excel",
+        "zendesk"
+      ],
+      "skills_nice": [],
+      "languages": [],
+      "salary": null,
+      "description": "<script>alert(1)</script> Build weekly reports. ![pixel](https://tracker.invalid/q.png)",
+      "posted_at": "2026-10-05",
+      "valid_through": null,
+      "requisition_id": null,
+      "attribution": "your file saved-page.html",
+      "thin": false,
+      "possible_duplicate_of": null
+    },
+    {
+      "id": "1489152306",
+      "source": "import:json",
+      "title": "Sales Representative",
+      "company": "Tinwhistle Leads",
+      "url": "https://tinwhistle.invalid/jobs/sales-representative",
+      "apply_url": null,
+      "other_urls": [],
+      "location": "Remote",
+      "countries": [
+        "SE"
+      ],
+      "remote": "remote",
+      "contract": [
+        "freelance"
+      ],
+      "level": null,
+      "skills": [],
+      "skills_nice": [],
+      "languages": [
+        "en"
+      ],
+      "salary": null,
+      "description": "Tinwhistle Leads books meetings for software vendors. Call prospects, qualify them and book demos.\n\nPay: this role is commission-based only. There is no base salary.\n\nFluent English.",
+      "posted_at": "2026-10-08",
+      "valid_through": null,
+      "requisition_id": "tinwhistle-sales-representative",
+      "attribution": "your file sample-offers.json",
+      "thin": false,
+      "possible_duplicate_of": null
+    },
+    {
+      "id": "70ae33d97d",
+      "source": "import:json",
+      "title": "Revenue Reporting Analyst",
+      "company": "Harrowmere Hotels",
+      "url": "https://harrowmere.invalid/careers/revenue-reporting-analyst",
+      "apply_url": null,
+      "other_urls": [],
+      "location": "Gothenburg, Sweden",
+      "countries": [
+        "SE"
+      ],
+      "remote": "hybrid",
+      "contract": [
+        "employment"
+      ],
+      "level": null,
+      "skills": [
+        "sql",
+        "excel",
+        "looker studio"
+      ],
+      "skills_nice": [],
+      "languages": [
+        "en"
+      ],
+      "salary": {
+        "min": 41000.0,
+        "max": 46000.0,
+        "currency": "SEK",
+        "unit": "month",
+        "unit_assumed": false
+      },
+      "description": "Harrowmere Hotels runs twelve hotels in Scandinavia. You will report on bookings and room revenue.\n\nRequirements\n- 2+ years of experience with SQL and Excel\n- Looker Studio or a similar tool\n\nFluent English.",
+      "posted_at": "2026-09-20",
+      "valid_through": "2026-10-01",
+      "requisition_id": "harrowmere-revenue-reporting-analyst",
+      "attribution": "your file sample-offers.json",
+      "thin": false,
+      "possible_duplicate_of": null
+    },
+    {
+      "id": "9471e29063",
+      "source": "import:eml",
+      "title": "Data Analyst",
+      "company": null,
+      "url": "https://alerts.example.invalid/r/48213",
+      "apply_url": null,
+      "other_urls": [],
+      "location": null,
+      "countries": [],
+      "remote": null,
+      "contract": [],
+      "level": null,
+      "skills": [],
+      "skills_nice": [],
+      "languages": [],
+      "salary": null,
+      "description": "",
+      "posted_at": null,
+      "valid_through": null,
+      "requisition_id": null,
+      "attribution": "your file alerts.eml",
+      "thin": true,
+      "possible_duplicate_of": null
+    },
+    {
+      "id": "e8dcc8a74a",
+      "source": "himalayas",
+      "title": "Branch Office Coordinator",
+      "company": "Example Bank",
+      "url": "https://jobs.examplebank.invalid/vacancies/branch-office-coordinator",
+      "apply_url": null,
+      "other_urls": [],
+      "location": "Uppsala, Sweden",
+      "countries": [
+        "SE"
+      ],
+      "remote": "onsite",
+      "contract": [],
+      "level": null,
+      "skills": [
+        "excel",
+        "tableau",
+        "dbt"
+      ],
+      "skills_nice": [],
+      "languages": [
+        "sv"
+      ],
+      "salary": {
+        "min": 27000.0,
+        "max": 30000.0,
+        "currency": "SEK",
+        "unit": "month",
+        "unit_assumed": false
+      },
+      "description": "Requirements\n- 2+ years of office experience\n- Excel, Tableau and dbt",
+      "posted_at": "2026-10-04",
+      "valid_through": null,
+      "requisition_id": null,
+      "attribution": "Himalayas",
+      "thin": false,
+      "possible_duplicate_of": null
+    }
+  ],
+  "results": [
+    {
+      "offer_id": "085450678e",
+      "cv_id": "maya-analytics.md",
+      "gate": null,
+      "layer": "CORE",
+      "layer_assumed": false,
+      "criteria": [
+        {
+          "id": "skills",
+          "weight": 45,
+          "applicable": true,
+          "fraction": 0.6429,
+          "points": 30.45,
+          "note": "4 of 6 required skills, 1 of 2 nice-to-have. Missing: airflow, dbt, tableau.",
+          "quotes": []
+        },
+        {
+          "id": "title",
+          "weight": 15,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 15.79,
+          "note": "\"Data Analyst\" matches target \"data analyst\"",
+          "quotes": []
+        },
+        {
+          "id": "level",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 10.53,
+          "note": "CORE: \"3+ years of experience\" -> mid, you: mid",
+          "quotes": [
+            "3+ years of experience"
+          ]
+        },
+        {
+          "id": "location",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 10.53,
+          "note": "remote, SE",
+          "quotes": []
+        },
+        {
+          "id": "salary",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 10.53,
+          "note": "48,000 SEK/month >= your 42,000",
+          "quotes": []
+        },
+        {
+          "id": "contract",
+          "weight": 5,
+          "applicable": false,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "n/a: no preference set, weight redistributed",
+          "quotes": []
+        },
+        {
+          "id": "language",
+          "weight": 5,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 5.26,
+          "note": "English required, you have C1",
+          "quotes": [
+            "Fluent English required."
+          ]
+        }
+      ],
+      "penalties": [],
+      "base": 83.08,
+      "match_pct": 83,
+      "unknowns": [],
+      "requirements": [
+        {
+          "term": "sql",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [
+            "backlog-dashboard"
+          ],
+          "quote": null
+        },
+        {
+          "term": "python",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [
+            "churn-capstone"
+          ],
+          "quote": null
+        },
+        {
+          "term": "looker studio",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [
+            "backlog-dashboard"
+          ],
+          "quote": null
+        },
+        {
+          "term": "excel",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "airflow",
+          "must": true,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "dbt",
+          "must": true,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "pandas",
+          "must": false,
+          "in_profile": true,
+          "backed_by": [
+            "churn-capstone"
+          ],
+          "quote": null
+        },
+        {
+          "term": "tableau",
+          "must": false,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        }
+      ],
+      "requirements_recognized": 8,
+      "backed": [
+        4,
+        5
+      ],
+      "surfaced": true,
+      "low_confidence": false,
+      "band": "strong"
+    },
+    {
+      "offer_id": "085450678e",
+      "cv_id": "maya-support-ops.md",
+      "gate": null,
+      "layer": "CORE",
+      "layer_assumed": false,
+      "criteria": [
+        {
+          "id": "skills",
+          "weight": 45,
+          "applicable": true,
+          "fraction": 0.2857,
+          "points": 13.53,
+          "note": "2 of 6 required skills, 0 of 2 nice-to-have. Missing: python, looker studio, airflow, dbt, pandas, tableau.",
+          "quotes": []
+        },
+        {
+          "id": "title",
+          "weight": 15,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 15.79,
+          "note": "\"Data Analyst\" matches target \"data analyst\"",
+          "quotes": []
+        },
+        {
+          "id": "level",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 10.53,
+          "note": "CORE: \"3+ years of experience\" -> mid, you: mid",
+          "quotes": [
+            "3+ years of experience"
+          ]
+        },
+        {
+          "id": "location",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 10.53,
+          "note": "remote, SE",
+          "quotes": []
+        },
+        {
+          "id": "salary",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 10.53,
+          "note": "48,000 SEK/month >= your 42,000",
+          "quotes": []
+        },
+        {
+          "id": "contract",
+          "weight": 5,
+          "applicable": false,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "n/a: no preference set, weight redistributed",
+          "quotes": []
+        },
+        {
+          "id": "language",
+          "weight": 5,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 5.26,
+          "note": "English required, you have C1",
+          "quotes": [
+            "Fluent English required."
+          ]
+        }
+      ],
+      "penalties": [],
+      "base": 66.17,
+      "match_pct": 66,
+      "unknowns": [],
+      "requirements": [
+        {
+          "term": "sql",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [
+            "backlog-dashboard"
+          ],
+          "quote": null
+        },
+        {
+          "term": "python",
+          "must": true,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "looker studio",
+          "must": true,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "excel",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "airflow",
+          "must": true,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "dbt",
+          "must": true,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "pandas",
+          "must": false,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "tableau",
+          "must": false,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        }
+      ],
+      "requirements_recognized": 8,
+      "backed": [
+        1,
+        2
+      ],
+      "surfaced": true,
+      "low_confidence": false,
+      "band": "good"
+    },
+    {
+      "offer_id": "53650315c7",
+      "cv_id": "maya-analytics.md",
+      "gate": null,
+      "layer": "STRETCH",
+      "layer_assumed": false,
+      "criteria": [
+        {
+          "id": "skills",
+          "weight": 45,
+          "applicable": true,
+          "fraction": 0.7778,
+          "points": 36.84,
+          "note": "3 of 4 required skills, 1 of 1 nice-to-have. Missing: dbt.",
+          "quotes": []
+        },
+        {
+          "id": "title",
+          "weight": 15,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "\"Analytics Engineer\" shares no word with your target titles",
+          "quotes": []
+        },
+        {
+          "id": "level",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.5,
+          "points": 5.26,
+          "note": "STRETCH: \"5+ years of experience\" -> senior, you: mid",
+          "quotes": [
+            "5+ years of experience with data work"
+          ]
+        },
+        {
+          "id": "location",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 10.53,
+          "note": "hybrid, SE",
+          "quotes": []
+        },
+        {
+          "id": "salary",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 10.53,
+          "note": "60,000 SEK/month >= your 42,000",
+          "quotes": []
+        },
+        {
+          "id": "contract",
+          "weight": 5,
+          "applicable": false,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "n/a: no preference set, weight redistributed",
+          "quotes": []
+        },
+        {
+          "id": "language",
+          "weight": 5,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 5.26,
+          "note": "English required, you have C1",
+          "quotes": [
+            "Fluent English."
+          ]
+        }
+      ],
+      "penalties": [],
+      "base": 68.42,
+      "match_pct": 68,
+      "unknowns": [],
+      "requirements": [
+        {
+          "term": "sql",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [
+            "backlog-dashboard"
+          ],
+          "quote": null
+        },
+        {
+          "term": "python",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [
+            "churn-capstone"
+          ],
+          "quote": null
+        },
+        {
+          "term": "dbt",
+          "must": true,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "looker studio",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [
+            "backlog-dashboard"
+          ],
+          "quote": null
+        },
+        {
+          "term": "pandas",
+          "must": false,
+          "in_profile": true,
+          "backed_by": [
+            "churn-capstone"
+          ],
+          "quote": null
+        }
+      ],
+      "requirements_recognized": 5,
+      "backed": [
+        4,
+        4
+      ],
+      "surfaced": true,
+      "low_confidence": false,
+      "band": "good"
+    },
+    {
+      "offer_id": "53650315c7",
+      "cv_id": "maya-support-ops.md",
+      "gate": null,
+      "layer": "STRETCH",
+      "layer_assumed": false,
+      "criteria": [
+        {
+          "id": "skills",
+          "weight": 45,
+          "applicable": true,
+          "fraction": 0.2222,
+          "points": 10.53,
+          "note": "1 of 4 required skills, 0 of 1 nice-to-have. Missing: python, dbt, looker studio, pandas.",
+          "quotes": []
+        },
+        {
+          "id": "title",
+          "weight": 15,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "\"Analytics Engineer\" shares no word with your target titles",
+          "quotes": []
+        },
+        {
+          "id": "level",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.5,
+          "points": 5.26,
+          "note": "STRETCH: \"5+ years of experience\" -> senior, you: mid",
+          "quotes": [
+            "5+ years of experience with data work"
+          ]
+        },
+        {
+          "id": "location",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 10.53,
+          "note": "hybrid, SE",
+          "quotes": []
+        },
+        {
+          "id": "salary",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 10.53,
+          "note": "60,000 SEK/month >= your 42,000",
+          "quotes": []
+        },
+        {
+          "id": "contract",
+          "weight": 5,
+          "applicable": false,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "n/a: no preference set, weight redistributed",
+          "quotes": []
+        },
+        {
+          "id": "language",
+          "weight": 5,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 5.26,
+          "note": "English required, you have C1",
+          "quotes": [
+            "Fluent English."
+          ]
+        }
+      ],
+      "penalties": [],
+      "base": 42.11,
+      "match_pct": 42,
+      "unknowns": [],
+      "requirements": [
+        {
+          "term": "sql",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [
+            "backlog-dashboard"
+          ],
+          "quote": null
+        },
+        {
+          "term": "python",
+          "must": true,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "dbt",
+          "must": true,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "looker studio",
+          "must": true,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "pandas",
+          "must": false,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        }
+      ],
+      "requirements_recognized": 5,
+      "backed": [
+        1,
+        1
+      ],
+      "surfaced": false,
+      "low_confidence": false,
+      "band": "fair"
+    },
+    {
+      "offer_id": "9735a2608f",
+      "cv_id": "maya-support-ops.md",
+      "gate": null,
+      "layer": "CORE",
+      "layer_assumed": false,
+      "criteria": [
+        {
+          "id": "skills",
+          "weight": 45,
+          "applicable": true,
+          "fraction": 0.7857,
+          "points": 37.22,
+          "note": "5 of 6 required skills, 1 of 2 nice-to-have. Missing: tableau, looker studio.",
+          "quotes": []
+        },
+        {
+          "id": "title",
+          "weight": 15,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 15.79,
+          "note": "\"Support Operations Analyst\" matches target \"support operations analyst\"",
+          "quotes": []
+        },
+        {
+          "id": "level",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 10.53,
+          "note": "CORE: \"2+ years\" -> mid, you: mid",
+          "quotes": [
+            "2+ years in a support operations or reporting role"
+          ]
+        },
+        {
+          "id": "location",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.5,
+          "points": 5.26,
+          "note": "onsite is not in your work modes; SE matches",
+          "quotes": []
+        },
+        {
+          "id": "salary",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "salary not stated",
+          "quotes": []
+        },
+        {
+          "id": "contract",
+          "weight": 5,
+          "applicable": false,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "n/a: no preference set, weight redistributed",
+          "quotes": []
+        },
+        {
+          "id": "language",
+          "weight": 5,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 5.26,
+          "note": "English and Swedish required, you have both",
+          "quotes": [
+            "Fluent English and Swedish."
+          ]
+        }
+      ],
+      "penalties": [
+        {
+          "code": "hard_requirement_missing",
+          "points": -10,
+          "quote": "Tableau is required for our client dashboards."
+        }
+      ],
+      "base": 74.06,
+      "match_pct": 64,
+      "unknowns": [
+        "salary not stated"
+      ],
+      "requirements": [
+        {
+          "term": "zendesk",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [
+            "tag-cleanup"
+          ],
+          "quote": null
+        },
+        {
+          "term": "customer support",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "sql",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [
+            "backlog-dashboard"
+          ],
+          "quote": null
+        },
+        {
+          "term": "excel",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "power bi",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "tableau",
+          "must": true,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "google sheets",
+          "must": false,
+          "in_profile": true,
+          "backed_by": [
+            "backlog-dashboard"
+          ],
+          "quote": null
+        },
+        {
+          "term": "looker studio",
+          "must": false,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        }
+      ],
+      "requirements_recognized": 8,
+      "backed": [
+        3,
+        6
+      ],
+      "surfaced": true,
+      "low_confidence": false,
+      "band": "good"
+    },
+    {
+      "offer_id": "9735a2608f",
+      "cv_id": "maya-analytics.md",
+      "gate": null,
+      "layer": "CORE",
+      "layer_assumed": false,
+      "criteria": [
+        {
+          "id": "skills",
+          "weight": 45,
+          "applicable": true,
+          "fraction": 0.7143,
+          "points": 33.83,
+          "note": "4 of 6 required skills, 2 of 2 nice-to-have. Missing: power bi, tableau.",
+          "quotes": []
+        },
+        {
+          "id": "title",
+          "weight": 15,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 15.79,
+          "note": "\"Support Operations Analyst\" matches target \"support operations analyst\"",
+          "quotes": []
+        },
+        {
+          "id": "level",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 10.53,
+          "note": "CORE: \"2+ years\" -> mid, you: mid",
+          "quotes": [
+            "2+ years in a support operations or reporting role"
+          ]
+        },
+        {
+          "id": "location",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.5,
+          "points": 5.26,
+          "note": "onsite is not in your work modes; SE matches",
+          "quotes": []
+        },
+        {
+          "id": "salary",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "salary not stated",
+          "quotes": []
+        },
+        {
+          "id": "contract",
+          "weight": 5,
+          "applicable": false,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "n/a: no preference set, weight redistributed",
+          "quotes": []
+        },
+        {
+          "id": "language",
+          "weight": 5,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 5.26,
+          "note": "English and Swedish required, you have both",
+          "quotes": [
+            "Fluent English and Swedish."
+          ]
+        }
+      ],
+      "penalties": [
+        {
+          "code": "hard_requirement_missing",
+          "points": -10,
+          "quote": "Tableau is required for our client dashboards."
+        }
+      ],
+      "base": 70.68,
+      "match_pct": 61,
+      "unknowns": [
+        "salary not stated"
+      ],
+      "requirements": [
+        {
+          "term": "zendesk",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [
+            "tag-cleanup"
+          ],
+          "quote": null
+        },
+        {
+          "term": "customer support",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "sql",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [
+            "backlog-dashboard"
+          ],
+          "quote": null
+        },
+        {
+          "term": "excel",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "power bi",
+          "must": true,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "tableau",
+          "must": true,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "google sheets",
+          "must": false,
+          "in_profile": true,
+          "backed_by": [
+            "backlog-dashboard"
+          ],
+          "quote": null
+        },
+        {
+          "term": "looker studio",
+          "must": false,
+          "in_profile": true,
+          "backed_by": [
+            "backlog-dashboard"
+          ],
+          "quote": null
+        }
+      ],
+      "requirements_recognized": 8,
+      "backed": [
+        4,
+        6
+      ],
+      "surfaced": true,
+      "low_confidence": false,
+      "band": "good"
+    },
+    {
+      "offer_id": "ab19b2740d",
+      "cv_id": "maya-analytics.md",
+      "gate": null,
+      "layer": "DOWNSHIFT",
+      "layer_assumed": false,
+      "criteria": [
+        {
+          "id": "skills",
+          "weight": 45,
+          "applicable": true,
+          "fraction": 0.6364,
+          "points": 30.14,
+          "note": "3 of 5 required skills, 1 of 1 nice-to-have. Missing: tableau, power bi.",
+          "quotes": []
+        },
+        {
+          "id": "title",
+          "weight": 15,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 15.79,
+          "note": "\"Junior Reporting Analyst\" matches target \"reporting analyst\"",
+          "quotes": []
+        },
+        {
+          "id": "level",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.5,
+          "points": 5.26,
+          "note": "DOWNSHIFT: \"Junior\" -> junior, you: mid",
+          "quotes": []
+        },
+        {
+          "id": "location",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.5,
+          "points": 5.26,
+          "note": "onsite is not in your work modes; SE matches",
+          "quotes": []
+        },
+        {
+          "id": "salary",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "32,000 SEK/month is below 80% of your 42,000",
+          "quotes": []
+        },
+        {
+          "id": "contract",
+          "weight": 5,
+          "applicable": false,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "n/a: no preference set, weight redistributed",
+          "quotes": []
+        },
+        {
+          "id": "language",
+          "weight": 5,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 5.26,
+          "note": "Swedish and English required, you have both",
+          "quotes": [
+            "Swedish and English, written and spoken"
+          ]
+        }
+      ],
+      "penalties": [],
+      "base": 61.72,
+      "match_pct": 62,
+      "unknowns": [],
+      "requirements": [
+        {
+          "term": "excel",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "sql",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [
+            "backlog-dashboard"
+          ],
+          "quote": null
+        },
+        {
+          "term": "looker studio",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [
+            "backlog-dashboard"
+          ],
+          "quote": null
+        },
+        {
+          "term": "tableau",
+          "must": true,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "power bi",
+          "must": true,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "python",
+          "must": false,
+          "in_profile": true,
+          "backed_by": [
+            "churn-capstone"
+          ],
+          "quote": null
+        }
+      ],
+      "requirements_recognized": 6,
+      "backed": [
+        3,
+        4
+      ],
+      "surfaced": true,
+      "low_confidence": false,
+      "band": "good"
+    },
+    {
+      "offer_id": "ab19b2740d",
+      "cv_id": "maya-support-ops.md",
+      "gate": null,
+      "layer": "DOWNSHIFT",
+      "layer_assumed": false,
+      "criteria": [
+        {
+          "id": "skills",
+          "weight": 45,
+          "applicable": true,
+          "fraction": 0.5455,
+          "points": 25.84,
+          "note": "3 of 5 required skills, 0 of 1 nice-to-have. Missing: looker studio, tableau, python.",
+          "quotes": []
+        },
+        {
+          "id": "title",
+          "weight": 15,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 15.79,
+          "note": "\"Junior Reporting Analyst\" matches target \"reporting analyst\"",
+          "quotes": []
+        },
+        {
+          "id": "level",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.5,
+          "points": 5.26,
+          "note": "DOWNSHIFT: \"Junior\" -> junior, you: mid",
+          "quotes": []
+        },
+        {
+          "id": "location",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.5,
+          "points": 5.26,
+          "note": "onsite is not in your work modes; SE matches",
+          "quotes": []
+        },
+        {
+          "id": "salary",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "32,000 SEK/month is below 80% of your 42,000",
+          "quotes": []
+        },
+        {
+          "id": "contract",
+          "weight": 5,
+          "applicable": false,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "n/a: no preference set, weight redistributed",
+          "quotes": []
+        },
+        {
+          "id": "language",
+          "weight": 5,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 5.26,
+          "note": "Swedish and English required, you have both",
+          "quotes": [
+            "Swedish and English, written and spoken"
+          ]
+        }
+      ],
+      "penalties": [],
+      "base": 57.42,
+      "match_pct": 57,
+      "unknowns": [],
+      "requirements": [
+        {
+          "term": "excel",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "sql",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [
+            "backlog-dashboard"
+          ],
+          "quote": null
+        },
+        {
+          "term": "looker studio",
+          "must": true,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "tableau",
+          "must": true,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "power bi",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "python",
+          "must": false,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        }
+      ],
+      "requirements_recognized": 6,
+      "backed": [
+        1,
+        3
+      ],
+      "surfaced": true,
+      "low_confidence": false,
+      "band": "fair"
+    },
+    {
+      "offer_id": "9cdf65a1a9",
+      "cv_id": "maya-support-ops.md",
+      "gate": null,
+      "layer": "CORE",
+      "layer_assumed": true,
+      "criteria": [
+        {
+          "id": "skills",
+          "weight": 45,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 52.94,
+          "note": "3 of 3 required skills.",
+          "quotes": []
+        },
+        {
+          "id": "title",
+          "weight": 15,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "\"Analityk danych\" shares no word with your target titles",
+          "quotes": []
+        },
+        {
+          "id": "level",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "level not stated, assumed CORE",
+          "quotes": []
+        },
+        {
+          "id": "location",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.5,
+          "points": 5.88,
+          "note": "hybrid matches; PL is not in your countries",
+          "quotes": []
+        },
+        {
+          "id": "salary",
+          "weight": 10,
+          "applicable": false,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "n/a: no preference set, weight redistributed",
+          "quotes": []
+        },
+        {
+          "id": "contract",
+          "weight": 5,
+          "applicable": false,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "n/a: no preference set, weight redistributed",
+          "quotes": []
+        },
+        {
+          "id": "language",
+          "weight": 5,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "Polish required; it is not in your CV",
+          "quotes": [
+            "Biegły polski i angielski"
+          ]
+        }
+      ],
+      "penalties": [],
+      "base": 58.82,
+      "match_pct": 59,
+      "unknowns": [
+        "level not stated, assumed CORE",
+        "salary in PLN; you set no PLN minimum"
+      ],
+      "requirements": [
+        {
+          "term": "sql",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [
+            "backlog-dashboard"
+          ],
+          "quote": null
+        },
+        {
+          "term": "excel",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "power bi",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [],
+          "quote": null
+        }
+      ],
+      "requirements_recognized": 3,
+      "backed": [
+        1,
+        3
+      ],
+      "surfaced": true,
+      "low_confidence": false,
+      "band": "fair"
+    },
+    {
+      "offer_id": "9cdf65a1a9",
+      "cv_id": "maya-analytics.md",
+      "gate": null,
+      "layer": "CORE",
+      "layer_assumed": true,
+      "criteria": [
+        {
+          "id": "skills",
+          "weight": 45,
+          "applicable": true,
+          "fraction": 0.6667,
+          "points": 35.29,
+          "note": "2 of 3 required skills. Missing: power bi.",
+          "quotes": []
+        },
+        {
+          "id": "title",
+          "weight": 15,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "\"Analityk danych\" shares no word with your target titles",
+          "quotes": []
+        },
+        {
+          "id": "level",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "level not stated, assumed CORE",
+          "quotes": []
+        },
+        {
+          "id": "location",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.5,
+          "points": 5.88,
+          "note": "hybrid matches; PL is not in your countries",
+          "quotes": []
+        },
+        {
+          "id": "salary",
+          "weight": 10,
+          "applicable": false,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "n/a: no preference set, weight redistributed",
+          "quotes": []
+        },
+        {
+          "id": "contract",
+          "weight": 5,
+          "applicable": false,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "n/a: no preference set, weight redistributed",
+          "quotes": []
+        },
+        {
+          "id": "language",
+          "weight": 5,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "Polish required; it is not in your CV",
+          "quotes": [
+            "Biegły polski i angielski"
+          ]
+        }
+      ],
+      "penalties": [],
+      "base": 41.18,
+      "match_pct": 41,
+      "unknowns": [
+        "level not stated, assumed CORE",
+        "salary in PLN; you set no PLN minimum"
+      ],
+      "requirements": [
+        {
+          "term": "sql",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [
+            "backlog-dashboard"
+          ],
+          "quote": null
+        },
+        {
+          "term": "excel",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "power bi",
+          "must": true,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        }
+      ],
+      "requirements_recognized": 3,
+      "backed": [
+        1,
+        2
+      ],
+      "surfaced": false,
+      "low_confidence": false,
+      "band": "fair"
+    },
+    {
+      "offer_id": "0b31598cd4",
+      "cv_id": "maya-analytics.md",
+      "gate": null,
+      "layer": "CORE",
+      "layer_assumed": true,
+      "criteria": [
+        {
+          "id": "skills",
+          "weight": 45,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 50.0,
+          "note": "3 of 3 required skills.",
+          "quotes": []
+        },
+        {
+          "id": "title",
+          "weight": 15,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "the title shares no word with your target titles",
+          "quotes": [
+            "<img src=https://tracker.invalid/p>"
+          ]
+        },
+        {
+          "id": "level",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "level not stated, assumed CORE",
+          "quotes": []
+        },
+        {
+          "id": "location",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 11.11,
+          "note": "remote, SE",
+          "quotes": []
+        },
+        {
+          "id": "salary",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "salary not stated",
+          "quotes": []
+        },
+        {
+          "id": "contract",
+          "weight": 5,
+          "applicable": false,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "n/a: no preference set, weight redistributed",
+          "quotes": []
+        },
+        {
+          "id": "language",
+          "weight": 5,
+          "applicable": false,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "n/a: no preference set, weight redistributed",
+          "quotes": []
+        }
+      ],
+      "penalties": [],
+      "base": 61.11,
+      "match_pct": 61,
+      "unknowns": [
+        "level not stated, assumed CORE",
+        "salary not stated"
+      ],
+      "requirements": [
+        {
+          "term": "sql",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [
+            "backlog-dashboard"
+          ],
+          "quote": null
+        },
+        {
+          "term": "excel",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "zendesk",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [
+            "tag-cleanup"
+          ],
+          "quote": null
+        }
+      ],
+      "requirements_recognized": 3,
+      "backed": [
+        2,
+        3
+      ],
+      "surfaced": true,
+      "low_confidence": false,
+      "band": "good"
+    },
+    {
+      "offer_id": "0b31598cd4",
+      "cv_id": "maya-support-ops.md",
+      "gate": null,
+      "layer": "CORE",
+      "layer_assumed": true,
+      "criteria": [
+        {
+          "id": "skills",
+          "weight": 45,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 50.0,
+          "note": "3 of 3 required skills.",
+          "quotes": []
+        },
+        {
+          "id": "title",
+          "weight": 15,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "the title shares no word with your target titles",
+          "quotes": [
+            "<img src=https://tracker.invalid/p>"
+          ]
+        },
+        {
+          "id": "level",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "level not stated, assumed CORE",
+          "quotes": []
+        },
+        {
+          "id": "location",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 11.11,
+          "note": "remote, SE",
+          "quotes": []
+        },
+        {
+          "id": "salary",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "salary not stated",
+          "quotes": []
+        },
+        {
+          "id": "contract",
+          "weight": 5,
+          "applicable": false,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "n/a: no preference set, weight redistributed",
+          "quotes": []
+        },
+        {
+          "id": "language",
+          "weight": 5,
+          "applicable": false,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "n/a: no preference set, weight redistributed",
+          "quotes": []
+        }
+      ],
+      "penalties": [],
+      "base": 61.11,
+      "match_pct": 61,
+      "unknowns": [
+        "level not stated, assumed CORE",
+        "salary not stated"
+      ],
+      "requirements": [
+        {
+          "term": "sql",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [
+            "backlog-dashboard"
+          ],
+          "quote": null
+        },
+        {
+          "term": "excel",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "zendesk",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [
+            "tag-cleanup"
+          ],
+          "quote": null
+        }
+      ],
+      "requirements_recognized": 3,
+      "backed": [
+        2,
+        3
+      ],
+      "surfaced": true,
+      "low_confidence": false,
+      "band": "good"
+    },
+    {
+      "offer_id": "1489152306",
+      "cv_id": "maya-analytics.md",
+      "gate": {
+        "code": "commission_only",
+        "detail": "commission only",
+        "quote": "Pay: this role is commission-based only."
+      },
+      "layer": "CORE",
+      "layer_assumed": true,
+      "criteria": [],
+      "penalties": [],
+      "base": 0.0,
+      "match_pct": 0,
+      "unknowns": [],
+      "requirements": [],
+      "requirements_recognized": 0,
+      "backed": [
+        0,
+        0
+      ],
+      "surfaced": false,
+      "low_confidence": false,
+      "band": null
+    },
+    {
+      "offer_id": "70ae33d97d",
+      "cv_id": "maya-analytics.md",
+      "gate": {
+        "code": "expired",
+        "detail": "valid until 2026-10-01",
+        "quote": null
+      },
+      "layer": "CORE",
+      "layer_assumed": true,
+      "criteria": [],
+      "penalties": [],
+      "base": 0.0,
+      "match_pct": 0,
+      "unknowns": [],
+      "requirements": [],
+      "requirements_recognized": 0,
+      "backed": [
+        0,
+        0
+      ],
+      "surfaced": false,
+      "low_confidence": false,
+      "band": null
+    },
+    {
+      "offer_id": "1489152306",
+      "cv_id": "maya-support-ops.md",
+      "gate": {
+        "code": "commission_only",
+        "detail": "commission only",
+        "quote": "Pay: this role is commission-based only."
+      },
+      "layer": "CORE",
+      "layer_assumed": true,
+      "criteria": [],
+      "penalties": [],
+      "base": 0.0,
+      "match_pct": 0,
+      "unknowns": [],
+      "requirements": [],
+      "requirements_recognized": 0,
+      "backed": [
+        0,
+        0
+      ],
+      "surfaced": false,
+      "low_confidence": false,
+      "band": null
+    },
+    {
+      "offer_id": "70ae33d97d",
+      "cv_id": "maya-support-ops.md",
+      "gate": {
+        "code": "expired",
+        "detail": "valid until 2026-10-01",
+        "quote": null
+      },
+      "layer": "CORE",
+      "layer_assumed": true,
+      "criteria": [],
+      "penalties": [],
+      "base": 0.0,
+      "match_pct": 0,
+      "unknowns": [],
+      "requirements": [],
+      "requirements_recognized": 0,
+      "backed": [
+        0,
+        0
+      ],
+      "surfaced": false,
+      "low_confidence": false,
+      "band": null
+    },
+    {
+      "offer_id": "9471e29063",
+      "cv_id": "maya-analytics.md",
+      "gate": null,
+      "layer": "CORE",
+      "layer_assumed": true,
+      "criteria": [
+        {
+          "id": "skills",
+          "weight": 45,
+          "applicable": false,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "n/a: no preference set, weight redistributed",
+          "quotes": []
+        },
+        {
+          "id": "title",
+          "weight": 15,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 33.33,
+          "note": "\"Data Analyst\" matches target \"data analyst\"",
+          "quotes": []
+        },
+        {
+          "id": "level",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "level not stated, assumed CORE",
+          "quotes": []
+        },
+        {
+          "id": "location",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "work mode and location not stated",
+          "quotes": []
+        },
+        {
+          "id": "salary",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "salary not stated",
+          "quotes": []
+        },
+        {
+          "id": "contract",
+          "weight": 5,
+          "applicable": false,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "n/a: no preference set, weight redistributed",
+          "quotes": []
+        },
+        {
+          "id": "language",
+          "weight": 5,
+          "applicable": false,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "n/a: no preference set, weight redistributed",
+          "quotes": []
+        }
+      ],
+      "penalties": [],
+      "base": 33.33,
+      "match_pct": 33,
+      "unknowns": [
+        "level not stated, assumed CORE",
+        "work mode and location not stated",
+        "salary not stated"
+      ],
+      "requirements": [],
+      "requirements_recognized": 0,
+      "backed": [
+        0,
+        0
+      ],
+      "surfaced": false,
+      "low_confidence": true,
+      "band": null
+    },
+    {
+      "offer_id": "9471e29063",
+      "cv_id": "maya-support-ops.md",
+      "gate": null,
+      "layer": "CORE",
+      "layer_assumed": true,
+      "criteria": [
+        {
+          "id": "skills",
+          "weight": 45,
+          "applicable": false,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "n/a: no preference set, weight redistributed",
+          "quotes": []
+        },
+        {
+          "id": "title",
+          "weight": 15,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 33.33,
+          "note": "\"Data Analyst\" matches target \"data analyst\"",
+          "quotes": []
+        },
+        {
+          "id": "level",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "level not stated, assumed CORE",
+          "quotes": []
+        },
+        {
+          "id": "location",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "work mode and location not stated",
+          "quotes": []
+        },
+        {
+          "id": "salary",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "salary not stated",
+          "quotes": []
+        },
+        {
+          "id": "contract",
+          "weight": 5,
+          "applicable": false,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "n/a: no preference set, weight redistributed",
+          "quotes": []
+        },
+        {
+          "id": "language",
+          "weight": 5,
+          "applicable": false,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "n/a: no preference set, weight redistributed",
+          "quotes": []
+        }
+      ],
+      "penalties": [],
+      "base": 33.33,
+      "match_pct": 33,
+      "unknowns": [
+        "level not stated, assumed CORE",
+        "work mode and location not stated",
+        "salary not stated"
+      ],
+      "requirements": [],
+      "requirements_recognized": 0,
+      "backed": [
+        0,
+        0
+      ],
+      "surfaced": false,
+      "low_confidence": true,
+      "band": null
+    },
+    {
+      "offer_id": "e8dcc8a74a",
+      "cv_id": "maya-analytics.md",
+      "gate": null,
+      "layer": "CORE",
+      "layer_assumed": false,
+      "criteria": [
+        {
+          "id": "skills",
+          "weight": 45,
+          "applicable": true,
+          "fraction": 0.3333,
+          "points": 15.79,
+          "note": "1 of 3 required skills. Missing: tableau, dbt.",
+          "quotes": []
+        },
+        {
+          "id": "title",
+          "weight": 15,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "\"Branch Office Coordinator\" shares no word with your target titles",
+          "quotes": []
+        },
+        {
+          "id": "level",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 10.53,
+          "note": "CORE: \"2+ years\" -> mid, you: mid",
+          "quotes": [
+            "2+ years of office experience"
+          ]
+        },
+        {
+          "id": "location",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.5,
+          "points": 5.26,
+          "note": "onsite is not in your work modes; SE matches",
+          "quotes": []
+        },
+        {
+          "id": "salary",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "30,000 SEK/month is below 80% of your 42,000",
+          "quotes": []
+        },
+        {
+          "id": "contract",
+          "weight": 5,
+          "applicable": false,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "n/a: no preference set, weight redistributed",
+          "quotes": []
+        },
+        {
+          "id": "language",
+          "weight": 5,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 5.26,
+          "note": "Swedish required, you have native",
+          "quotes": []
+        }
+      ],
+      "penalties": [],
+      "base": 36.84,
+      "match_pct": 37,
+      "unknowns": [],
+      "requirements": [
+        {
+          "term": "excel",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "tableau",
+          "must": true,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "dbt",
+          "must": true,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        }
+      ],
+      "requirements_recognized": 3,
+      "backed": [
+        0,
+        1
+      ],
+      "surfaced": false,
+      "low_confidence": false,
+      "band": "fair"
+    },
+    {
+      "offer_id": "e8dcc8a74a",
+      "cv_id": "maya-support-ops.md",
+      "gate": null,
+      "layer": "CORE",
+      "layer_assumed": false,
+      "criteria": [
+        {
+          "id": "skills",
+          "weight": 45,
+          "applicable": true,
+          "fraction": 0.3333,
+          "points": 15.79,
+          "note": "1 of 3 required skills. Missing: tableau, dbt.",
+          "quotes": []
+        },
+        {
+          "id": "title",
+          "weight": 15,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "\"Branch Office Coordinator\" shares no word with your target titles",
+          "quotes": []
+        },
+        {
+          "id": "level",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 10.53,
+          "note": "CORE: \"2+ years\" -> mid, you: mid",
+          "quotes": [
+            "2+ years of office experience"
+          ]
+        },
+        {
+          "id": "location",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.5,
+          "points": 5.26,
+          "note": "onsite is not in your work modes; SE matches",
+          "quotes": []
+        },
+        {
+          "id": "salary",
+          "weight": 10,
+          "applicable": true,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "30,000 SEK/month is below 80% of your 42,000",
+          "quotes": []
+        },
+        {
+          "id": "contract",
+          "weight": 5,
+          "applicable": false,
+          "fraction": 0.0,
+          "points": 0.0,
+          "note": "n/a: no preference set, weight redistributed",
+          "quotes": []
+        },
+        {
+          "id": "language",
+          "weight": 5,
+          "applicable": true,
+          "fraction": 1.0,
+          "points": 5.26,
+          "note": "Swedish required, you have native",
+          "quotes": []
+        }
+      ],
+      "penalties": [],
+      "base": 36.84,
+      "match_pct": 37,
+      "unknowns": [],
+      "requirements": [
+        {
+          "term": "excel",
+          "must": true,
+          "in_profile": true,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "tableau",
+          "must": true,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        },
+        {
+          "term": "dbt",
+          "must": true,
+          "in_profile": false,
+          "backed_by": [],
+          "quote": null
+        }
+      ],
+      "requirements_recognized": 3,
+      "backed": [
+        0,
+        1
+      ],
+      "surfaced": false,
+      "low_confidence": false,
+      "band": "fair"
+    }
+  ],
+  "gate_counts": {
+    "commission_only": 1,
+    "expired": 1
+  },
+  "new_offer_ids": [
+    "085450678e",
+    "0b31598cd4",
+    "9471e29063",
+    "9cdf65a1a9"
+  ],
+  "config_digest": "acbe461170bdffdea9cccec2b542c65eb566d9bf03722832c96a94bcce76d66f",
+  "ledger_present": true
+}

@@ -1,0 +1,70 @@
+[
+  {
+    "last_updated": 1791551358,
+    "legal": "Fictional legal notice for tests. Link back to the listing and name the source."
+  },
+  {
+    "slug": "remote-data-analyst-tallgrove",
+    "id": "900001",
+    "epoch": 1791551358,
+    "date": "2026-10-09T13:09:18+00:00",
+    "company": "Tallgrove Analytics",
+    "company_logo": "",
+    "position": "Data Analyst",
+    "tags": [
+      "analyst",
+      "sql",
+      "python"
+    ],
+    "description": "<p>Work with <b>SQL</b> and Python on delivery data.</p>",
+    "location": "Worldwide",
+    "salary_min": 70000,
+    "salary_max": 90000,
+    "apply_url": "https://remoteok.invalid/remote-jobs/remote-data-analyst-tallgrove-900001?utm_campaign=x",
+    "original": true,
+    "logo": "",
+    "url": "https://remoteok.invalid/remote-jobs/remote-data-analyst-tallgrove-900001"
+  },
+  {
+    "slug": "remote-platform-engineer-example-cloud",
+    "id": "900002",
+    "epoch": 1791500000,
+    "date": "2026-10-08T12:00:00+00:00",
+    "company": "Example Cloud",
+    "company_logo": "",
+    "position": "Platform Engineer",
+    "tags": [
+      "devops",
+      "kubernetes"
+    ],
+    "description": "<p>Run managed databases.</p>",
+    "location": "",
+    "salary_min": 0,
+    "salary_max": 0,
+    "apply_url": "https://remoteok.invalid/remote-jobs/remote-platform-engineer-example-cloud-900002",
+    "original": true,
+    "logo": "",
+    "url": "https://remoteok.invalid/remote-jobs/remote-platform-engineer-example-cloud-900002"
+  },
+  {
+    "slug": "remote-support-agent-mossby",
+    "id": "900003",
+    "epoch": 1791400000,
+    "date": "2026-10-07T09:00:00+00:00",
+    "company": "Mossby Support Services",
+    "company_logo": "",
+    "position": "Customer Support Agent",
+    "tags": [
+      "support",
+      "zendesk"
+    ],
+    "description": "<p>Answer tickets.</p>",
+    "location": "Remote",
+    "salary_min": 0,
+    "salary_max": 0,
+    "apply_url": "https://remoteok.invalid/remote-jobs/remote-support-agent-mossby-900003",
+    "original": true,
+    "logo": "",
+    "url": "https://remoteok.invalid/remote-jobs/remote-support-agent-mossby-900003"
+  }
+]

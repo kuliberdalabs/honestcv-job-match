@@ -1,0 +1,111 @@
+# The sources honestcv may read. This file is the allow-list: only the hosts listed here are ever requested.
+# Verdicts are a reading of each site's terms and robots.txt on the verified_at date. They are not legal advice.
+# docs/sources.md is generated from this file by registry_table() in sources/__init__.py.
+sources:
+  himalayas:
+    name: Himalayas
+    verdict: SHIP_DEFAULT
+    default_on: true
+    terms_url: https://himalayas.app/api
+    verified_at: 2026-10-10
+    hosts: [himalayas.app]
+    endpoints:
+      - GET https://himalayas.app/jobs/api/search?q=KEYWORD&country=CC
+    min_interval_s: 2
+    cache_ttl_h: 6
+    accept: application/json
+    attribution: Link back to himalayas.app and name Himalayas as the source.
+    notes: 20 jobs per page, at most 3 pages per keyword and 3 keywords per run. Backs off on HTTP 429. Jobs are not resubmitted to other job sites.
+
+  remoteok:
+    name: RemoteOK
+    verdict: SHIP_DEFAULT
+    default_on: true
+    terms_url: https://remoteok.com/api
+    verified_at: 2026-10-10
+    hosts: [remoteok.com]
+    endpoints:
+      - GET https://remoteok.com/api
+    min_interval_s: 1
+    cache_ttl_h: 1
+    accept: application/json
+    filter_keywords: true
+    attribution: Followed link back to the RemoteOK listing, name RemoteOK, no logo.
+    notes: Element 0 of the answer is a legal notice and is skipped. The feed has no search, so keywords are applied locally.
+
+  weworkremotely:
+    name: We Work Remotely
+    verdict: SHIP_DEFAULT
+    default_on: true
+    terms_url: https://weworkremotely.com/remote-job-rss-feed
+    verified_at: 2026-10-10
+    hosts: [weworkremotely.com]
+    endpoints:
+      - GET https://weworkremotely.com/remote-jobs.rss
+      - GET https://weworkremotely.com/categories/NAME.rss
+    min_interval_s: 2
+    cache_ttl_h: 1
+    accept: application/rss+xml, application/xml;q=0.9, */*;q=0.1
+    attribution: Link back to the listing.
+    notes: RSS only, parsed with a DOCTYPE and entity check. HTTP 403 makes the source refused and it is not retried. Category feeds come from search.weworkremotely_feeds.
+
+  arbeitnow:
+    name: Arbeitnow
+    verdict: SHIP_DEFAULT
+    default_on: true
+    terms_url: https://www.arbeitnow.com/terms
+    verified_at: 2026-10-10
+    hosts: [www.arbeitnow.com]
+    endpoints:
+      - GET https://www.arbeitnow.com/api/job-board-api?page=N
+    min_interval_s: 2
+    cache_ttl_h: 1
+    accept: application/json
+    attribution: Link back to the listing.
+    notes: Pages 1 to 3. Focus on Germany, Austria and Switzerland.
+
+  greenhouse:
+    name: Greenhouse job boards
+    verdict: SHIP_DEFAULT (user list only)
+    default_on: false
+    terms_url: https://developers.greenhouse.io/job-board.html
+    verified_at: 2026-10-10
+    hosts: [boards-api.greenhouse.io]
+    endpoints:
+      - GET https://boards-api.greenhouse.io/v1/boards/TOKEN/jobs?content=true
+    min_interval_s: 1
+    cache_ttl_h: 6
+    accept: application/json
+    attribution: The company's own careers page.
+    notes: Off until search.companies.greenhouse lists board tokens. One request per token; no boards are discovered.
+
+  lever:
+    name: Lever job boards
+    verdict: SHIP_DEFAULT (user list only)
+    default_on: false
+    terms_url: https://github.com/lever/postings-api
+    verified_at: 2026-10-10
+    hosts: [api.lever.co, api.eu.lever.co]
+    endpoints:
+      - GET https://api.lever.co/v0/postings/SITE?mode=json
+      - GET https://api.eu.lever.co/v0/postings/SITE?mode=json
+    min_interval_s: 1
+    cache_ttl_h: 6
+    accept: application/json
+    attribution: The company's own careers page.
+    notes: Off until search.companies.lever or lever_eu lists site names. The EU host is used for lever_eu.
+
+  ashby:
+    name: Ashby job boards
+    verdict: SHIP_DEFAULT (user list only)
+    default_on: false
+    terms_url: https://developers.ashbyhq.com/docs/public-job-posting-api
+    verified_at: 2026-10-10
+    hosts: [api.ashbyhq.com]
+    endpoints:
+      - GET https://api.ashbyhq.com/posting-api/job-board/NAME?includeCompensation=true
+    min_interval_s: 1
+    cache_ttl_h: 6
+    accept: application/json
+    attribution: The company's own careers page.
+    notes: Off until search.companies.ashby lists board names. Its robots.txt answers 401, which RFC 9309 treats as no rules.

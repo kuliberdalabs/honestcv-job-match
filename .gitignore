@@ -1,0 +1,20 @@
+# A honestcv workspace holds your CVs, ledger and settings. None of it belongs in this repository.
+out/
+.honestcv/
+cvs/
+ledger.yml
+honestcv.yml
+offers/
+evidence/
+demo-out*/
+!src/honestcv/samples/**
+!tests/golden/**
+
+# Python and tool files
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+dist/
+build/
+*.egg-info/

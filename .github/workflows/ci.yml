@@ -1,0 +1,64 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {os: ubuntu-latest,  python: "3.11"}
+          - {os: macos-latest,   python: "3.11"}
+          - {os: windows-latest, python: "3.11"}
+          - {os: ubuntu-latest,  python: "3.13"}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Tests (offline)
+        run: uv run pytest -q -rs
+      - name: Clean-room demo, as a user would run it (today pinned to the sample date)
+        run: uvx --from . honestcv demo --no-open --out demo-out
+      - name: Doctor on the demo workspace
+        run: uvx --from . honestcv doctor --json --workspace demo-out
+
+  windows-powershell:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          python-version: "3.11"
+      - name: Install the CLI as a user would
+        run: uv tool install .
+      - name: Put the uv tool bin directory on PATH
+        shell: powershell
+        run: uv tool dir --bin | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Demo and init under Windows PowerShell 5.1, output redirected (cp1252 trap)
+        shell: powershell
+        run: |
+          honestcv demo --no-open --out demo-out > demo.log
+          honestcv init ~/hc-test
+          honestcv schedule --platform windows --workspace ~/hc-test > schedule.txt
+          if (-not (Select-String -Path schedule.txt -Pattern 'schtasks /Create' -SimpleMatch -Quiet)) { exit 1 }
+      - name: Install the printed schedule line as a person would paste it, check it, remove it
+        shell: powershell
+        run: |
+          $line = Get-Content schedule.txt | Where-Object { $_ -like 'schtasks /Create*' } | Select-Object -First 1
+          if (-not $line) { exit 1 }
+          Invoke-Expression $line
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          $task = schtasks /Query /TN "honestcv scan" /V /FO LIST | Out-String
+          if ($task -notmatch 'scan --no-open --workspace') { $task; exit 1 }
+          schtasks /Delete /TN "honestcv scan" /F
+          if ($LASTEXITCODE -ne 0) { exit 1 }

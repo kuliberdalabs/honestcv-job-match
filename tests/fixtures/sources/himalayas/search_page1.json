@@ -1,0 +1,73 @@
+{
+  "comments": "Synthetic payload shaped like the public API documentation. Every value is invented.",
+  "updatedAt": 1791401423,
+  "offset": 0,
+  "limit": 20,
+  "totalCount": 3,
+  "nextCursor": "cursor-page-2",
+  "jobs": [
+    {
+      "title": "Data Analyst",
+      "excerpt": "Build weekly delivery reports.",
+      "companyName": "Tallgrove Analytics",
+      "companySlug": "tallgrove-analytics",
+      "companyLogo": "https://assets.tallgrove.invalid/logo.png",
+      "employmentType": "Full Time",
+      "minSalary": 5200,
+      "maxSalary": 6400,
+      "salaryPeriod": "monthly",
+      "seniority": [
+        "Mid-level"
+      ],
+      "currency": "EUR",
+      "locationRestrictions": [
+        "Poland",
+        "Sweden"
+      ],
+      "timezoneRestrictions": [
+        1,
+        2
+      ],
+      "categories": [
+        "Data-Analyst"
+      ],
+      "parentCategories": [
+        "Data"
+      ],
+      "description": "<p>We need an analyst for <strong>SQL</strong> and Python reports.</p><ul><li>3+ years of experience</li><li>Dashboards in Looker Studio</li></ul>",
+      "pubDate": 1791300000,
+      "expiryDate": 1793900000,
+      "applicationLink": "https://himalayas.invalid/companies/tallgrove-analytics/jobs/data-analyst?utm_source=feed",
+      "guid": "https://himalayas.invalid/companies/tallgrove-analytics/jobs/data-analyst"
+    },
+    {
+      "title": "Support Operations Analyst",
+      "excerpt": "Keep help-desk data clean.",
+      "companyName": "Mossby Support Services",
+      "companySlug": "mossby-support-services",
+      "companyLogo": "https://assets.mossby.invalid/logo.png",
+      "employmentType": "Contractor",
+      "minSalary": null,
+      "maxSalary": null,
+      "salaryPeriod": "annual",
+      "seniority": [
+        "Mid-level",
+        "Senior"
+      ],
+      "currency": null,
+      "locationRestrictions": [],
+      "timezoneRestrictions": [],
+      "categories": [
+        "Support-Analyst"
+      ],
+      "parentCategories": [
+        "Support"
+      ],
+      "description": "<p>Zendesk administration and reporting.</p>",
+      "pubDate": 1791250000,
+      "expiryDate": 1793850000,
+      "applicationLink": "https://himalayas.invalid/companies/mossby-support-services/jobs/support-operations-analyst",
+      "guid": "https://himalayas.invalid/companies/mossby-support-services/jobs/support-operations-analyst"
+    }
+  ]
+}

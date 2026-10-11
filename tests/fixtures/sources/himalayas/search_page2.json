@@ -1,0 +1,42 @@
+{
+  "comments": "Synthetic payload shaped like the public API documentation. Every value is invented.",
+  "updatedAt": 1791401423,
+  "offset": 20,
+  "limit": 20,
+  "totalCount": 3,
+  "jobs": [
+    {
+      "title": "Reporting Analyst",
+      "excerpt": "Monthly reports.",
+      "companyName": "Example Bank",
+      "companySlug": "example-bank",
+      "companyLogo": "https://assets.examplebank.invalid/logo.png",
+      "employmentType": "Full Time",
+      "minSalary": 40,
+      "maxSalary": 55,
+      "salaryPeriod": "hourly",
+      "seniority": [
+        "Entry-level"
+      ],
+      "currency": "USD",
+      "locationRestrictions": [
+        "United States",
+        "Canada",
+        "Mexico",
+        "Brazil",
+        "Chile",
+        "Peru"
+      ],
+      "timezoneRestrictions": [
+        -5
+      ],
+      "categories": [],
+      "parentCategories": [],
+      "description": "<p>Excel and SQL.</p>",
+      "pubDate": 1791200000,
+      "expiryDate": 1793800000,
+      "applicationLink": "https://himalayas.invalid/companies/example-bank/jobs/reporting-analyst",
+      "guid": "https://himalayas.invalid/companies/example-bank/jobs/reporting-analyst"
+    }
+  ]
+}

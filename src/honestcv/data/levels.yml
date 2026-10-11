@@ -1,0 +1,31 @@
+# honestcv level words and title vocabulary, English and Polish. Written by hand for honestcv.
+# Tokens use the syntax of textutil.hit(): a bare token is a whole word or phrase, "staż*" is a prefix at a word start.
+# Matching is word-bounded, so "international" and "internal" never read as "intern".
+
+# Words in a job title that state a level.
+levels:
+  intern: [intern, interns, internship, trainee, apprentice, "staż*", "stażyst*", "praktyk*"]
+  junior: [junior, jr, entry level, entry-level, "młodsz*"]
+  mid: [mid, mid-level, mid level, intermediate, regular, "średnio zaawansowan*"]
+  senior: [senior, sr, "starsz*", ekspert]
+  lead: [lead, principal, head of, staff engineer, staff scientist, staff analyst,
+    staff developer, staff software, staff data, staff product, staff designer, "kierownik zespołu"]
+
+# Phrases removed from a title before level words are looked up ("Lead Generation Specialist" is not a lead role).
+exclude: [lead generation, lead gen, lead qualification, lead management, lead nurturing, lead scoring,
+  lead time, lead capture, lead conversion, mid-market, mid market, mid-size, mid size, mid-sized, mid sized]
+
+# Required years of experience to level, as [first year, level]. Half-open bands: [0, 2) junior, [2, 5) mid,
+# [5, 8) senior, [8, and more) lead.
+years_bands: [[0, junior], [2, mid], [5, senior], [8, lead]]
+
+# A line that starts with one of these opens the requirements part of an offer. Used to find "N years"
+# requirements and to end a soft window ("Nice to have: dbt. Requirements: Python").
+requirement_headings: [requirements, requirement, qualifications, must have, must-have, must haves, must-haves,
+  what you need, what we are looking for, what we expect, your profile, who you are, about you, you have, you bring,
+  wymagania, wymagane, czego oczekujemy, oczekiwania, nasze wymagania, twój profil, twoje kwalifikacje, wymagamy]
+
+# Title words that name a kind of job, not a field. They count toward a title match only beside a shared word
+# that is not on this list ("Support Analyst" and "Data Analyst" share only "analyst" and score 0).
+generic_title_tokens: [specialist, specjalista, specjalistka, manager, kierownik, consultant, konsultant,
+  konsultantka, engineer, inżynier, analyst, analityk, ds, officer, coordinator, koordynator, koordynatorka]

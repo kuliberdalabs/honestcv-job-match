@@ -1,0 +1,81 @@
+{
+  "apiVersion": "1",
+  "jobs": [
+    {
+      "id": "00000000-0000-4000-8000-0000000000a1",
+      "title": " Revenue Reporting Analyst",
+      "department": "Finance",
+      "team": "Reporting",
+      "employmentType": "FullTime",
+      "location": "Gothenburg, Sweden",
+      "shouldDisplayCompensationOnJobPostings": true,
+      "secondaryLocations": [
+        {
+          "location": "Remote (Sweden)",
+          "address": {
+            "postalAddress": {
+              "addressCountry": "Sweden"
+            }
+          }
+        }
+      ],
+      "publishedAt": "2026-10-04T08:00:00.000+00:00",
+      "isListed": true,
+      "isRemote": true,
+      "workplaceType": "Hybrid",
+      "address": {
+        "postalAddress": {
+          "addressRegion": "Vastra Gotaland",
+          "addressCountry": "Sweden",
+          "addressLocality": "Gothenburg"
+        }
+      },
+      "jobUrl": "https://jobs.harrowmere.invalid/harrowmere/00000000-0000-4000-8000-0000000000a1",
+      "applyUrl": "https://jobs.harrowmere.invalid/harrowmere/00000000-0000-4000-8000-0000000000a1/application",
+      "descriptionHtml": "<p>Own the revenue reports for twelve hotels.</p><ul><li>Excel and SQL</li></ul>",
+      "descriptionPlain": "Own the revenue reports for twelve hotels.",
+      "compensation": {
+        "compensationTierSummary": "SEK 41K - 46K",
+        "compensationTiers": [],
+        "summaryComponents": [
+          {
+            "compensationType": "Salary",
+            "interval": "1 MONTH",
+            "currencyCode": "SEK",
+            "minValue": 41000,
+            "maxValue": 46000
+          },
+          {
+            "compensationType": "Bonus",
+            "interval": "1 YEAR",
+            "currencyCode": "SEK",
+            "minValue": null,
+            "maxValue": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-0000000000a2",
+      "title": "Hidden Draft Role",
+      "department": "Finance",
+      "team": "Reporting",
+      "employmentType": "FullTime",
+      "location": "Gothenburg, Sweden",
+      "secondaryLocations": [],
+      "publishedAt": "2026-10-04T08:00:00.000+00:00",
+      "isListed": false,
+      "isRemote": false,
+      "workplaceType": "OnSite",
+      "address": {
+        "postalAddress": {
+          "addressCountry": "Sweden"
+        }
+      },
+      "jobUrl": "https://jobs.harrowmere.invalid/harrowmere/00000000-0000-4000-8000-0000000000a2",
+      "applyUrl": "https://jobs.harrowmere.invalid/harrowmere/00000000-0000-4000-8000-0000000000a2/application",
+      "descriptionHtml": "<p>Not listed.</p>",
+      "descriptionPlain": "Not listed."
+    }
+  ]
+}

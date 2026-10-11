@@ -1,0 +1,55 @@
+# Fictional sample. Any resemblance to real people or companies is accidental.
+# Golden ledger for Anna Kowalska (an obvious placeholder name): HR assistant moving into recruitment analytics.
+# Path refs resolve against tests/golden/ (pass ws_root=tests/golden). Lints with zero ERRORs and zero WARNs.
+schema_version: 1
+person:
+  name: Anna Kowalska             # fictional placeholder
+  as_of: 2026-09-01
+  stale_after_days: 365
+
+claims:
+  - id: raport-rekrutacji
+    kind: delivery
+    summary: Miesięczny raport rekrutacji w Excelu dla dwóch działów
+    skills: [excel]
+    confirmed:
+      built:   [{type: file,            ref: evidence/pl/raport-szablon.txt,     date: 2024-01-15}]
+      shipped: [{type: handover_record, ref: evidence/pl/raport-przekazanie.txt, date: 2024-02-01}]
+      used:    [{type: usage_evidence,  ref: evidence/pl/raport-uzycie.txt,      date: 2024-06-03}]
+    quantities:
+      - {name: dzialy, value: 2, unit: dział, state: used}
+    beneficiaries: {count: 2, kind: działy}
+    authorship: {role: sole, agent_assisted: false, can_defend_end_to_end: true}
+    allowed:
+      - "Przygotowywałam miesięczny raport rekrutacji w Excelu dla dwóch działów."
+    review_by: 2027-03-01
+
+  - id: kurs-power-bi
+    kind: artifact
+    summary: Projekt kursowy Power BI
+    skills: [power bi]
+    confirmed:
+      built:  [{type: file,        ref: evidence/pl/kurs-power-bi-plik.txt,  date: 2025-05-10}]
+      tested: [{type: test_record, ref: evidence/pl/kurs-power-bi-ocena.txt, date: 2025-05-30}]
+    required_qualifiers: [projekt kursowy]
+    allowed:
+      - "Zbudowałam projekt kursowy w Power BI."
+    review_by: 2027-03-01
+
+  - id: brak-zarzadzania
+    kind: ceiling
+    statement: "Brak doświadczenia w zarządzaniu zespołem (stan na 2026-09-01)."
+    forbidden_here:
+      - '(?i)\b(kierował|zarządzał)(em|am|a|y|i|yśmy|iśmy)\s+(\w+\s+)?zespoł(em|u|ami|ach)\b'
+      - '(?i)\bprowadził(em|am|a|y|i|yśmy|iśmy)\s+(\w+\s+)?(zespół|zespoły|zespoł\w+)'
+    allowed:
+      - "Nie mam jeszcze doświadczenia w zarządzaniu zespołem."
+    review_by: 2027-03-01
+
+  - id: asystentka-hr
+    kind: biography
+    statement: "Asystentka HR, 2019-2026"
+    facts: {start_year: 2019, end_year: 2026, precision: year}
+    allowed:
+      - "Asystentka HR, 2019-2026."
+    review_by: 2027-03-01

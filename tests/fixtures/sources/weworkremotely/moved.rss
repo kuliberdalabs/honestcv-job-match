@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Fictional sample. Any resemblance to real people or companies is accidental. -->
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Synthetic feed whose shape moved</title>
+  <entry>
+    <title>Example Cloud: Platform Engineer</title>
+    <link href="https://weworkremotely.invalid/remote-jobs/examplecloud-platform-engineer"/>
+  </entry>
+</feed>

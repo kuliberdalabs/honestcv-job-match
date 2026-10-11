@@ -1,0 +1,45 @@
+# honestcv language names, level words and requirement cues, English and Polish. Written by hand for honestcv.
+# Codes are ISO 639-1. Tokens use the syntax of textutil.hit(); "angielsk*" is a prefix at a word start,
+# so the Polish name matches in every case form (angielski, angielskiego, angielskim ...).
+# Quote codes that YAML reads as booleans ("no").
+
+names:
+  en: [english, "angielsk*"]
+  pl: [polish, polski, polskiego, polskim, polskiemu]
+  de: [german, deutsch, "niemieck*"]
+  fr: [french, "francusk*"]
+  es: [spanish, "hiszpańsk*"]
+  it: [italian, "włosk*"]
+  pt: [portuguese, "portugalsk*"]
+  nl: [dutch, "niderlandzk*", "holendersk*"]
+  sv: [swedish, "szwedzk*"]
+  "no": [norwegian, "norwesk*"]
+  da: [danish, "duńsk*"]
+  fi: [finnish, "fińsk*"]
+  cs: [czech, "czesk*"]
+  sk: [slovak, "słowack*"]
+  uk: [ukrainian, "ukraińsk*"]
+  ru: [russian, "rosyjsk*"]
+  tr: [turkish, "tureck*"]
+  hu: [hungarian, "węgiersk*"]
+  ro: [romanian, "rumuńsk*"]
+  el: [greek, "grecki*"]
+  ja: [japanese, "japońsk*"]
+  zh: [chinese, mandarin, "chińsk*"]
+  ar: [arabic, "arabsk*"]
+
+# A language name followed by one of these is not a language ("polish the dashboards").
+determiners: [the, our, your, my, their, this, these, those, its, a, an, up, all, each, every]
+
+# A language counts as required only within 60 characters of one of these.
+cues: [fluent, fluency, proficient, proficiency, c1, c2, b2, native, required, written and spoken, spoken and written,
+  mother tongue, good command, "biegł*", znajomość, "komunikatywn*", "wymagan*", "wymagane"]
+
+# Level words a CV may put next to a language, in the order they are tried. The value is what the profile stores.
+# A CEFR level (A1 to C2) next to the name is stored as it is.
+level_words:
+  native: [native, mother tongue, "ojczyst*", "natywn*"]
+  fluent: [fluent, proficient, bilingual, "biegł*", "swobodn*"]
+  advanced: [advanced, upper intermediate, "zaawansowan*"]
+  intermediate: [intermediate, conversational, "komunikatywn*", "średnio zaawansowan*"]
+  basic: [basic, beginner, elementary, "podstawow*"]

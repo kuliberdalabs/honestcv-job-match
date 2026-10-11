@@ -1,0 +1,3 @@
+# Fictional sample. Any resemblance to real people or companies is accidental.
+Stub evidence file for tests/golden/ledger_rules.yml (feed-integration, shipped).
+Handover record, 2024-11-18: the contractor handed over the supplier feed integration.
