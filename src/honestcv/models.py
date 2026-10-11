@@ -41,8 +41,9 @@ def _clean(value: Any) -> Any:
     return value
 
 class _Untrusted(BaseModel):
-    """Base of the models that hold text from outside (job boards, files, e-mails). Whatever builds one, from an
-    adapter, an importer or a JSON file, every string in it comes out without control characters."""
+    """Base of the models that hold text from outside (job boards, files, e-mails) or text derived from it (scores,
+    gates, source messages, the scan run). Whatever builds one, from an adapter, an importer or a JSON file, every
+    string in it comes out without control characters, lone surrogates or non-characters."""
 
     @model_validator(mode="before")
     @classmethod
@@ -269,14 +270,14 @@ class LintIssue(BaseModel):
     message: str
 
 # ---- scoring ----
-class Requirement(BaseModel):
+class Requirement(_Untrusted):
     term: str
     must: bool
     in_profile: bool
     backed_by: list[str] = []  # claim ids
     quote: str | None = None
 
-class CriterionScore(BaseModel):
+class CriterionScore(_Untrusted):
     id: str
     weight: int
     applicable: bool
@@ -290,7 +291,7 @@ class Penalty(BaseModel):
     points: int  # negative
     quote: str | None = None
 
-class Gate(BaseModel):
+class Gate(_Untrusted):
     code: Literal[
         "deny_title", "deny_term", "commission_only", "unpaid_task", "equity_only", "expired", "stale",
         "no_content", "ledger_ceiling"
@@ -298,7 +299,7 @@ class Gate(BaseModel):
     detail: str
     quote: str | None = None
 
-class MatchResult(BaseModel):
+class MatchResult(_Untrusted):
     offer_id: str
     cv_id: str
     gate: Gate | None
@@ -352,14 +353,14 @@ class CheckResult(BaseModel):
     document_sha256: str
 
 # ---- run ----
-class SourceStatus(BaseModel):
+class SourceStatus(_Untrusted):
     id: str
     state: Literal["ok", "cached", "empty", "drift", "refused", "error", "skipped"]
     http_status: int | None
     offers: int
     message: str
 
-class ScanRun(BaseModel):
+class ScanRun(_Untrusted):
     model_config = _SCHEMA_ALIAS
     schema_: Literal["honestcv.scan.v1"] = Field("honestcv.scan.v1", alias="schema")
     run_id: str

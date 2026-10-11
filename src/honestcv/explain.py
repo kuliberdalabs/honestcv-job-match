@@ -52,7 +52,7 @@ def render_rubric(cfg: Config) -> str:
         *[f"- **{c.id}** ({c.type}): {_rule(c)}" for c in sc.criteria], "",
         "## When a criterion does not apply", "",
         "- A preference you did not set is not scored, and its weight goes to the other criteria. The report shows it as n/a.",
-        "- A fact the offer does not state never counts as a plus: the criterion scores 0, and the line descriptions above say when it is also listed under unknowns. The skills and language lines are the exception: they do not apply when the offer names no skill or language honestcv knows.", "",
+        "- A fact the offer does not state never counts as a plus: it earns no points (a line with two checks, such as location, still earns the part the offer states), and the line descriptions above say when it is also listed under unknowns. The skills and language lines are the exception: they do not apply when the offer names no skill or language honestcv knows.", "",
         "## Layers", "",
         "The layer is the direction of a role relative to your profile. It is not a grade and not a veto.", "",
         "- The offer level is the one the source states, else a level word in the title, else the years of experience the offer asks for: "

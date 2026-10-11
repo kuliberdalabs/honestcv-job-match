@@ -198,7 +198,8 @@ def _add_inbox_offer(workspace, **fields) -> None:
     (workspace.inbox / "hostile.json").write_text(json.dumps([offer]), encoding="utf-8")
 
 
-@pytest.mark.parametrize("fields", [{"skills": ["\u001b"]}, {"location": "\ud800"}, {"skills": ["\ud800", ""]}])
+@pytest.mark.parametrize("fields", [{"skills": ["\u001b"]}, {"location": "\ud800"}, {"skills": ["\ud800", ""]}, {"remote": "\ud800"},
+                                    {"\ud800": "x"}, {"remote": "\x1b]0;PWNED\x07"}])  # fmt: skip
 def test_an_offer_with_unwritable_text_does_not_stop_the_scan(cli, sample_workspace, fields):
     _add_inbox_offer(sample_workspace, **fields)
     result = cli("scan", "--offline", "--no-open", "--workspace", sample_workspace.root, *TODAY)
