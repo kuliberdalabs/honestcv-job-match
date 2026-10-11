@@ -454,6 +454,9 @@ def test_a_word_in_another_sense_is_not_the_contract(text):
     "text",
     ["000 " * 25000, "1 " * 50000, "1,000-" * 20000, "zł " * 30000, "€ " * 50000, "5-" * 50000, "9" * 100000, "12k " * 25000, "1" + " " * 90000 + "1",
      "12 000 - 18 000 zł " * 5000, "5 zł / " * 14000, "hybrid " * 14000, "no " * 33000, "Kraków\n" * 14000],
+    # Short ids: pytest puts the test id in an environment variable, and Windows caps those at 32767 characters.
+    ids=["zero groups", "ones", "thousands range", "zl", "euro", "dashes", "nines", "12k", "two ones far apart",
+         "pay range", "pay per", "hybrid", "no", "city lines"],
 )
 def test_long_hostile_text_is_read_quickly(text):
     started = time.perf_counter()
