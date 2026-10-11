@@ -3,6 +3,7 @@ screens printed after each command."""
 
 import io
 import json
+import os
 import sys
 
 import pytest
@@ -154,7 +155,7 @@ def test_windows_safety_utf8_stdout(monkeypatch):
     cli_module._utf8()
     print("→ ≥ zażółć")
     stream.flush()
-    assert raw.getvalue().decode("utf-8") == "→ ≥ zażółć\n"
+    assert raw.getvalue().decode("utf-8") == "→ ≥ zażółć" + os.linesep  # print() ends lines with \r\n on Windows
 
 
 def test_windows_safety_utf8_child_process(tmp_path, run_child):

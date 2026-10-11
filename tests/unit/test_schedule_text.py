@@ -58,7 +58,7 @@ def test_macos_plist_parses_and_carries_the_arguments(tmp_path):
 
 
 def test_macos_plist_escapes_odd_workspace_names(tmp_path):
-    ws = make(tmp_path, "Tom & Jerry <jobs>")
+    ws = make(tmp_path, "Tom & Jerry" if sys.platform == "win32" else "Tom & Jerry <jobs>")  # Windows forbids < > in names
     entry = plist_of(schedule_text(ws, every="1d", at=None, platform="macos", executable=[sys.executable, "-m", "honestcv"]))
     assert entry["ProgramArguments"][-1] == str(ws.root)
     assert entry["ProgramArguments"][:3] == [sys.executable, "-m", "honestcv"]
@@ -106,6 +106,10 @@ def test_auto_picks_a_known_platform(tmp_path, monkeypatch):
         assert expect in schedule_text(ws, every="1d", at=None, platform="auto", executable=EXE)
 
 
+POSIX_ONLY = pytest.mark.skipif(sys.platform == "win32", reason="a cron line carries a Linux or macOS path")
+
+
+@POSIX_ONLY
 def test_cron_line_is_shell_safe(tmp_path):
     ws = make(tmp_path, "My jobs 100%")
     text = schedule_text(ws, every="1d", at="08:00", platform="linux", executable=["/opt/my tools/honestcv"])
@@ -170,6 +174,7 @@ def test_prints_only_nothing_is_written(tmp_path, _isolated_home):
     assert not (_isolated_home / "Library").exists()
 
 
+@POSIX_ONLY
 def test_the_workspace_is_shown_with_a_tilde_but_commands_stay_absolute(tmp_path, _isolated_home):
     ws = Workspace.for_root(_isolated_home / "honestcv")
     text = schedule_text(ws, every="1d", at="08:00", platform="linux", executable=EXE)
