@@ -187,3 +187,48 @@ def test_an_inbox_file_with_infinite_salaries_scans_and_reports(cli, sample_work
     assert offer.salary is None or (offer.salary.min, offer.salary.max) == (None, None)
     assert any(r.offer_id == offer.id and r.gate is None and not r.low_confidence for r in run.results)  # ranked, so its card is drawn
     assert "Reporting Analyst" in (sample_workspace.out / "report-latest.html").read_text(encoding="utf-8")
+
+
+# ---- one hostile offer never stops a scan ----
+
+
+def _add_inbox_offer(workspace, **fields) -> None:
+    offer = {"title": "Data Analyst", "company": "Example Bank", "url": "https://jobs.example.invalid/x",
+             "description": "Requirements: SQL, Python, Power BI."} | fields  # fmt: skip
+    (workspace.inbox / "hostile.json").write_text(json.dumps([offer]), encoding="utf-8")
+
+
+@pytest.mark.parametrize("fields", [{"skills": ["\u001b"]}, {"location": "\ud800"}, {"skills": ["\ud800", ""]}])
+def test_an_offer_with_unwritable_text_does_not_stop_the_scan(cli, sample_workspace, fields):
+    _add_inbox_offer(sample_workspace, **fields)
+    result = cli("scan", "--offline", "--no-open", "--workspace", sample_workspace.root, *TODAY)
+    assert result.exit_code == 0, result.output
+    assert (sample_workspace.out / "report-latest.md").is_file()
+    run = pipeline.load_run(sample_workspace)
+    assert any(o.company == "Example Bank" and o.title == "Data Analyst" for o in run.offers)
+
+
+def test_a_saved_page_with_a_lone_surrogate_does_not_stop_the_scan(cli, sample_workspace):
+    page = ('<html><script type="application/ld+json">{"@type": "JobPosting", "title": "Data Analyst", '
+            '"description": "SQL and Python.", "hiringOrganization": {"name": "Example Bank"}, '
+            '"jobLocation": {"address": {"addressLocality": "\\ud800"}}}</script></html>')  # fmt: skip
+    (sample_workspace.inbox / "saved.html").write_text(page, encoding="utf-8")
+    result = cli("scan", "--offline", "--no-open", "--workspace", sample_workspace.root, *TODAY)
+    assert result.exit_code == 0, result.output
+
+
+def test_an_offer_that_cannot_be_scored_is_left_out_and_the_run_is_partial(cli, sample_workspace, monkeypatch):
+    real = pipeline.score_all
+
+    def fails_for_one(offers, *args):
+        if any(o.title == "Junior Reporting Analyst" for o in offers):
+            raise AttributeError("an offer the scorer cannot read")
+        return real(offers, *args)
+
+    monkeypatch.setattr(pipeline, "score_all", fails_for_one)
+    result = cli("scan", "--offline", "--no-open", "--workspace", sample_workspace.root, *TODAY)
+    assert result.exit_code == 3, result.output
+    assert "Status    PARTIAL" in result.stdout and "1 offer could not be read and was left out." in result.stdout
+    run = pipeline.load_run(sample_workspace)
+    assert not any(o.title == "Junior Reporting Analyst" for o in run.offers)
+

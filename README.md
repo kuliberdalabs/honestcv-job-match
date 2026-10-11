@@ -77,7 +77,7 @@ honestcv scan
 |---|---|
 | One deterministic scorer. No model ever changes a match percentage. | Several scoring vocabularies, or model prose that restates the rubric, drift apart. |
 | The match % is coverage of the offer by your CV against criteria in one YAML file. Ledger backing is shown beside it and does not change the %. | A first run has no ledger, and the % would jump when you add one. |
-| A preference you did not state is not scored, and its weight goes to the other criteria. A fact the offer does not state scores 0 and is listed as unknown. | Unknown counting as a plus, or an empty config giving meaningless numbers. |
+| A preference you did not state is not scored, and its weight goes to the other criteria. The skills and language lines do not apply when the offer names no skill or language honestcv knows. Any other fact the offer leaves out never counts as a plus: that line scores 0, and [docs/scoring.md](docs/scoring.md) says line by line when it is also listed as unknown. | Unknown counting as a plus, or an empty config giving meaningless numbers. |
 | Inside `tailor`, the checker reads the written file back from disk and removes blocked lines. `check` on your own document only reports. | Shipping text that was never checked, or rewriting text a person wrote. |
 | No model calls in this version. | A claims check that only works with a model, a running cost, and data sent to a provider. |
 | A fixed list of job APIs whose terms allow automated access. Every other host is refused before a request is made; you import those offers by file or paste. | Reading sites whose terms do not allow it. |

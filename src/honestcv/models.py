@@ -23,10 +23,12 @@ _STRICT_KEYS = ConfigDict(extra="forbid")
 
 # C0 controls except tab and newline, DEL and the C1 controls. ESC starts the sequences that move the cursor, clear the
 # screen, set a window title or write to the clipboard when a terminal prints them.
-_CONTROLS = dict.fromkeys([*range(0x09), *range(0x0B, 0x20), 0x7F, *range(0x80, 0xA0)], None)
+# Lone surrogates (from a JSON "\ud800" escape) and the non-characters U+FFFE/U+FFFF go too: they cannot be written as UTF-8.
+_CONTROLS = dict.fromkeys([*range(0x09), *range(0x0B, 0x20), 0x7F, *range(0x80, 0xA0), *range(0xD800, 0xE000), 0xFFFE, 0xFFFF], None)
 
 def strip_controls(text: str) -> str:
-    """Text without control characters. A carriage return counts as a line end; tab and newline stay."""
+    """Text without control characters, lone surrogates and non-characters. A carriage return counts as a line end;
+    tab and newline stay."""
     return text.replace("\r\n", "\n").replace("\r", "\n").translate(_CONTROLS)
 
 def _clean(value: Any) -> Any:
@@ -34,7 +36,9 @@ def _clean(value: Any) -> Any:
         return strip_controls(value)
     if isinstance(value, dict):
         return {k: _clean(v) for k, v in value.items()}
-    return [_clean(v) for v in value] if isinstance(value, (list, tuple)) else value
+    if isinstance(value, (list, tuple)):  # an item that was nothing but control characters is dropped
+        return [c for c in map(_clean, value) if not (isinstance(c, str) and not c.strip())]
+    return value
 
 class _Untrusted(BaseModel):
     """Base of the models that hold text from outside (job boards, files, e-mails). Whatever builds one, from an

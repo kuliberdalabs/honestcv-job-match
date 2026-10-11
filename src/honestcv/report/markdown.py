@@ -13,7 +13,7 @@ from honestcv.report.matches import (
 
 def esc(value: object) -> str:
     """One line of plain text for a Markdown viewer: no tags, no links and no images can come out of offer text."""
-    text = " ".join(str(value).split())
+    text = " ".join(str(value).split()).replace("\\", "\\\\")  # a backslash in the text first, so it cannot undo an escape
     return text.replace("<", "&lt;").replace(">", "&gt;").replace("[", "\\[").replace("]", "\\]")
 
 

@@ -7,7 +7,7 @@ from honestcv.config import Config, config_digest
 from honestcv.errors import WorkspaceError
 from honestcv.importers import import_inbox
 from honestcv.ledger import build_index, load_ledger
-from honestcv.models import Profile, ScanRun
+from honestcv.models import Profile, ScanRun, SourceStatus
 from honestcv.profile import load_profiles
 from honestcv.report.html import render_html
 from honestcv.report.markdown import render_markdown
@@ -71,7 +71,18 @@ def run_scan(ws: Workspace, cfg: Config, *, offline: bool, today: dt.date, pinne
         collected, statuses = collect(search, ws, offline=offline, today=today)
         inbox, inbox_status = import_inbox(ws, store, today)
         offers = sorted(dedupe(collected + inbox), key=lambda o: o.id)
-        results = score_all(offers, profiles, cfg, index, today)
+        results, unread = [], set()
+        for offer in offers:  # one offer honestcv cannot write or score is left out; it never stops the run
+            try:
+                offer.model_dump_json()
+                results += score_all([offer], profiles, cfg, index, today)
+            except Exception:
+                unread.add(offer.id)
+        if unread:
+            offers = [o for o in offers if o.id not in unread]
+            many = len(unread) > 1
+            statuses = [*statuses, SourceStatus(id="scoring", state="error", http_status=None, offers=0,
+                                                message=f"{len(unread)} offer{'s' if many else ''} could not be read and {'were' if many else 'was'} left out.")]  # fmt: skip
         gates = {r.offer_id: r.gate.code for r in results if r.gate}
         surfaced = {r.offer_id for r in results if r.surfaced}
         counts: dict[str, int] = {}

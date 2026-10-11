@@ -130,3 +130,15 @@ def test_render_is_repeatable_and_survives_a_json_round_trip(run):
     first = render_markdown(run, show_below=True)
     again = ScanRun.model_validate_json(run.model_dump_json(by_alias=True))
     assert render_markdown(run, show_below=True) == first == render_markdown(again, show_below=True)
+
+
+def test_a_backslash_in_offer_text_cannot_undo_the_escape():
+    import re
+
+    from honestcv.report.markdown import esc
+
+    out = esc("Data Analyst \\[click\\](https://attacker.example.invalid/phish) ![img](x) \\\\[two]")
+    for m in re.finditer(r"[\[\]]", out):
+        slashes = len(out[: m.start()]) - len(out[: m.start()].rstrip("\\"))
+        assert slashes % 2 == 1, (out, m.start())  # every bracket is escaped, so no link or image can open
+

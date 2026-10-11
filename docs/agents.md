@@ -25,7 +25,7 @@ Prints the whole run, the same data as `out/runs/<run_id>/scan.json`. Paths are 
 | Field | Meaning |
 |---|---|
 | `status` | `PASS`, `PARTIAL` (a source was refused, unreadable or failed) or `FAIL` (every source failed and the inbox was empty) |
-| `sources[]` | one entry per source plus `inbox`: `state` is ok, cached, empty, drift, refused, error or skipped |
+| `sources[]` | one entry per source plus `inbox`, and a `scoring` entry (state `error`) when an offer could not be read and was left out: `state` is ok, cached, empty, drift, refused, error or skipped |
 | `offers[]` | every offer collected, after deduplication; `thin: true` means title and link only |
 | `results[]` | one per offer and CV; `gate` is set when the offer was filtered out; `surfaced` and `low_confidence` decide where it is listed |
 | `results[].match_pct` | coverage of the offer by the CV, by the person's criteria. It is not a hire probability |
