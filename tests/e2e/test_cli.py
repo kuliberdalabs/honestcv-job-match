@@ -246,6 +246,17 @@ def test_scan_partial_names_the_source_and_exits_3(cli, sample_workspace, monkey
     assert "Matches   out/matches.csv  +4 rows" in result.stdout
 
 
+def test_scan_with_every_source_failed_and_an_empty_inbox_is_fail(cli, sample_workspace, monkeypatch):
+    from honestcv.models import SourceStatus
+
+    (sample_workspace.inbox / "sample-offers.json").unlink()
+    refused = SourceStatus(id="weworkremotely", state="refused", http_status=403, offers=0, message="weworkremotely refused access (HTTP 403).")
+    monkeypatch.setattr(pipeline, "collect", lambda cfg, ws, *, offline, today: ([], [refused]))
+    result = cli("scan", "--no-open", "--workspace", sample_workspace.root, *TODAY)
+    assert result.exit_code == 3, result.output
+    assert "Status    FAIL" in result.stdout
+
+
 def test_scan_without_imported_offers_says_how_to_bring_them_in(cli, sample_workspace):
     (sample_workspace.inbox / "sample-offers.json").unlink()
     result = cli("scan", "--offline", "--no-open", "--workspace", sample_workspace.root, *TODAY)

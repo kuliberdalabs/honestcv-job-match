@@ -151,6 +151,25 @@ def test_an_opener_or_closer_neutralises_only_itself(tmp_path, maya, text):
     assert _check(tmp_path, maya, text).units_claim_bearing == 1
 
 
+@pytest.mark.parametrize("text", [
+    "I am writing to apply for the Junior Data Analyst position at Tallgrove Analytics.",
+    "I am writing to express my interest in the Senior Reporting Analyst role.",
+    "I am excited about the opportunity to join your team.",
+    "Chciałabym aplikować na stanowisko Młodszego Analityka Danych w Example Bank.",
+])  # fmt: skip
+def test_the_job_an_opener_names_is_not_a_claim(tmp_path, maya, text):
+    assert _check(tmp_path, maya, text).units_claim_bearing == 0
+
+
+@pytest.mark.parametrize("text", [
+    "I am writing to apply for the Senior Data Analyst position with a doctorate in data science.",
+    "I am writing to apply for the Data Analyst position after 12 years in support.",
+    "Chciałabym aplikować na stanowisko analityka, mając doktorat z fizyki.",
+])  # fmt: skip
+def test_a_claim_after_the_job_an_opener_names_is_still_checked(tmp_path, maya, text):
+    assert _check(tmp_path, maya, text).units_claim_bearing == 1
+
+
 def test_an_opener_with_a_citation_marker_is_a_claim(maya):
     ctx = checker._Ctx.build(maya, TODAY)
     assert checker._claim_bearing(checker._unit(1, "I look forward to hearing from you. <!-- c:tag-cleanup -->", ctx), ctx)

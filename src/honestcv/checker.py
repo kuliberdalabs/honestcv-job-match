@@ -32,6 +32,13 @@ _WORD = re.compile(r"[^\W_]+(?:'[^\W_]+)*")
 _CLAUSE_END = re.compile(r"[;:]|[.!?](?=\s|$)")
 _HEADING = re.compile(r"^#{1,6}\s+(.+?)(?:\s+#+)?$")
 _LIST_GAP = re.compile(r"(?:[\s,;|/\u00b7]|\band\b|\bi\b)*", re.IGNORECASE)  # what may stand between two skills
+# the job an opener names ("for the Junior Data Analyst position", "na stanowisko Młodszego Analityka"): words about the
+# job, not about the person; the rest of the sentence is still checked
+_ROLE_REF = re.compile(
+    r"\s*(?:(?:for|to|in)\s+(?:the|this|your|a|an)\s+(?:[^\s,.;:!?]+\s+){0,7}?(?:position|role|job|opening|vacancy|post)\b"
+    r"|(?:na|w\s+sprawie)\s+(?:stanowisk\w*|rol\w*|ofert\w*)\b[^,.;:!?]*?(?=[,.;:!?]|\s+(?:w|z|ponieważ|bo|jako|mając\w*)\s|$))",
+    re.IGNORECASE,
+)
 
 
 # ---------------------------------------------------------------- vocabulary
@@ -310,12 +317,17 @@ def _overlap(item: str, full: set[str]) -> float:
 
 
 def _nonclaim(u: _Unit, ctx: "_Ctx") -> bool:
-    """A unit on the non-claim list, or a letter opener or closer whose rest has no claim signal."""
+    """A unit on the non-claim list, or a letter opener or closer whose rest (after the job it names) has no claim signal."""
     voc = vocab()
     if any(p.fullmatch(u.norm) for p in voc.nonclaims):
         return True
     m = next((m for p in voc.phrases if (m := p.match(u.norm))), None)
-    return m is not None and u.cites is None and not _signal(_unit(u.line, u.norm[m.end():], ctx))
+    if m is None or u.cites is not None:
+        return False
+    rest = u.norm[m.end():]
+    if role := _ROLE_REF.match(rest):
+        rest = rest[role.end():]
+    return not _signal(_unit(u.line, rest, ctx))
 
 
 def _signal(u: _Unit) -> bool:

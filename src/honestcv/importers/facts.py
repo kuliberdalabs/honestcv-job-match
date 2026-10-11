@@ -41,7 +41,7 @@ _SALARY_WORD = re.compile(r"wynagrodz|zarob|stawk|widełk|pensj|salary|(?<!\w)pa
 _GROSS_NET = re.compile(r"\s*(?:brutto|netto|gross|net)(?!\w)", re.IGNORECASE)
 _MAX_PAY = 1_000_000
 # A sentence of running text is read for pay only when it carries a pay word and no word for a budget, a price or a customer.
-_PAY_WORD = re.compile(r"(?<!\w)(?:salar(?:y|ies)|pay|compensation|wages?|rates?|wynagrodz\w*|pensj\w*|stawk\w*|wide[łl]k\w*|brutto|netto|gross|net)(?!\w)", re.IGNORECASE)
+_PAY_WORD = re.compile(r"(?<!\w)(?:salar(?:y|ies)|pay|oferujemy|we\s+offer|zarobk\w*|zarabia\w*|earn(?:s|ing)?|miesi[eę]cznie|compensation|wages?|rates?|wynagrodz\w*|pensj\w*|stawk\w*|wide[łl]k\w*|brutto|netto|gross|net)(?!\w)", re.IGNORECASE)
 _NOT_PAY = re.compile(r"(?<!\w)(?:budget\w*|bud[zż]et\w*|costs?|koszt\w*|pric(?:e|es|ing)|cen[aęyą]|cenie|cenach|revenues?|przych[oó]d\w*|turnover|obr[oó]t\w*"
                       r"|clients?|klient\w*|funding|training\w*|szkole\w*|bonus\s+pool)(?!\w)", re.IGNORECASE)  # fmt: skip
 _SENTENCES = re.compile(r"(?<=[.!?;])\s+(?=[A-ZĄĆĘŁŃÓŚŹŻ0-9€$£])")

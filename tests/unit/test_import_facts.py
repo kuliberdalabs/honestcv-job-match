@@ -325,6 +325,17 @@ def test_money_that_is_not_the_pay_gives_no_pay(text):
 
 
 @pytest.mark.parametrize(
+    "text",
+    [
+        "Oferujemy 12 000 - 15 000 zł miesięcznie oraz prywatną opiekę medyczną, a cały zespół pracuje razem od lat w jednym miejscu.",
+        "We offer 4,000-5,000 EUR per month, a laptop of your choice and a yearly learning allowance for the whole team to use freely.",
+    ],
+)
+def test_an_offer_sentence_with_pay_is_read_as_pay(text):
+    assert pay(text) is not None
+
+
+@pytest.mark.parametrize(
     "text, expected",
     [
         ("Praca w Krakowie", (["PL"], "Kraków")),

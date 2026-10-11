@@ -77,8 +77,11 @@ def run_scan(ws: Workspace, cfg: Config, *, offline: bool, today: dt.date, pinne
         counts: dict[str, int] = {}
         for code in gates.values():
             counts[code] = counts.get(code, 0) + 1
+        status = collection_status(statuses, len(inbox))
+        if status == "PASS" and inbox_status.state == "error":
+            status = "PARTIAL"  # a damaged inbox file
         run = ScanRun(
-            run_id=_run_id(ws, today, pinned), today=today, status=collection_status([*statuses, inbox_status], len(inbox)),
+            run_id=_run_id(ws, today, pinned), today=today, status=status,
             sources=[*statuses, inbox_status], cvs=[p.cv_id for p in profiles], offers=offers, results=results,
             gate_counts=dict(sorted(counts.items())), new_offer_ids=sorted(o.id for o in offers if store.is_new(o.id)),
             config_digest=config_digest(cfg), ledger_present=ledger is not None,
