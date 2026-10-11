@@ -39,12 +39,12 @@ class HimalayasAdapter:
 
     @staticmethod
     def _next(payload: dict, base: dict, count: int) -> dict | None:
-        """Cursor paging (nextCursor) when the answer has it, else the older offset paging."""
+        """The search endpoint pages with `page` (1-based); nextCursor is honoured if the answer ever carries it."""
         if payload.get("nextCursor"):
             return {**base, "cursor": payload["nextCursor"]}
         offset, limit, total = payload.get("offset"), payload.get("limit"), payload.get("totalCount")
-        if count and all(isinstance(n, int) for n in (offset, limit, total)) and offset + limit < total:
-            return {**base, "offset": offset + limit}
+        if count and all(isinstance(n, int) for n in (offset, limit, total)) and limit > 0 and offset + limit < total:
+            return {**base, "page": offset // limit + 2}
         return None
 
     @staticmethod

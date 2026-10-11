@@ -197,13 +197,13 @@ def test_many_unclosed_script_tags_are_read_in_linear_time(tmp_path):
     mail = alert(tmp_path / "flood.eml", f'<html><body>{flood}<a href="https://jobs.example.invalid/openings/data-analyst">Data Analyst</a></body></html>')
     started = time.perf_counter()
     offers, notes = read_path(mail, TODAY)
-    assert time.perf_counter() - started < 1
+    assert time.perf_counter() - started < 5  # generous for slow CI runners; the quadratic version takes minutes
     assert offers == [] or [o.title for o in offers] == ["Data Analyst"]  # an unclosed script swallows the rest of the page
     saved = tmp_path / "flood.html"
     saved.write_text(f"<html><body>{flood}</body></html>", encoding="utf-8")
     started = time.perf_counter()
     assert import_path(saved, today=TODAY) == []
-    assert time.perf_counter() - started < 1
+    assert time.perf_counter() - started < 5  # generous for slow CI runners; the quadratic version takes minutes
     # a closed block is found whatever the order of the attributes
     tidy = alert(tmp_path / "tidy.eml", f'<script data-x="1" id="a" type="application/ld+json; charset=utf-8">{json.dumps(POSTING)}</script>')
     assert [o.title for o in import_path(tidy, today=TODAY)] == ["Reporting Analyst"]

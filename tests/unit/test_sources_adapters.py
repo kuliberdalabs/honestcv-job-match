@@ -84,15 +84,15 @@ def test_adapter_himalayas_request_limits(tmp_path):
     assert all("country" not in r.url.params for r in requests)  # two countries: no country filter
     net, _, _ = run(HimalayasAdapter(), {"/jobs/api/search": himalayas_route}, tmp_path / "b")  # no keywords: one plain search
     assert [r.url.params.get("q") for r in net.requests if r.url.path == "/jobs/api/search"] == [None, None]
-    # no cursor in the answer: the older offset paging is used while totalCount says there is more
+    # no cursor in the answer: the documented page paging is used while totalCount says there is more
     calls = []
 
     def offsets(request):
-        calls.append(request.url.params.get("offset"))
-        return 200, fixture("himalayas/search_offset_page1.json" if not request.url.params.get("offset") else "himalayas/search_page2.json")
+        calls.append(request.url.params.get("page"))
+        return 200, fixture("himalayas/search_offset_page1.json" if not request.url.params.get("page") else "himalayas/search_page2.json")
 
     run(HimalayasAdapter(), {"/jobs/api/search": offsets}, tmp_path / "c")
-    assert calls == [None, "1"]
+    assert calls == [None, "2"]
 
 
 def test_adapter_remoteok_fields(tmp_path):
